@@ -47,7 +47,7 @@
   font-size: 0.9rem;
   color: #fff;
   text-decoration: none;
-  background: var(--ws-blue);
+  background: var(--accent);
 }
 
 .site-promo-banner__cta:hover {

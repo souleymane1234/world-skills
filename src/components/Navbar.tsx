@@ -54,7 +54,7 @@ export function Navbar() {
       >
         <img
           className="site-navbar__logo"
-          src="/logo-worldskills.svg"
+          src="/logo.png"
           width={56}
           height={56}
           alt="WorldSkills Côte d'Ivoire"

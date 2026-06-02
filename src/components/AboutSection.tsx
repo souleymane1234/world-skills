@@ -26,9 +26,9 @@ export function AboutSection() {
         <p className="ws-about__summary">
           Les Olympiades des métiers — WorldSkills Côte d&apos;Ivoire — sont
           organisées par le ministère de l&apos;Enseignement technique, de la
-          Formation professionnelle et de l&apos;Apprentissage (METFPA). Elles
-          révèlent les talents, valorisent le savoir-faire et projettent la
-          Côte d&apos;Ivoire dans la compétitivité internationale.
+          Formation professionnelle et de l&apos;Apprentissage (METFPA). L&apos;objectif
+          général est de mobiliser les entreprises de production autour du
+          développement des compétences techniques et professionnelles des jeunes.
         </p>
 
         <ul className="ws-about__highlights">

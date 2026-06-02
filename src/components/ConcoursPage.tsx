@@ -60,8 +60,8 @@ export function ConcoursPage() {
   return (
     <main className="concours-page" aria-labelledby="competition-title">
       <HeroVideo
-        subtitle="Olympiades des métiers 2025"
-        title="Les métiers au cœur de la croissance économique"
+        subtitle="Olympiades des métiers 2026"
+        title="FORMATION – INNOVATION – EMPLOYABILITE DES JEUNES"
       />
       <PromoBanner />
       <SectionBridge variant="ribbon" />
@@ -70,17 +70,17 @@ export function ConcoursPage() {
         <section className="concours-page__section concours-page__hero">
           <div className="concours-page__inner">
             <p className="concours-page__eyebrow">Compétition</p>
-            <h1 id="competition-title">WorldSkills Côte d&apos;Ivoire 2025</h1>
+            <h1 id="competition-title">WorldSkills Côte d&apos;Ivoire 2026</h1>
             <p className="concours-page__lead">
-              5ᵉ édition des Olympiades des métiers : 28 disciplines, plus de 325
-              compétiteurs et 15 établissements finalistes. Un rendez-vous national
-              pour valoriser l&apos;excellence technique et l&apos;employabilité.
+              6ᵉ édition des Olympiades des métiers : 25 disciplines, 1500+
+              compétiteurs et 300 finalistes et exposants. Un rendez-vous national
+              autour du thème « FORMATION – INNOVATION – EMPLOYABILITE DES JEUNES ».
             </p>
             <div className="concours-page__actions">
               <a href="/metiers" className="concours-page__btn-primary">
                 Voir les disciplines
               </a>
-              <a href="/edition/2025">Édition 2025</a>
+              <a href="/edition">Édition 2026</a>
             </div>
           </div>
         </section>

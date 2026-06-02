@@ -77,7 +77,7 @@
 }
 
 .ws-contact__btn--primary {
-  background: var(--ws-blue);
+  background: var(--accent);
   color: #fff;
 }
 

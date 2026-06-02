@@ -89,7 +89,7 @@ export const EDITIONS: Edition[] = [
     year: 2025,
     status: 'current',
     title: 'WorldSkills Côte d’Ivoire 2025',
-    theme: 'Les métiers au cœur de la croissance économique',
+    theme: 'FORMATION – INNOVATION – EMPLOYABILITE DES JEUNES',
     tagline: '5ᵉ édition des Olympiades des métiers — finale nationale au LTA.',
     description:
       'Organisées par le METFPA via la Direction de la Vie scolaire, les Olympiades des métiers réunissent les meilleurs apprenants des établissements de formation professionnelle. Présélections régionales à Abidjan, Bouaké, Gagnoa et Korhogo, puis finale nationale au Lycée technique d’Abidjan-Cocody.',
@@ -175,7 +175,7 @@ export const EDITIONS: Edition[] = [
       { name: 'Partenaire Bronze', logoSrc: '/trustCaroussel/port-5.png', tier: 'bronze' },
     ],
     highlights: [
-      '28 disciplines',
+      '25 disciplines',
       '15 établissements finalistes',
       '325+ compétiteurs',
       '4 villes de présélection',

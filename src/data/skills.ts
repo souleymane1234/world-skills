@@ -1,4 +1,9 @@
-export type SkillCategory = 'artisanat' | 'industrie' | 'services' | 'numerique' | 'agro'
+export type SkillCategory =
+  | 'technologie-tertiaire'
+  | 'hotellerie-agroalimentaire'
+  | 'technologie-industrielle'
+  | 'arts-mode-esthetique'
+  | 'batiment'
 
 export type Skill = {
   id: string
@@ -8,40 +13,56 @@ export type Skill = {
 }
 
 export const SKILL_CATEGORY_LABELS: Record<SkillCategory, string> = {
-  artisanat: 'Artisanat & arts',
-  industrie: 'Industrie & technique',
-  services: 'Services & hôtellerie',
-  numerique: 'Numérique & design',
-  agro: 'Agroalimentaire',
+  'technologie-tertiaire': 'TECHNOLOGIE TERTIAIRE',
+  'hotellerie-agroalimentaire': 'HOTELLERIE ET AGROALIMENTAIRE',
+  'technologie-industrielle': 'TECHNOLOGIE INDUSTRIELLE',
+  'arts-mode-esthetique': 'ARTS – MODE ET ESTHETIQUE',
+  batiment: 'BATIMENT',
 }
 
-/** Disciplines représentatives des Olympiades des métiers — WorldSkills CI 2025. */
+/** Domaines professionnels concernés — WorldSkills Côte d'Ivoire. */
 export const SKILLS: Skill[] = [
-  { id: 'coiffure', name: 'Coiffure', category: 'services', icon: '✂️' },
-  { id: 'electricite-auto', name: 'Électricité automobile', category: 'industrie', icon: '⚡' },
-  { id: 'peinture-deco', name: 'Peinture et décoration', category: 'artisanat', icon: '🎨' },
-  { id: 'bijouterie', name: 'Bijouterie', category: 'artisanat', icon: '💎' },
-  { id: 'mecanique-moteur', name: 'Mécanique moteur', category: 'industrie', icon: '🔧' },
-  { id: 'transformation-fl', name: 'Transformation F&L', category: 'agro', icon: '🥗' },
-  { id: 'cuisine', name: 'Cuisine', category: 'services', icon: '👨‍🍳' },
-  { id: 'boulangerie', name: 'Boulangerie–Viennoiserie–Pâtisserie', category: 'agro', icon: '🥖' },
-  { id: 'bar-cocktail', name: 'Bar et cocktail', category: 'services', icon: '🍸' },
-  { id: 'service-etage', name: "Service d'étage", category: 'services', icon: '🛎️' },
-  { id: 'techniques-commerciales', name: 'Techniques commerciales et banque', category: 'services', icon: '🏦' },
-  { id: 'cao-dao', name: 'CAO / DAO', category: 'numerique', icon: '📐' },
-  { id: 'menuiserie', name: 'Menuiserie', category: 'artisanat', icon: '🪚' },
-  { id: 'domotique', name: 'Domotique', category: 'numerique', icon: '🏠' },
-  { id: 'soudure', name: 'Soudure', category: 'industrie', icon: '🔥' },
-  { id: 'plomberie', name: 'Plomberie', category: 'industrie', icon: '🚿' },
-  { id: 'esthetique', name: 'Esthétique', category: 'services', icon: '💅' },
-  { id: 'couture', name: 'Couture', category: 'artisanat', icon: '🧵' },
+  { id: 'finance-comptabilite', name: 'Finance-comptabilité', category: 'technologie-tertiaire', icon: '📊' },
+  { id: 'entrepreneuriat', name: 'Entrepreneuriat', category: 'technologie-tertiaire', icon: '💼' },
+  { id: 'communication', name: 'Communication', category: 'technologie-tertiaire', icon: '📣' },
+
+  { id: 'cuisine', name: 'Cuisine', category: 'hotellerie-agroalimentaire', icon: '👨‍🍳' },
+  { id: 'boulangerie-patisserie', name: 'Boulangerie-pâtisserie', category: 'hotellerie-agroalimentaire', icon: '🥖' },
+  { id: 'bar-cocktail', name: 'Bar cocktail', category: 'hotellerie-agroalimentaire', icon: '🍸' },
+  { id: 'transformation-agroalimentaire', name: 'Transformation agroalimentaire', category: 'hotellerie-agroalimentaire', icon: '🥗' },
+
+  {
+    id: 'maintenance-cnc',
+    name: 'Maintenance industrielle et usinage CNC',
+    category: 'technologie-industrielle',
+    icon: '⚙️',
+  },
+  { id: 'mecatronique', name: 'Mécatronique', category: 'technologie-industrielle', icon: '🧠' },
+  { id: 'robotique', name: 'Robotique', category: 'technologie-industrielle', icon: '🤖' },
+  { id: 'soudage', name: 'Soudage', category: 'technologie-industrielle', icon: '🔥' },
+  { id: 'mecanique-automobile', name: 'Mécanique automobile', category: 'technologie-industrielle', icon: '🚗' },
+  { id: 'aeronautique', name: 'Aéronautique', category: 'technologie-industrielle', icon: '✈️' },
+  { id: 'numerique-technologie', name: 'Numérique et technologie', category: 'technologie-industrielle', icon: '💻' },
+
+  { id: 'couture', name: 'Couture', category: 'arts-mode-esthetique', icon: '🧵' },
+  { id: 'coiffure', name: 'Coiffure', category: 'arts-mode-esthetique', icon: '✂️' },
+  { id: 'bijouterie', name: 'Bijouterie', category: 'arts-mode-esthetique', icon: '💎' },
+
+  { id: 'maconnerie', name: 'Maçonnerie', category: 'batiment', icon: '🧱' },
+  { id: 'menuiserie-bois', name: 'Menuiserie bois', category: 'batiment', icon: '🪚' },
+  { id: 'carrelage', name: 'Carrelage', category: 'batiment', icon: '🟫' },
+  { id: 'peinture', name: 'Peinture', category: 'batiment', icon: '🎨' },
+  { id: 'installation-sanitaire', name: 'Installation sanitaire', category: 'batiment', icon: '🚿' },
+  { id: 'electricite', name: 'Électricité', category: 'batiment', icon: '⚡' },
+  { id: 'froid-climatisation', name: 'Froid-climatisation', category: 'batiment', icon: '❄️' },
+  { id: 'domotique', name: 'Domotique', category: 'batiment', icon: '🏠' },
 ]
 
 export const WORLD_SKILLS_STATS = {
-  disciplines: 28,
-  establishments2025: 15,
-  competitors2025: 325,
-  regions: 4,
-  editionYear: 2025,
+  disciplines: 25,
+  competitors: 1500,
+  finalistsAndExhibitors: 300,
+  editionNumber: 6,
+  editionYear: 2026,
   foundingYear: 2021,
 } as const

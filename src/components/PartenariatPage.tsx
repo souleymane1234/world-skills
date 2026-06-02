@@ -28,6 +28,36 @@ const PACKS = [
   },
 ] as const
 
+const OBJECTIF_GENERAL =
+  'Mobiliser les entreprises de production autour du développement des compétences techniques et professionnelles des jeunes afin de renforcer l’employabilité, l’innovation et la compétitivité de la Côte d’Ivoire.'
+
+const OBJECTIFS_SPECIFIQUES = [
+  'Renforcer les liens entre les entreprises et les établissements de formation.',
+  'Promouvoir les standards internationaux de compétences professionnelles.',
+  'Offrir aux jeunes une formation pratique adaptée aux réalités industrielles.',
+  'Valoriser les métiers techniques et industriels.',
+  'Identifier et accompagner les jeunes talents.',
+  'Encourager l’innovation et l’excellence professionnelle.',
+  'Permettre aux entreprises de contribuer à la formation de futurs techniciens qualifiés.',
+] as const
+
+const CONTEXTE_JUSTIFICATION =
+  'Dans le cadre de la promotion de l’excellence professionnelle, de l’employabilité des jeunes et du rapprochement entre l’école et l’industrie, le Comité d’Organisation des Olympiades des Métiers 2026 organise la 6ème édition des Olympiades des Métiers de Côte d’Ivoire, inspirée des standards internationaux de WorldSkills International.'
+
+const CONTEXTE_POINTS = [
+  'Renforcer les compétences techniques des jeunes apprenants.',
+  'Valoriser les métiers professionnels.',
+  'Favoriser l’implication des entreprises de production dans la formation pratique et l’insertion professionnelle.',
+] as const
+
+const ACTEURS_PLATEFORME = [
+  'Les entreprises de production.',
+  'Les établissements de formation technique et professionnelle.',
+  'Les institutions publiques.',
+  'Les professionnels des métiers.',
+  'Les experts nationaux et internationaux.',
+] as const
+
 export function PartenariatPage() {
   return (
     <main className="concours-page" aria-labelledby="partenariat-title">
@@ -64,6 +94,55 @@ export function PartenariatPage() {
 
         <SectionBridge variant="wave" />
         <PartnersTrustCarousel />
+        <SectionBridge variant="ribbon" />
+
+        <section className="concours-page__section">
+          <div className="concours-page__inner">
+            <h2>Contexte et justification</h2>
+            <p>{CONTEXTE_JUSTIFICATION}</p>
+            <ul className="concours-page__list">
+              {CONTEXTE_POINTS.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ul>
+            <p>
+              Les Olympiades des Métiers 2026 constituent une plateforme stratégique
+              de collaboration entre :
+            </p>
+            <ul className="concours-page__list">
+              {ACTEURS_PLATEFORME.map((acteur) => (
+                <li key={acteur}>{acteur}</li>
+              ))}
+            </ul>
+            <p>
+              Dans cette dynamique, le Comité d’Organisation souhaite associer les
+              entreprises en qualité de partenaires techniques et institutionnels.
+            </p>
+          </div>
+        </section>
+
+        <SectionBridge variant="wave" />
+
+        <section className="concours-page__section">
+          <div className="concours-page__inner">
+            <h2>Objectif général du partenariat</h2>
+            <p>{OBJECTIF_GENERAL}</p>
+          </div>
+        </section>
+
+        <SectionBridge variant="wave" />
+
+        <section className="concours-page__section">
+          <div className="concours-page__inner">
+            <h2>Objectifs spécifiques</h2>
+            <ul className="concours-page__list">
+              {OBJECTIFS_SPECIFIQUES.map((objectif) => (
+                <li key={objectif}>{objectif}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
         <SectionBridge variant="ribbon" />
 
         <section className="concours-page__section">

@@ -9,8 +9,8 @@ type PromoBannerProps = {
 }
 
 export function PromoBanner({
-  title = 'Finale nationale · 26—29 novembre 2025',
-  subtitle = 'Lycée technique d\'Abidjan-Cocody — 28 disciplines en compétition',
+  title = 'FORMATION – INNOVATION – EMPLOYABILITE DES JEUNES',
+  subtitle = 'Finale nationale · 26—29 novembre 2025 · Lycée technique d\'Abidjan-Cocody',
   ctaHref = '/competition',
   ctaLabel = 'Découvrir le programme',
 }: PromoBannerProps) {

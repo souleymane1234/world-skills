@@ -16,7 +16,6 @@ import { PartnersTrustCarousel } from './components/PartnersTrustCarousel'
 import { AcademyPromo } from './components/AcademyPromo'
 import { PromoBanner } from './components/PromoBanner'
 import { SectionBridge } from './components/SectionBridge'
-import { ContactSection } from './components/ContactSection'
 import { Footer } from './components/Footer'
 import './App.css'
 
@@ -108,7 +107,6 @@ function App() {
       <SectionBridge variant="wave" />
       <AcademyPromo />
       <SectionBridge variant="wave" />
-      <ContactSection />
 
       <div className="ticks" />
       <Footer />

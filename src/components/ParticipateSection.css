@@ -92,7 +92,7 @@
   font-size: 0.92rem;
   color: #fff;
   text-decoration: none;
-  background: var(--ws-blue);
+  background: var(--accent);
   transition: filter 0.2s ease;
 }
 

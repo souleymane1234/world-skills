@@ -23,14 +23,6 @@ export function AcademyPromo() {
           <li>Adéquation formation–emploi</li>
           <li>Exposition aux standards internationaux</li>
         </ul>
-        <a
-          className="ws-act__link"
-          href="https://www.worldskills.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Découvrir WorldSkills International
-        </a>
       </div>
     </section>
   )

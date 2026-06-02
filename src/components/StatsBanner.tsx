@@ -4,9 +4,9 @@ import './StatsBanner.css'
 
 const STATS = [
   { value: String(WORLD_SKILLS_STATS.disciplines), label: 'Disciplines' },
-  { value: `${WORLD_SKILLS_STATS.competitors2025}+`, label: 'Compétiteurs (2025)' },
-  { value: String(WORLD_SKILLS_STATS.establishments2025), label: 'Établissements finalistes' },
-  { value: String(WORLD_SKILLS_STATS.regions), label: 'Villes de présélection' },
+  { value: `${WORLD_SKILLS_STATS.competitors}+`, label: 'Compétiteurs' },
+  { value: String(WORLD_SKILLS_STATS.finalistsAndExhibitors), label: 'Finalistes et exposants' },
+  { value: `${WORLD_SKILLS_STATS.editionNumber}e`, label: 'Édition' },
 ] as const
 
 export function StatsBanner() {

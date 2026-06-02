@@ -15,7 +15,7 @@ const APERCU_ACTUALITES = [
     isoDate: '2025-11-26',
     title: 'Lancement de la finale WorldSkills Côte d’Ivoire 2025',
     excerpt:
-      '28 disciplines, 15 établissements et plus de 325 compétiteurs au Lycée technique d’Abidjan-Cocody.',
+      '25 disciplines, 15 établissements et plus de 325 compétiteurs au Lycée technique d’Abidjan-Cocody.',
     href: `${ACTUALITES_VOIR_PLUS_HREF}#finale-2025`,
   },
   {

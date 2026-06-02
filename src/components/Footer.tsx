@@ -48,7 +48,7 @@ export function Footer() {
         <section className="site-footer__brand" aria-label="WorldSkills Côte d'Ivoire">
           <a className="site-footer__brand-logo" href="#accueil" aria-label="Accueil">
             <img
-              src="/logo-worldskills.svg"
+              src="/logo.png"
               alt="WorldSkills Côte d'Ivoire"
               width={72}
               height={72}

@@ -18,7 +18,7 @@ export function MetiersPage() {
       <section className="concours-page__stack">
         <section className="concours-page__section">
           <div className="concours-page__inner metiers-page__intro">
-            <p className="concours-page__eyebrow">28 disciplines</p>
+            <p className="concours-page__eyebrow">25 disciplines</p>
             <h1 id="metiers-title">Olympiades des métiers 2025</h1>
             <p className="concours-page__lead">
               De la coiffure à la CAO/DAO, les compétiteurs démontrent leurs
