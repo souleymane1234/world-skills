@@ -431,9 +431,6 @@ export function ConcoursPage() {
                     <a href="/connexion" className="concours-page__modal-btn concours-page__modal-btn--primary">
                       Créer un compte / Se connecter
                     </a>
-                    <a href="/profil" className="concours-page__modal-btn">
-                      Mon profil
-                    </a>
                   </div>
                 </div>
               )}

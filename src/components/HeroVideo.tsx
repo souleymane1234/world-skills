@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './HeroVideo.css'
 
 const DEFAULT_SRC = '/video.mp4'
@@ -24,9 +24,15 @@ export function HeroVideo({
   controls = false,
   soundOnTopMuteOnScroll = false,
 }: HeroVideoProps) {
+  const videoRef = useRef<HTMLVideoElement>(null)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [hasUserInteracted, setHasUserInteracted] = useState(false)
   const shouldMute =
-    controls ? false : soundOnTopMuteOnScroll ? isScrolled : true
+    controls
+      ? false
+      : soundOnTopMuteOnScroll
+        ? isScrolled || !hasUserInteracted
+        : true
 
   useEffect(() => {
     if (!soundOnTopMuteOnScroll || controls) return
@@ -37,9 +43,37 @@ export function HeroVideo({
     return () => window.removeEventListener('scroll', onScroll)
   }, [soundOnTopMuteOnScroll, controls])
 
+  useEffect(() => {
+    if (!soundOnTopMuteOnScroll || controls) return
+
+    const markInteracted = () => setHasUserInteracted(true)
+    window.addEventListener('pointerdown', markInteracted, { once: true })
+    window.addEventListener('keydown', markInteracted, { once: true })
+    window.addEventListener('touchstart', markInteracted, { once: true })
+    return () => {
+      window.removeEventListener('pointerdown', markInteracted)
+      window.removeEventListener('keydown', markInteracted)
+      window.removeEventListener('touchstart', markInteracted)
+    }
+  }, [soundOnTopMuteOnScroll, controls])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || controls) return
+    const tryPlay = async () => {
+      try {
+        await video.play()
+      } catch {
+        // Ignore autoplay rejection; muted fallback will keep a stable UI.
+      }
+    }
+    void tryPlay()
+  }, [shouldMute, controls, src])
+
   return (
     <div className={`site-hero-video${controls ? ' site-hero-video--controls' : ''}`}>
       <video
+        ref={videoRef}
         className="site-hero-video__media"
         src={src}
         poster={poster}
