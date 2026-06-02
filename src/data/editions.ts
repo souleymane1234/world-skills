@@ -60,6 +60,13 @@ export type EditionSponsor = {
   tier: 'principal' | 'or' | 'argent' | 'bronze'
 }
 
+export type GalleryPhoto = {
+  id: string
+  src: string
+  alt: string
+  caption?: string
+}
+
 export type Edition = {
   year: number
   status: 'current' | 'past'
@@ -80,24 +87,112 @@ export type Edition = {
   rulesDocumentHref: string
   sponsors: EditionSponsor[]
   highlights: string[]
+  galleryPhotos: GalleryPhoto[]
 }
 
 const PHOTO = (seed: string) => `https://picsum.photos/seed/wsci-${seed}/480/640`
 
+function buildGallery(year: number, captions: string[]): GalleryPhoto[] {
+  return captions.map((caption, index) => ({
+    id: `${year}-photo-${index + 1}`,
+    src: `https://picsum.photos/seed/wsci-gallery-${year}-${index + 1}/900/650`,
+    alt: caption,
+    caption,
+  }))
+}
+
+// 2026 n’a pas encore commencé : pas de galerie pour le moment.
+const GALLERY_2026: GalleryPhoto[] = []
+
+const GALLERY_2025 = buildGallery(2025, [
+  'Finale nationale 2025',
+  'Compétiteurs en action',
+  'Épreuves de menuiserie',
+  'Épreuves de cuisine',
+  'Village des métiers',
+  'Remise des médailles',
+  'Encadrement pédagogique',
+  'Public et partenaires',
+  'Coulisses de la compétition',
+  'Cérémonie officielle',
+])
+
+const GALLERY_2024 = buildGallery(2024, [
+  'Édition 2024 — phases finales',
+  'Compétitions par corps de métiers',
+  'Stands d’exposition',
+  'Apprenants en compétition',
+  'Jury et évaluation',
+  'Clôture de l’édition',
+  'Moments institutionnels',
+  'Highlights techniques',
+])
+
+const GALLERY_2023 = buildGallery(2023, [
+  'Olympiades des métiers 2023',
+  'Ateliers techniques',
+  'Compétiteurs régionaux',
+  'Formation pratique',
+  'Exposition des savoir-faire',
+  'Cérémonie de clôture',
+  'Partenaires engagés',
+  'Ambiance événement',
+])
+
+export const EDITION_NAV_YEARS = [2026, 2025, 2024, 2023] as const
+
+export const CURRENT_EDITION_YEAR = 2026
+
+export function editionPath(year: number): string {
+  return year === CURRENT_EDITION_YEAR ? '/edition' : `/edition/${year}`
+}
+
+export function parseEditionYearFromPath(pathname = window.location.pathname): number {
+  const match = pathname.match(/^\/edition\/(\d{4})\/?$/)
+  if (match) return Number(match[1])
+  if (pathname === '/edition' || pathname === '/edition/') return CURRENT_EDITION_YEAR
+  return CURRENT_EDITION_YEAR
+}
+
 export const EDITIONS: Edition[] = [
   {
-    year: 2025,
+    year: 2026,
     status: 'current',
+    title: 'WorldSkills Côte d’Ivoire 2026',
+    theme: 'FORMATION – INNOVATION – EMPLOYABILITE DES JEUNES',
+    tagline: '6ᵉ édition des Olympiades des métiers — Abidjan.',
+    description:
+      'Édition en cours : candidatures en ligne, formation, compétition nationale et sélection de 300 finalistes et exposants.',
+    coverImageSrc: '/miss.jpg',
+    videoSrc: '/video.mp4',
+    videoPosterSrc: '/miss.jpg',
+    dates: '02 — 04 octobre 2026',
+    location: 'Parc des Expositions d’Abidjan',
+    candidateCount: 1500,
+    candidates: [],
+    prizes: [],
+    rulesSummary: ['Édition en cours.'],
+    rulesDocumentHref: '#contact',
+    sponsors: [
+      { name: 'METFPA', logoSrc: '/trustCaroussel/port-1.png', tier: 'principal' },
+      { name: 'CIE', logoSrc: '/trustCaroussel/port-2.png', tier: 'or' },
+    ],
+    highlights: ['25 disciplines', '1500+ compétiteurs', '300 finalistes'],
+    galleryPhotos: GALLERY_2026,
+  },
+  {
+    year: 2025,
+    status: 'past',
     title: 'WorldSkills Côte d’Ivoire 2025',
     theme: 'FORMATION – INNOVATION – EMPLOYABILITE DES JEUNES',
-    tagline: '5ᵉ édition des Olympiades des métiers — finale nationale au LTA.',
+    tagline: '5ᵉ édition des Olympiades des métiers — finale nationale au Parc des Expositions d’Abidjan.',
     description:
-      'Organisées par le METFPA via la Direction de la Vie scolaire, les Olympiades des métiers réunissent les meilleurs apprenants des établissements de formation professionnelle. Présélections régionales à Abidjan, Bouaké, Gagnoa et Korhogo, puis finale nationale au Lycée technique d’Abidjan-Cocody.',
+      'Organisées par le METFPA via la Direction de la Vie scolaire, les Olympiades des métiers réunissent les meilleurs apprenants des établissements de formation professionnelle. Présélections régionales à Abidjan, Bouaké, Gagnoa et Korhogo, puis finale nationale au Parc des Expositions d’Abidjan.',
     coverImageSrc: '/miss.jpg',
     videoSrc: '/video.mp4',
     videoPosterSrc: '/miss.jpg',
     dates: '26 — 29 novembre 2025',
-    location: 'Lycée technique d’Abidjan-Cocody (LTA)',
+    location: 'Parc des Expositions d’Abidjan',
     candidateCount: 325,
     candidates: enrichCompetitors([
       {
@@ -117,7 +212,7 @@ export const EDITIONS: Edition[] = [
         age: 19,
         region: 'Lagunes',
         city: 'Abidjan',
-        establishment: 'LTA Cocody',
+        establishment: 'Parc des Expositions d’Abidjan',
         photoSrc: PHOTO('2025-traore'),
         tradition: 'Cuisine',
         bio: 'Finaliste nationale — excellence en service et créativité culinaire.',
@@ -180,6 +275,7 @@ export const EDITIONS: Edition[] = [
       '325+ compétiteurs',
       '4 villes de présélection',
     ],
+    galleryPhotos: GALLERY_2025,
   },
   {
     year: 2024,
@@ -188,12 +284,12 @@ export const EDITIONS: Edition[] = [
     theme: 'Assurer l’adéquation compétences–employabilité pour un développement durable',
     tagline: '4ᵉ édition — 271 compétiteurs, 46 établissements.',
     description:
-      'Phases finales sur cinq corps de métiers après un mois de présélections. Village partenaires et stands d’exposition au LTA.',
+      'Phases finales sur cinq corps de métiers après un mois de présélections. Village partenaires et stands d’exposition au Parc des Expositions d’Abidjan.',
     coverImageSrc: '/miss.jpg',
     videoSrc: '/video.mp4',
     videoPosterSrc: '/miss.jpg',
     dates: 'Novembre 2024',
-    location: 'Lycée technique d’Abidjan-Cocody',
+    location: 'Parc des Expositions d’Abidjan',
     candidateCount: 271,
     winnerId: '2024-yao',
     candidates: enrichCompetitors([
@@ -203,7 +299,7 @@ export const EDITIONS: Edition[] = [
         age: 20,
         region: 'Lagunes',
         city: 'Abidjan',
-        establishment: 'LTA Cocody',
+        establishment: 'Parc des Expositions d’Abidjan',
         photoSrc: PHOTO('2024-yao'),
         tradition: 'Domotique',
         bio: 'Lauréat édition 2024 — domotique et systèmes intelligents.',
@@ -230,43 +326,31 @@ export const EDITIONS: Edition[] = [
       { name: 'CIE', logoSrc: '/trustCaroussel/port-7.png', tier: 'or' },
     ],
     highlights: ['271 compétiteurs', '68 équipes', '46 établissements'],
+    galleryPhotos: GALLERY_2024,
   },
   {
-    year: 2021,
+    year: 2023,
     status: 'past',
-    title: 'WorldSkills Côte d’Ivoire 2021',
-    theme: 'Lancement des Olympiades des métiers en Côte d’Ivoire',
-    tagline: 'Première édition — 4 disciplines pilotes.',
+    title: 'WorldSkills Côte d’Ivoire 2023',
+    theme: 'Valoriser les talents techniques ivoiriens',
+    tagline: '3ᵉ édition — consolidation du dispositif national.',
     description:
-      'Naissance des Olympiades des métiers en Côte d’Ivoire, alignées sur le mouvement WorldSkills International né en 1950.',
+      'Édition marquée par l’élargissement des disciplines et la mobilisation des établissements de formation professionnelle.',
     coverImageSrc: '/miss.jpg',
     videoSrc: '/video.mp4',
     videoPosterSrc: '/miss.jpg',
-    dates: '2021',
+    dates: 'Octobre 2023',
     location: 'Abidjan',
-    candidateCount: 48,
-    candidates: enrichCompetitors([
-      {
-        id: '2021-demo',
-        name: 'Équipe pilote',
-        age: 18,
-        region: 'Lagunes',
-        city: 'Abidjan',
-        establishment: 'LTA Cocody',
-        photoSrc: PHOTO('2021-demo'),
-        tradition: 'Métiers techniques',
-        bio: 'Édition inaugurale — pose des bases du dispositif national.',
-      },
-    ]),
-    prizes: [{ title: 'Lauréats pilotes', description: 'Premiers médaillés nationaux.' }],
-    rulesSummary: ['Édition inaugurale.'],
+    candidateCount: 180,
+    candidates: [],
+    prizes: [{ title: 'Lauréats 2023', description: 'Médailles nationales par discipline.' }],
+    rulesSummary: ['Édition clôturée.'],
     rulesDocumentHref: '#contact',
     sponsors: [{ name: 'METFPA', logoSrc: '/trustCaroussel/port-8.png', tier: 'principal' }],
-    highlights: ['4 disciplines', 'Lancement national'],
+    highlights: ['Phases régionales', 'Finale nationale'],
+    galleryPhotos: GALLERY_2023,
   },
 ]
-
-export const CURRENT_EDITION_YEAR = 2025
 
 export function getEditionByYear(year: number): Edition | undefined {
   return EDITIONS.find((e) => e.year === year)

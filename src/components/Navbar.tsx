@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { getAuthEventName, isCandidateLoggedIn } from '../lib/candidate-auth'
 import './Navbar.css'
 
 const SCROLL_SOLID_THRESHOLD_PX = 32
@@ -7,14 +8,17 @@ const SUBPAGE_PREFIXES = [
   '/actualites',
   '/competition',
   '/concours',
-  '/edition',
   '/metiers',
   '/partenariat',
+  '/contact',
+  '/connexion',
+  '/profil',
 ] as const
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [candidateLoggedIn, setCandidateLoggedIn] = useState(() => isCandidateLoggedIn())
   const pathname = window.location.pathname
 
   const isSubPage = SUBPAGE_PREFIXES.some(
@@ -27,10 +31,12 @@ export function Navbar() {
     { href: `${homePrefix}accueil`, label: 'Accueil' },
     { href: '/metiers', label: 'Métiers' },
     { href: '/competition', label: 'Compétition' },
-    { href: '/edition', label: 'Éditions' },
     { href: '/actualites', label: 'Actualités' },
     { href: '/partenariat', label: 'Partenariat' },
-    { href: `${homePrefix}contact`, label: 'Contact' },
+    { href: '/contact', label: 'Contact' },
+    candidateLoggedIn
+      ? { href: '/profil', label: 'Profil' }
+      : { href: '/connexion', label: 'Connexion' },
   ] as const
 
   useEffect(() => {
@@ -40,6 +46,16 @@ export function Navbar() {
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const onAuthChanged = () => setCandidateLoggedIn(isCandidateLoggedIn())
+    window.addEventListener(getAuthEventName(), onAuthChanged)
+    window.addEventListener('storage', onAuthChanged)
+    return () => {
+      window.removeEventListener(getAuthEventName(), onAuthChanged)
+      window.removeEventListener('storage', onAuthChanged)
+    }
   }, [])
 
   const isSolid =
@@ -54,12 +70,11 @@ export function Navbar() {
       >
         <img
           className="site-navbar__logo"
-          src="/logo.png"
+          src="/logo-removebg-preview.png"
           width={56}
           height={56}
           alt="WorldSkills Côte d'Ivoire"
         />
-        <span className="site-navbar__title">WorldSkills CI</span>
       </a>
 
       <button
@@ -84,7 +99,7 @@ export function Navbar() {
           {navLinks.map(({ href, label }) => (
             <li key={href + label}>
               <a
-                className="site-navbar__link"
+                className={`site-navbar__link${label === 'Connexion' ? ' site-navbar__link--cta' : ''}`}
                 href={href}
                 onClick={() => setMenuOpen(false)}
               >
@@ -94,6 +109,14 @@ export function Navbar() {
           ))}
         </ul>
       </nav>
+
+      <a
+        className="site-navbar__ticket-btn"
+        href="/billetterie"
+        onClick={() => setMenuOpen(false)}
+      >
+        Bielleterie
+      </a>
     </header>
   )
 }

@@ -17,7 +17,6 @@ const FOOTER_COLUMNS = [
       { href: '#accueil', label: 'Accueil' },
       { href: '/metiers', label: 'Métiers' },
       { href: '/competition', label: 'Compétition' },
-      { href: '/edition', label: 'Éditions' },
       { href: '/actualites', label: 'Actualités' },
     ],
   },
@@ -48,7 +47,7 @@ export function Footer() {
         <section className="site-footer__brand" aria-label="WorldSkills Côte d'Ivoire">
           <a className="site-footer__brand-logo" href="#accueil" aria-label="Accueil">
             <img
-              src="/logo.png"
+              src="/logo-removebg-preview.png"
               alt="WorldSkills Côte d'Ivoire"
               width={72}
               height={72}

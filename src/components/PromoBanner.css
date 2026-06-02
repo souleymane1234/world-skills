@@ -50,6 +50,12 @@
   background: var(--accent);
 }
 
+.site-promo-banner__cta--button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
 .site-promo-banner__cta:hover {
   filter: brightness(1.08);
   color: #fff;

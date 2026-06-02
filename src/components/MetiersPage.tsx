@@ -1,10 +1,10 @@
-import { SKILL_CATEGORY_LABELS, SKILLS } from '../data/skills'
+import { useMemo, useState } from 'react'
+import { getSkillImageCandidates, SKILL_CATEGORY_LABELS, SKILLS } from '../data/skills'
 import { HeroVideo } from './HeroVideo'
 import { SectionBridge } from './SectionBridge'
 import './MetiersPage.css'
 import './ConcoursPage.css'
 
-const skillImageSrc = (id: string) => `https://picsum.photos/seed/wsci-metier-${id}/640/360`
 const CATEGORIES = Object.keys(SKILL_CATEGORY_LABELS) as Array<keyof typeof SKILL_CATEGORY_LABELS>
 const CATEGORY_META: Record<
   (typeof CATEGORIES)[number],
@@ -15,6 +15,27 @@ const CATEGORY_META: Record<
   'technologie-industrielle': { emoji: '⚙️', className: 'metiers-page__category-title--industrielle' },
   'arts-mode-esthetique': { emoji: '🎨', className: 'metiers-page__category-title--arts' },
   batiment: { emoji: '🏗️', className: 'metiers-page__category-title--batiment' },
+}
+
+function SkillCardImage({ id, name, alt }: { id: string; name: string; alt: string }) {
+  const candidates = useMemo(() => getSkillImageCandidates(id, name), [id, name])
+  const [index, setIndex] = useState(0)
+  const src = candidates[index] ?? '/logo-worldskills.svg'
+
+  return (
+    <img
+      className="metiers-page__card-image"
+      src={src}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      onError={() => {
+        setIndex((current) =>
+          current < candidates.length - 1 ? current + 1 : current,
+        )
+      }}
+    />
+  )
 }
 
 export function MetiersPage() {
@@ -55,13 +76,7 @@ export function MetiersPage() {
                 <div className="metiers-page__cards-grid">
                   {items.map((skill) => (
                     <article key={skill.id} className="metiers-page__card">
-                      <img
-                        className="metiers-page__card-image"
-                        src={skillImageSrc(skill.id)}
-                        alt={skill.name}
-                        loading="lazy"
-                        decoding="async"
-                      />
+                      <SkillCardImage id={skill.id} name={skill.name} alt={skill.name} />
                       <div className="metiers-page__card-body">
                         <h3 className="metiers-page__card-title">{skill.name}</h3>
                         <p className="metiers-page__card-category">

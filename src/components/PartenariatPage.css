@@ -1,4 +1,7 @@
 .partenariat-page__cta-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
   border-radius: 10px;
   padding: 10px 14px;
@@ -14,36 +17,139 @@
   filter: brightness(1.06);
 }
 
-.partenariat-page__intro {
-  margin: 0 0 14px;
+.partenariat-page__cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  background: var(--social-bg);
+  border: 1px solid var(--border);
+  color: var(--text-h);
+}
+
+.partenariat-page__hero-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  background:
+    radial-gradient(1200px 440px at -10% -10%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 55%),
+    radial-gradient(1000px 420px at 110% 0%, color-mix(in srgb, var(--ws-blue) 10%, transparent), transparent 55%),
+    var(--bg);
+  box-shadow: 0 8px 26px rgb(0 0 0 / 8%);
+}
+
+.partenariat-page__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.partenariat-page__card,
+.partenariat-page__objective-card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 18px 16px;
+  background: color-mix(in srgb, var(--bg) 96%, var(--accent) 4%);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 6%);
+}
+
+.partenariat-page__card::before,
+.partenariat-page__objective-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--ws-blue) 70%, var(--accent) 30%));
+}
+
+.partenariat-page__objective-card {
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--bg) 90%, var(--accent) 10%),
+      color-mix(in srgb, var(--bg) 95%, var(--ws-blue) 5%)
+    );
+}
+
+.partenariat-page__card h2,
+.partenariat-page__objective-card h2 {
+  margin: 0 0 12px;
+  font-size: 1.16rem;
+  line-height: 1.3;
+  color: var(--text-h);
+}
+
+.partenariat-page__card p,
+.partenariat-page__objective-card p {
+  margin: 0 0 10px;
+  line-height: 1.55;
   color: var(--text);
-  max-width: 62ch;
+}
+
+.partenariat-page__muted {
+  color: color-mix(in srgb, var(--text) 80%, transparent);
 }
 
 .partenariat-page__packs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 8px;
+  gap: 14px;
+  margin-top: 12px;
 }
 
 @media (max-width: 900px) {
+  .partenariat-page__grid {
+    grid-template-columns: 1fr;
+  }
+
   .partenariat-page__packs {
     grid-template-columns: 1fr;
   }
 }
 
 .partenariat-page__pack {
+  position: relative;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px;
-  background: color-mix(in srgb, var(--bg) 92%, var(--gold) 8%);
+  background: color-mix(in srgb, var(--bg) 95%, var(--gold) 5%);
   text-align: left;
+  box-shadow: 0 8px 22px rgb(0 0 0 / 6%);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.partenariat-page__pack::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(90deg, var(--gold-light), var(--gold-deep));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .partenariat-page__pack:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+    box-shadow: 0 14px 30px rgb(0 0 0 / 10%);
+  }
 }
 
 .partenariat-page__pack h3 {
   margin: 0 0 10px;
-  font-size: 1.05rem;
+  font-size: 1.04rem;
   color: var(--text-h);
 }
 
@@ -56,6 +162,56 @@
   font-size: 0.9rem;
 }
 
+.partenariat-page__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.partenariat-page__list li {
+  position: relative;
+  padding-left: 16px;
+  line-height: 1.45;
+}
+
+.partenariat-page__list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 78%, var(--ws-blue) 22%);
+}
+
+.partenariat-page__list--two-cols {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 20px;
+}
+
+.partenariat-page__list--spaced {
+  margin-top: 12px;
+}
+
 .partenariat-page__footer-cta {
-  margin: 18px 0 0;
+  margin: 20px 0 24px;
+  padding-top: 14px;
+  border-top: 1px dashed color-mix(in srgb, var(--border) 78%, transparent);
+}
+
+@media (max-width: 760px) {
+  .partenariat-page__hero-card,
+  .partenariat-page__card,
+  .partenariat-page__objective-card {
+    padding: 16px;
+  }
+
+  .partenariat-page__list--two-cols {
+    grid-template-columns: 1fr;
+  }
 }

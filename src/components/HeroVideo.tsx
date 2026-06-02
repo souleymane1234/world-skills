@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import './HeroVideo.css'
 
 const DEFAULT_SRC = '/video.mp4'
@@ -11,6 +12,8 @@ type HeroVideoProps = {
   title?: string
   /** Lecture avec controles (video de presentation d'edition) */
   controls?: boolean
+  /** Active le son en haut de page, puis le coupe au scroll */
+  soundOnTopMuteOnScroll?: boolean
 }
 
 export function HeroVideo({
@@ -19,7 +22,21 @@ export function HeroVideo({
   subtitle = DEFAULT_SUBTITLE,
   title = DEFAULT_TITLE,
   controls = false,
+  soundOnTopMuteOnScroll = false,
 }: HeroVideoProps) {
+  const [isScrolled, setIsScrolled] = useState(false)
+  const shouldMute =
+    controls ? false : soundOnTopMuteOnScroll ? isScrolled : true
+
+  useEffect(() => {
+    if (!soundOnTopMuteOnScroll || controls) return
+
+    const onScroll = () => setIsScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [soundOnTopMuteOnScroll, controls])
+
   return (
     <div className={`site-hero-video${controls ? ' site-hero-video--controls' : ''}`}>
       <video
@@ -27,7 +44,7 @@ export function HeroVideo({
         src={src}
         poster={poster}
         autoPlay={!controls}
-        muted={!controls}
+        muted={shouldMute}
         loop={!controls}
         controls={controls}
         playsInline

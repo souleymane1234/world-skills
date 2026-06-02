@@ -1,54 +1,14 @@
-import { USE_MOCK_NEWS } from '../config/app-config'
-import { isNewsRateLimitError, useNewsApercu } from '../hooks/use-news-queries'
+import { ACTUALITES } from '../data/actualites'
 import { useRevealOnView } from '../hooks/useRevealOnView'
 import './ActualitesAccess.css'
 
 const ACTUALITES_VOIR_PLUS_HREF = '/actualites'
 
-const APERCU_ACTUALITES = [
-  {
-    id: '1',
-    imageSrc: 'https://picsum.photos/seed/wsci-act-1/640/400',
-    imageAlt: 'Illustration — finale nationale',
-    category: 'Compétition',
-    date: '26 novembre 2025',
-    isoDate: '2025-11-26',
-    title: 'Lancement de la finale WorldSkills Côte d’Ivoire 2025',
-    excerpt:
-      '25 disciplines, 15 établissements et plus de 325 compétiteurs au Lycée technique d’Abidjan-Cocody.',
-    href: `${ACTUALITES_VOIR_PLUS_HREF}#finale-2025`,
-  },
-  {
-    id: '2',
-    imageSrc: 'https://picsum.photos/seed/wsci-act-2/640/400',
-    imageAlt: 'Illustration — présélection régionale',
-    category: 'Régions',
-    date: '12 novembre 2025',
-    isoDate: '2025-11-12',
-    title: 'Présélection menuiserie à Gagnoa',
-    excerpt:
-      'Le LPIG Gagnoa remporte la phase régionale et se qualifie pour la finale nationale.',
-    href: `${ACTUALITES_VOIR_PLUS_HREF}#gagnoa`,
-  },
-  {
-    id: '3',
-    imageSrc: 'https://picsum.photos/seed/wsci-act-3/640/400',
-    imageAlt: 'Illustration — partenaires',
-    category: 'Partenariat',
-    date: '3 décembre 2025',
-    isoDate: '2025-12-03',
-    title: 'La CIE soutient les talents techniques ivoiriens',
-    excerpt:
-      'Engagement sur la domotique et la CAO/DAO lors de la 5ᵉ édition des Olympiades des métiers.',
-    href: `${ACTUALITES_VOIR_PLUS_HREF}#partenaires`,
-  },
-] as const
-
 export function ActualitesAccess() {
   const { ref, isVisible } = useRevealOnView<HTMLElement>()
-  const newsQuery = useNewsApercu(3)
-
-  const items = USE_MOCK_NEWS ? [...APERCU_ACTUALITES] : newsQuery.items
+  const items = [...ACTUALITES]
+    .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
+    .slice(0, 3)
 
   return (
     <section
@@ -71,18 +31,6 @@ export function ActualitesAccess() {
           </p>
         </header>
 
-        {newsQuery.isLoading && !USE_MOCK_NEWS ? (
-          <p className="act-access__loading">Chargement des actualites…</p>
-        ) : null}
-
-        {newsQuery.isError && !USE_MOCK_NEWS ? (
-          <p className="act-access__error" role="alert">
-            {isNewsRateLimitError(newsQuery.error)
-              ? 'Actualites temporairement indisponibles (limite serveur). Reessayez dans un instant.'
-              : 'Impossible de charger les actualites pour le moment.'}
-          </p>
-        ) : null}
-
         <ul className="act-access__grid" id="actualites-apercu">
           {items.map((item) => (
             <li key={item.id} className="act-access__card-item">
@@ -90,8 +38,8 @@ export function ActualitesAccess() {
                 <div className="act-access__news-visual">
                   <img
                     className="act-access__news-img"
-                    src={item.imageSrc}
-                    alt={item.imageAlt}
+                    src={item.image}
+                    alt={item.title}
                     width={640}
                     height={400}
                     loading="lazy"
@@ -101,11 +49,13 @@ export function ActualitesAccess() {
                 <div className="act-access__news-body">
                   <div className="act-access__news-meta">
                     <span className="act-access__news-cat">{item.category}</span>
-                    <time dateTime={item.isoDate}>{item.date}</time>
+                    <time dateTime={item.publishedAt}>
+                      {new Date(item.publishedAt).toLocaleDateString('fr-FR')}
+                    </time>
                   </div>
                   <h3 className="act-access__news-title">{item.title}</h3>
-                  <p className="act-access__news-excerpt">{item.excerpt}</p>
-                  <a className="act-access__news-link" href={item.href}>
+                  <p className="act-access__news-excerpt">{item.description}</p>
+                  <a className="act-access__news-link" href={`${ACTUALITES_VOIR_PLUS_HREF}/${item.slug}`}>
                     Lire la suite
                   </a>
                 </div>

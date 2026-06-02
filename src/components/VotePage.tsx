@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { USE_MOCK_DATA } from '../config/app-config'
 import {
-  CURRENT_EDITION_YEAR,
   parseVoteCandidateIdFromPath,
   resolveVoteContext,
 } from '../data/editions'
@@ -96,8 +95,8 @@ export function VotePage() {
         <div className="vote-page__shell">
           <h1>Candidate introuvable</h1>
           <p>Le lien de vote est invalide ou la candidate n&apos;existe plus.</p>
-          <a href="/edition" className="vote-page__back-link">
-            Retour aux editions
+          <a href="/competition" className="vote-page__back-link">
+            Retour à la compétition
           </a>
         </div>
       </main>
@@ -108,7 +107,7 @@ export function VotePage() {
   const videoSrc = candidate.videoSrc ?? '/videomiss.mp4'
   const total = voteCount * amountPerVote
   const operatorLabel = MOBILE_OPERATORS.find((o) => o.id === operator)?.label ?? ''
-  const editionHref = `/edition${edition.year === CURRENT_EDITION_YEAR ? '' : `/${edition.year}`}`
+  const editionHref = '/competition'
 
   const handleInitiatePayment = async () => {
     if (!phone.trim()) {

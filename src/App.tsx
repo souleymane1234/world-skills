@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { HeroVideo } from './components/HeroVideo'
 import { AboutSection } from './components/AboutSection'
-import { ParticipateSection } from './components/ParticipateSection'
 import { StatsBanner } from './components/StatsBanner'
 import { SkillsPreview } from './components/SkillsPreview'
 import { Navbar } from './components/Navbar'
@@ -11,11 +10,13 @@ import { ActualitesPage } from './components/ActualitesPage'
 import { ConcoursPage } from './components/ConcoursPage'
 import { MetiersPage } from './components/MetiersPage'
 import { PartenariatPage } from './components/PartenariatPage'
-import { EditionPage } from './components/EditionPage'
 import { PartnersTrustCarousel } from './components/PartnersTrustCarousel'
 import { AcademyPromo } from './components/AcademyPromo'
 import { PromoBanner } from './components/PromoBanner'
 import { SectionBridge } from './components/SectionBridge'
+import { ContactSection } from './components/ContactSection'
+import { ConnexionPage } from './components/ConnexionPage'
+import { ProfilPage } from './components/ProfilPage'
 import { Footer } from './components/Footer'
 import './App.css'
 
@@ -76,10 +77,22 @@ function App() {
     )
   }
 
-  if (pathname.startsWith('/edition')) {
+  if (pathname.startsWith('/contact')) {
     return (
       <PageShell>
-        <EditionPage />
+        <ContactSection />
+      </PageShell>
+    )
+  }
+
+  if (pathname.startsWith('/connexion')) {
+    return <ConnexionPage />
+  }
+
+  if (pathname.startsWith('/profil')) {
+    return (
+      <PageShell>
+        <ProfilPage />
       </PageShell>
     )
   }
@@ -88,15 +101,13 @@ function App() {
     <>
       <Navbar />
       <section id="accueil">
-        <HeroVideo />
+        <HeroVideo soundOnTopMuteOnScroll />
         <PromoBanner />
         <SectionBridge variant="ribbon" />
         <AboutSection />
         <StatsBanner />
         <SectionBridge variant="wave" />
         <SkillsPreview />
-        <SectionBridge variant="ribbon" />
-        <ParticipateSection />
         <SectionBridge variant="wave" />
       </section>
 

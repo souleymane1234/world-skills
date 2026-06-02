@@ -8,22 +8,34 @@ import './PartenariatPage.css'
 const PACKS = [
   {
     titre: 'Partenaire Bronze',
-    points: ['Logo sur le site', 'Mention réseaux sociaux', 'Accès espace presse'],
+    resume: 'Visibilité institutionnelle et premier niveau d’engagement.',
+    points: [
+      'Visibilité institutionnelle et médiatique',
+      'Présence dans les supports officiels de communication',
+      'Valorisation de l’image citoyenne de l’entreprise',
+      'Appui matériel et logistique (consommables / supports de démonstration)',
+    ],
   },
   {
     titre: 'Partenaire Argent',
+    resume: 'Accompagnement technique + impact direct sur la formation.',
     points: [
       'Pack Bronze +',
-      'Stand village partenaires (LTA)',
-      'Visibilité pendant les épreuves',
+      'Mise à disposition d’experts',
+      'Encadrement technique des candidats',
+      'Participation aux jurys et évaluations',
+      'Espace d’exposition (stand + branding) au Parc des Expositions',
     ],
   },
   {
     titre: 'Partenaire Or',
+    resume: 'Partenaire stratégique de l’excellence et de l’insertion.',
     points: [
       'Pack Argent +',
-      'Naming discipline ou segment',
-      'Accompagnement des lauréats',
+      'Appui financier ou sponsoring des activités et compétitions',
+      'Soutien à la remise des prix',
+      'Opportunités de stages et recrutement de jeunes talents',
+      'Positionnement comme acteur du développement des compétences en Côte d’Ivoire',
     ],
   },
 ] as const
@@ -58,6 +70,50 @@ const ACTEURS_PLATEFORME = [
   'Les experts nationaux et internationaux.',
 ] as const
 
+const IMPORTANCE_PARTENARIAT = [
+  'Le développement des compétences',
+  'L’amélioration de la qualité des formations',
+  'L’adaptation des programmes aux besoins du marché',
+  'L’insertion professionnelle des jeunes',
+  'Le rapprochement de l’école et du monde professionnel',
+  'La promotion des innovations technologiques',
+  'La détection de futurs collaborateurs qualifiés',
+  'L’amélioration de la compétitivité industrielle nationale',
+] as const
+
+const CONTRIBUTIONS = {
+  technique: [
+    'Mise à disposition d’experts',
+    'Encadrement technique des candidats',
+    'Participation aux jurys et évaluations',
+  ],
+  materiel: [
+    'Équipements techniques',
+    'Consommables',
+    'Matériels industriels',
+    'Supports de démonstration',
+  ],
+  financier: [
+    'Financement d’activités',
+    'Accompagnement des compétitions',
+    'Soutien à la remise des prix',
+  ],
+  insertion: [
+    'Opportunités de stages',
+    'Recrutement de jeunes talents',
+    'Visites d’entreprises',
+  ],
+} as const
+
+const AVANTAGES_PARTENAIRE = [
+  'Visibilité institutionnelle et médiatique',
+  'Espace d’exposition (stand + branding) au Parc des Expositions',
+  'Valorisation de l’image citoyenne',
+  'Accès privilégié aux meilleurs talents',
+  'Présence dans les supports officiels de communication',
+  'Positionnement comme acteur du développement des compétences en Côte d’Ivoire',
+] as const
+
 export function PartenariatPage() {
   return (
     <main className="concours-page" aria-labelledby="partenariat-title">
@@ -67,7 +123,7 @@ export function PartenariatPage() {
       />
       <PromoBanner
         title="Investissez dans les métiers de demain"
-        subtitle="CIE, secteur privé, ONG : rejoignez WorldSkills Côte d'Ivoire"
+        subtitle="Secteur privé, ONG : rejoignez WorldSkills Côte d'Ivoire"
         ctaHref="#contact"
         ctaLabel="Nous contacter"
       />
@@ -75,7 +131,7 @@ export function PartenariatPage() {
 
       <section id="partenaires" className="concours-page__stack">
         <section className="concours-page__section concours-page__hero">
-          <div className="concours-page__inner">
+          <div className="concours-page__inner partenariat-page__hero-card">
             <p className="concours-page__eyebrow">Partenariat</p>
             <h1 id="partenariat-title">Associez-vous aux Olympiades des métiers</h1>
             <p className="concours-page__lead">
@@ -87,44 +143,46 @@ export function PartenariatPage() {
               <a href="/#contact" className="partenariat-page__cta-link">
                 Nous contacter
               </a>
-              <a href="/competition">Découvrir la compétition</a>
+              <a href="/competition" className="partenariat-page__cta-secondary">Voir la compétition</a>
             </div>
           </div>
         </section>
 
-        <SectionBridge variant="wave" />
-        <PartnersTrustCarousel />
-        <SectionBridge variant="ribbon" />
-
         <section className="concours-page__section">
-          <div className="concours-page__inner">
-            <h2>Contexte et justification</h2>
-            <p>{CONTEXTE_JUSTIFICATION}</p>
-            <ul className="concours-page__list">
-              {CONTEXTE_POINTS.map((point) => (
-                <li key={point}>{point}</li>
-              ))}
-            </ul>
-            <p>
-              Les Olympiades des Métiers 2026 constituent une plateforme stratégique
-              de collaboration entre :
-            </p>
-            <ul className="concours-page__list">
-              {ACTEURS_PLATEFORME.map((acteur) => (
-                <li key={acteur}>{acteur}</li>
-              ))}
-            </ul>
-            <p>
-              Dans cette dynamique, le Comité d’Organisation souhaite associer les
-              entreprises en qualité de partenaires techniques et institutionnels.
-            </p>
+          <div className="concours-page__inner partenariat-page__grid">
+            <article className="partenariat-page__card">
+              <h2>Contexte et justification</h2>
+              <p>{CONTEXTE_JUSTIFICATION}</p>
+              <ul className="partenariat-page__list">
+                {CONTEXTE_POINTS.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            </article>
+
+            <article className="partenariat-page__card">
+              <h2>Acteurs de la plateforme</h2>
+              <p>
+                Les Olympiades des Métiers 2026 constituent une plateforme stratégique
+                de collaboration entre :
+              </p>
+              <ul className="partenariat-page__list">
+                {ACTEURS_PLATEFORME.map((acteur) => (
+                  <li key={acteur}>{acteur}</li>
+                ))}
+              </ul>
+              <p className="partenariat-page__muted">
+                Le Comité d’Organisation souhaite associer les entreprises en qualité de
+                partenaires techniques et institutionnels.
+              </p>
+            </article>
           </div>
         </section>
 
         <SectionBridge variant="wave" />
 
         <section className="concours-page__section">
-          <div className="concours-page__inner">
+          <div className="concours-page__inner partenariat-page__objective-card">
             <h2>Objectif général du partenariat</h2>
             <p>{OBJECTIF_GENERAL}</p>
           </div>
@@ -133,9 +191,9 @@ export function PartenariatPage() {
         <SectionBridge variant="wave" />
 
         <section className="concours-page__section">
-          <div className="concours-page__inner">
+          <div className="concours-page__inner partenariat-page__card">
             <h2>Objectifs spécifiques</h2>
-            <ul className="concours-page__list">
+            <ul className="partenariat-page__list partenariat-page__list--two-cols">
               {OBJECTIFS_SPECIFIQUES.map((objectif) => (
                 <li key={objectif}>{objectif}</li>
               ))}
@@ -143,7 +201,68 @@ export function PartenariatPage() {
           </div>
         </section>
 
-        <SectionBridge variant="ribbon" />
+        <SectionBridge variant="wave" />
+
+        <section className="concours-page__section">
+          <div className="concours-page__inner partenariat-page__grid">
+            <article className="partenariat-page__card">
+              <h2>Importance du partenariat avec les entreprises de production</h2>
+              <ul className="partenariat-page__list">
+                {IMPORTANCE_PARTENARIAT.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+
+            <article className="partenariat-page__card">
+              <h2>Avantages pour l’entreprise partenaire</h2>
+              <ul className="partenariat-page__list">
+                {AVANTAGES_PARTENAIRE.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <SectionBridge variant="wave" />
+
+        <section className="concours-page__section">
+          <div className="concours-page__inner partenariat-page__card">
+            <h2>Contributions attendues de l’entreprise partenaire</h2>
+            <div className="partenariat-page__packs">
+              <article className="partenariat-page__pack">
+                <h3>Appui technique</h3>
+                <ul className="partenariat-page__list">
+                  {CONTRIBUTIONS.technique.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+              <article className="partenariat-page__pack">
+                <h3>Appui matériel et logistique</h3>
+                <ul className="partenariat-page__list">
+                  {CONTRIBUTIONS.materiel.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+              <article className="partenariat-page__pack">
+                <h3>Appui financier / sponsoring</h3>
+                <ul className="partenariat-page__list">
+                  {CONTRIBUTIONS.financier.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            </div>
+            <ul className="partenariat-page__list partenariat-page__list--spaced">
+              {CONTRIBUTIONS.insertion.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
         <section className="concours-page__section">
           <div className="concours-page__inner">
@@ -152,7 +271,8 @@ export function PartenariatPage() {
               {PACKS.map((pack) => (
                 <article key={pack.titre} className="partenariat-page__pack">
                   <h3>{pack.titre}</h3>
-                  <ul>
+                  <p className="partenariat-page__muted">{pack.resume}</p>
+                  <ul className="partenariat-page__list">
                     {pack.points.map((point) => (
                       <li key={point}>{point}</li>
                     ))}
@@ -160,11 +280,17 @@ export function PartenariatPage() {
                 </article>
               ))}
             </div>
-            <a className="concours-page__inline-link" href="/#contact">
-              Demander une proposition sur mesure
-            </a>
+            <div className="partenariat-page__footer-cta">
+              <a className="partenariat-page__cta-link" href="/#contact">
+                Demander une proposition sur mesure
+              </a>
+            </div>
           </div>
         </section>
+
+        <SectionBridge variant="wave" />
+        <PartnersTrustCarousel />
+        <SectionBridge variant="ribbon" />
       </section>
     </main>
   )

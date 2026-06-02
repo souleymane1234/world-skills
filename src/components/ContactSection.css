@@ -1,14 +1,23 @@
 .ws-contact {
   width: 100%;
+  margin-top: 55px;
+  margin-bottom: 32px;
   padding: clamp(32px, 5vw, 56px) clamp(16px, 4vw, 48px);
-  background: color-mix(in srgb, var(--accent-bg) 30%, var(--bg));
+  background:
+    radial-gradient(900px 420px at -10% -10%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 60%),
+    color-mix(in srgb, var(--accent-bg) 30%, var(--bg));
   border-top: 1px solid var(--border);
   text-align: left;
 }
 
 .ws-contact__inner {
-  max-width: 40rem;
+  max-width: 70rem;
   margin: 0 auto;
+}
+
+.ws-contact__intro {
+  max-width: 52rem;
+  margin-bottom: 18px;
 }
 
 .ws-contact__eyebrow {
@@ -31,13 +40,32 @@
   color: var(--text);
 }
 
+.ws-contact__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.ws-contact__card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg) 95%, var(--accent) 5%);
+  padding: 16px;
+  box-shadow: 0 8px 22px rgb(0 0 0 / 7%);
+}
+
+.ws-contact__card h3 {
+  margin: 0 0 12px;
+  font-size: 1.08rem;
+}
+
 .ws-contact__channels {
   list-style: none;
-  margin: 0 0 28px;
+  margin: 0 0 18px;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .ws-contact__channels li {
@@ -66,6 +94,39 @@
   gap: 12px;
 }
 
+.ws-contact__form {
+  display: grid;
+  gap: 10px;
+}
+
+.ws-contact__form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.ws-contact__form input,
+.ws-contact__form select,
+.ws-contact__form textarea {
+  width: min(100%, 480px);
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.ws-contact__form input:focus,
+.ws-contact__form select:focus,
+.ws-contact__form textarea:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
 .ws-contact__btn {
   display: inline-flex;
   padding: 12px 20px;
@@ -89,4 +150,10 @@
 
 .ws-contact__btn:hover {
   filter: brightness(1.06);
+}
+
+@media (max-width: 900px) {
+  .ws-contact__grid {
+    grid-template-columns: 1fr;
+  }
 }

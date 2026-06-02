@@ -204,6 +204,7 @@ export function mapEditionFullDetailToEdition(
       detail.currentStage ? `Phase : ${detail.currentStage}` : 'Edition en cours',
       past ? 'Edition terminee' : 'Vote en ligne ouvert',
     ],
+    galleryPhotos: [],
   }
 }
 

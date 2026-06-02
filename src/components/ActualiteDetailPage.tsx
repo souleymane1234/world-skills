@@ -1,29 +1,6 @@
-import { USE_MOCK_NEWS } from '../config/app-config'
-import { useNewsArticle } from '../hooks/use-news-queries'
+import { ACTUALITES } from '../data/actualites'
 import { formatNewsDate } from '../lib/map-news'
 import './ActualiteDetailPage.css'
-
-const MOCK_ARTICLES: Record<
-  string,
-  {
-    title: string
-    summary: string
-    imageSrc?: string
-    author: string
-    category: string
-    publishedAt: string
-  }
-> = {
-  'pre-inscriptions-2026': {
-    title: 'Pre-inscriptions 2026',
-    summary:
-      'Les pre-inscriptions 2026 sont ouvertes. Merci de verifier les conditions et le dossier de candidature avant envoi.',
-    imageSrc: '/affiche%20miss%20tradi_Plan%20de%20travail%201.jpg',
-    author: 'Comité WorldSkills CI',
-    category: 'Compte officiel',
-    publishedAt: '2026-05-19T09:07:00.000Z',
-  },
-}
 
 function parseSlugFromPath(): string | null {
   const match = window.location.pathname.match(/^\/actualites\/([^/]+)\/?$/)
@@ -32,42 +9,7 @@ function parseSlugFromPath(): string | null {
 
 export function ActualiteDetailPage() {
   const slug = parseSlugFromPath()
-  const articleQuery = useNewsArticle(slug)
-  const mockArticle = slug && USE_MOCK_NEWS ? MOCK_ARTICLES[slug] : null
-  const apiArticle = articleQuery.data
-
-  const isLoading = !USE_MOCK_NEWS && articleQuery.isLoading
-  const article = mockArticle
-    ? {
-        title: mockArticle.title,
-        summary: mockArticle.summary,
-        imageSrc: mockArticle.imageSrc,
-        author: mockArticle.author,
-        category: mockArticle.category,
-        publishedAt: mockArticle.publishedAt,
-        views: 0,
-      }
-    : apiArticle
-      ? {
-          title: apiArticle.title,
-          summary: apiArticle.summary?.trim() || apiArticle.title,
-          imageSrc: apiArticle.mainImage ?? undefined,
-          author: apiArticle.author?.trim() || 'WorldSkills Côte d\u2019Ivoire',
-          category: apiArticle.category?.name ?? 'Actualite',
-          publishedAt: apiArticle.publishedAt ?? '',
-          views: apiArticle.views ?? 0,
-        }
-      : null
-
-  if (isLoading) {
-    return (
-      <main className="actu-detail">
-        <div className="actu-detail__inner">
-          <p className="actu-detail__status">Chargement de l&apos;actualite…</p>
-        </div>
-      </main>
-    )
-  }
+  const article = slug ? ACTUALITES.find((item) => item.slug === slug) : null
 
   if (!article) {
     return (
@@ -91,9 +33,9 @@ export function ActualiteDetailPage() {
         </a>
 
         <article className="actu-detail__article">
-          {article.imageSrc ? (
+          {article.image ? (
             <div className="actu-detail__hero">
-              <img src={article.imageSrc} alt={article.title} />
+              <img src={article.image} alt={article.title} />
             </div>
           ) : null}
 
@@ -103,12 +45,21 @@ export function ActualiteDetailPage() {
 
             <ul className="actu-detail__meta">
               <li>{formatNewsDate(article.publishedAt)}</li>
-              <li>{article.author}</li>
-              {article.views > 0 ? <li>{article.views} lectures</li> : null}
+              <li>{article.source}</li>
             </ul>
 
             <div className="actu-detail__content">
-              <p>{article.summary}</p>
+              <p>{article.description}</p>
+              <p>{article.content}</p>
+              {article.link ? (
+                <p>
+                  Source :
+                  {' '}
+                  <a href={article.link} target="_blank" rel="noreferrer">
+                    Voir le lien original
+                  </a>
+                </p>
+              ) : null}
             </div>
           </div>
         </article>
