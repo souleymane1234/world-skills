@@ -1,0 +1,7 @@
+export { buildApiEnvironment, type ApiEnvironment } from './config/api-environment'
+export { createAppHttpClient } from './create-app-http-client'
+export { createFetchHttpClient } from './adapters/fetch-http-client'
+export type { HttpClient } from './ports/http-client.port'
+export { ApiHttpError } from './errors/api-http-error'
+export * from './modules/emission'
+export * from './modules/news'

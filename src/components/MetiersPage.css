@@ -1,0 +1,40 @@
+.metiers-page__intro {
+  text-align: left;
+}
+
+.metiers-page__block h2 {
+  text-align: left;
+  margin-bottom: 16px;
+  font-size: 1.25rem;
+  color: var(--ws-blue);
+}
+
+.metiers-page__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  text-align: left;
+}
+
+.metiers-page__list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--social-bg);
+  font-size: 0.9rem;
+  color: var(--text-h);
+}
+
+.metiers-page__note {
+  margin: 0 0 16px;
+  text-align: left;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}

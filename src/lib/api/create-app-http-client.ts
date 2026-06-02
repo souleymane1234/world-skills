@@ -1,0 +1,27 @@
+import { createFetchHttpClient } from './adapters/fetch-http-client'
+import { buildApiEnvironment, type ApiEnvironment } from './config/api-environment'
+import type { HttpClient } from './ports/http-client.port'
+
+function readEnvString(key: string): string | undefined {
+  const value = import.meta.env[key as keyof ImportMetaEnv]
+  if (typeof value !== 'string' || value.trim() === '') return undefined
+  return value.trim()
+}
+
+export function createAppHttpClient(options?: {
+  environment?: Partial<ApiEnvironment>
+  defaultHeaders?: Record<string, string>
+}): HttpClient {
+  const environment = buildApiEnvironment(options?.environment)
+
+  const fromEnv: Record<string, string> = {}
+  const apiKey = readEnvString('VITE_API_KEY')
+  if (apiKey) {
+    fromEnv['X-Api-Key'] = apiKey
+  }
+
+  return createFetchHttpClient({
+    environment,
+    defaultHeaders: { ...fromEnv, ...options?.defaultHeaders },
+  })
+}
