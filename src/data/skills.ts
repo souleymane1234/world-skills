@@ -12,79 +12,52 @@ export type Skill = {
   icon: string
 }
 
-const DISCIPLINE_IMAGE_FILES = [
-  'Aéronautique.jpg',
-  'Bar cocktail.jpg',
-  'Boulangerie-pâtisserie.jpg',
-  'Communication.jpg',
-  'Couture.jpg',
-  'Cuisine.jpg',
-  'Finance-comptabilité.jpg',
-  'Froid-climatisation.jpeg',
-  'Maintenance industrielle et usinage CNC.jpg',
-  'Mécanique automobile.jpg',
-  'Mécatronique.jpg',
-  'Numérique et technologie.jpg',
-  'Robotique.jpg',
-  'Soudage.jpg',
-  'Transformation agroalimentaire.jpg',
-  'WhatsApp Image 2026-06-02 at 11.05.13.jpeg',
-  'bijouterie.jpeg',
-  'coiffure.jpeg',
-  'domotique.jpeg',
-  'electricité.jpeg',
-  'entrepreneuriat.jpg',
-  'Installation sanitaire.jpeg',
-  'maconnerie.jpeg',
-  'menuiserie de bois.jpeg',
-  'peinture.jpeg',
-] as const
-
-function normalize(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim()
-}
-
-const FILE_INDEX = DISCIPLINE_IMAGE_FILES.map((file) => ({
-  file,
-  normalized: normalize(file.replace(/\.[^.]+$/, '')),
-}))
-
 const SKILL_IMAGE_BY_ID: Partial<Record<string, string>> = {
-  maconnerie: 'maçonnerie.jpeg',
+  'finance-comptabilite': 'Finance-comptabilité.jpg',
+  entrepreneuriat: 'entrepreneuriat.jpg',
+  communication: 'Communication.jpg',
+
+  cuisine: 'Cuisine.jpg',
+  'boulangerie-patisserie': 'Boulangerie-pâtisserie.jpg',
+  'bar-cocktail': 'Bar cocktail.jpg',
+  'transformation-agroalimentaire': 'Transformation agroalimentaire.jpg',
+
+  'maintenance-cnc': 'Maintenance industrielle et usinage CNC.jpg',
+  mecatronique: 'Mécatronique.jpg',
+  robotique: 'Robotique.jpg',
+  soudage: 'Soudage.jpg',
+  'mecanique-automobile': 'Mécanique automobile.jpg',
+  aeronautique: 'Aéronautique.jpg',
+  'numerique-technologie': 'Numérique et technologie.jpg',
+
+  couture: 'Couture.jpg',
+  coiffure: 'coiffure.jpeg',
+  bijouterie: 'bijouterie.jpeg',
+
+  maconnerie: 'maconnerie.jpeg',
   'menuiserie-bois': 'menuiserie de bois.jpeg',
+  carrelage: 'carrelage.jpeg',
+  peinture: 'peinture.jpeg',
   'installation-sanitaire': 'Installation sanitaire.jpeg',
+  electricite: 'electricité.jpeg',
+  'froid-climatisation': 'Froid-climatisation.jpeg',
+  domotique: 'domotique.jpeg',
 }
 
-export function getSkillImageCandidates(id: string, name: string): string[] {
-  const idNormalized = normalize(id.replace(/-/g, ' '))
-  const nameNormalized = normalize(name)
-
-  const matched = FILE_INDEX.find(
-    (entry) =>
-      entry.normalized.includes(nameNormalized) ||
-      nameNormalized.includes(entry.normalized) ||
-      entry.normalized.includes(idNormalized),
-  )
-
+export function getSkillImageCandidates(id: string, _name: string): string[] {
   const strictByIdBase = `/image discipline/${id}`
   const strictCandidates = [
-    `${strictByIdBase}.jpg`,
-    `${strictByIdBase}.jpeg`,
-    `${strictByIdBase}.png`,
-    `${strictByIdBase}.webp`,
-    `${strictByIdBase}.avif`,
+    encodeURI(`${strictByIdBase}.jpg`),
+    encodeURI(`${strictByIdBase}.jpeg`),
+    encodeURI(`${strictByIdBase}.png`),
+    encodeURI(`${strictByIdBase}.webp`),
+    encodeURI(`${strictByIdBase}.avif`),
   ]
   const forcedFile = SKILL_IMAGE_BY_ID[id]
   if (forcedFile) {
-    return [`/image discipline/${forcedFile}`, ...strictCandidates]
+    return [encodeURI(`/image discipline/${forcedFile}`), ...strictCandidates]
   }
-  if (!matched) return strictCandidates
-  return [`/image discipline/${matched.file}`, ...strictCandidates]
+  return strictCandidates
 }
 
 export const SKILL_CATEGORY_LABELS: Record<SkillCategory, string> = {
