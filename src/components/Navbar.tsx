@@ -20,6 +20,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [candidateLoggedIn, setCandidateLoggedIn] = useState(() => isCandidateLoggedIn())
   const pathname = window.location.pathname
+  const hash = window.location.hash
 
   const isSubPage = SUBPAGE_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
@@ -61,6 +62,16 @@ export function Navbar() {
   const isSolid =
     isSubPage || isActualitesDetail || scrolled || menuOpen
 
+  const isLinkActive = (href: string) => {
+    if (href.includes('#accueil')) {
+      return pathname === '/' && (hash === '' || hash === '#accueil')
+    }
+    if (href === '/actualites') {
+      return pathname === '/actualites' || pathname.startsWith('/actualites/')
+    }
+    return pathname === href || pathname.startsWith(`${href}/`)
+  }
+
   return (
     <header className={`site-navbar${isSolid ? ' site-navbar--solid' : ''}`}>
       <a
@@ -99,7 +110,7 @@ export function Navbar() {
           {navLinks.map(({ href, label }) => (
             <li key={href + label}>
               <a
-                className={`site-navbar__link${label === 'Connexion' ? ' site-navbar__link--cta' : ''}`}
+                className={`site-navbar__link${label === 'Connexion' ? ' site-navbar__link--cta' : ''}${isLinkActive(href) ? ' site-navbar__link--active' : ''}`}
                 href={href}
                 onClick={() => setMenuOpen(false)}
               >
@@ -108,7 +119,11 @@ export function Navbar() {
             </li>
           ))}
           <li className="site-navbar__item--mobile-only">
-            <a className="site-navbar__link" href="/billetterie" onClick={() => setMenuOpen(false)}>
+            <a
+              className={`site-navbar__link${isLinkActive('/billetterie') ? ' site-navbar__link--active' : ''}`}
+              href="/billetterie"
+              onClick={() => setMenuOpen(false)}
+            >
               Bielleterie
             </a>
           </li>
@@ -116,7 +131,7 @@ export function Navbar() {
       </nav>
 
       <a
-        className="site-navbar__ticket-btn"
+        className={`site-navbar__ticket-btn${isLinkActive('/billetterie') ? ' site-navbar__ticket-btn--active' : ''}`}
         href="/billetterie"
         onClick={() => setMenuOpen(false)}
       >

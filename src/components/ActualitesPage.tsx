@@ -66,7 +66,7 @@ export function ActualitesPage() {
         <div className="actu-page__inner">
           <header className="actu-page__header">
             <p className="actu-page__eyebrow">Actualites</p>
-            <h1 id="actu-page-title">Fil officiel WorldSkills Côte d\u2019Ivoire</h1>
+            <h1 id="actu-page-title">Fil officiel WorldSkills Côte d'Ivoire</h1>
             <p>
               Retrouvez toutes les publications, annonces et espaces publicitaires dans un fil
               continu.
@@ -140,8 +140,19 @@ export function ActualitesPage() {
             ) : null}
           </div>
         </div>
-
-        <aside className="actu-page__aside" aria-label="Publicites droite">
+        <aside className="actu-page__aside" aria-label="Publicites gauche">
+          <article className="actu-side-ad">
+            <p>Publicite</p>
+            <img
+              src="/affuche%20pub%20miss%20tradi.jpg"
+              alt="Publicite WorldSkills Côte d\u2019Ivoire"
+              loading="lazy"
+              decoding="async"
+            />
+            <a href="/partenariat">Reserver cet espace</a>
+          </article>
+        </aside>
+        {/* <aside className="actu-page__aside" aria-label="Publicites droite">
           <article className="actu-side-ad">
             <p>Annonce</p>
             <img
@@ -152,7 +163,7 @@ export function ActualitesPage() {
             />
             <a href="/#contact">Nous contacter</a>
           </article>
-        </aside>
+        </aside> */}
       </div>
     </main>
   )

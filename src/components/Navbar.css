@@ -201,6 +201,20 @@
   outline-offset: 2px;
 }
 
+.site-navbar__link--active {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--accent) 58%, var(--border));
+  font-weight: 700;
+}
+
+.site-navbar:not(.site-navbar--solid) .site-navbar__link--active {
+  color: #fff;
+  text-shadow: none;
+  background: color-mix(in srgb, var(--accent) 54%, transparent);
+  border: 1px solid color-mix(in srgb, #fff 40%, var(--accent));
+}
+
 .site-navbar__link--cta {
   font-weight: 700;
   border: 1px solid var(--accent);
@@ -229,6 +243,11 @@
   color: var(--text-h);
   border-color: color-mix(in srgb, var(--accent) 68%, var(--border));
   background: color-mix(in srgb, var(--accent) 24%, var(--bg));
+}
+
+.site-navbar__ticket-btn--active {
+  border-color: color-mix(in srgb, var(--accent) 75%, var(--border));
+  background: color-mix(in srgb, var(--accent) 30%, var(--bg));
 }
 
 .site-navbar__link--cta:hover {
