@@ -161,6 +161,10 @@
   gap: 4px 8px;
 }
 
+.site-navbar__item--mobile-only {
+  display: none;
+}
+
 .site-navbar__link {
   display: block;
   padding: 8px 14px;
@@ -282,6 +286,14 @@
   }
 
   .site-navbar__ticket-btn {
+    display: none;
+  }
+
+  .site-navbar__item--mobile-only {
+    display: block;
+  }
+
+  .site-navbar__item--mobile-only .site-navbar__link {
     width: calc(100% - 24px);
     margin: 8px 12px 4px;
     text-align: center;

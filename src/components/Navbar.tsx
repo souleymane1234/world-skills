@@ -107,6 +107,11 @@ export function Navbar() {
               </a>
             </li>
           ))}
+          <li className="site-navbar__item--mobile-only">
+            <a className="site-navbar__link" href="/billetterie" onClick={() => setMenuOpen(false)}>
+              Bielleterie
+            </a>
+          </li>
         </ul>
       </nav>
 
