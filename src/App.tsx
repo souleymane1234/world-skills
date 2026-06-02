@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { HeroVideo } from './components/HeroVideo'
 import { AboutSection } from './components/AboutSection'
 import { StatsBanner } from './components/StatsBanner'
@@ -33,6 +33,12 @@ function PageShell({ children }: { children: ReactNode }) {
 
 function App() {
   const pathname = window.location.pathname
+
+  useEffect(() => {
+    if (pathname === '/' && window.location.hash === '') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    }
+  }, [pathname])
 
   if (/^\/actualites\/[^/]+\/?$/.test(pathname)) {
     return (

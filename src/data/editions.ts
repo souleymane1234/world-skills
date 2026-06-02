@@ -92,52 +92,33 @@ export type Edition = {
 
 const PHOTO = (seed: string) => `https://picsum.photos/seed/wsci-${seed}/480/640`
 
-function buildGallery(year: number, captions: string[]): GalleryPhoto[] {
-  return captions.map((caption, index) => ({
+const EDITION_GALLERY_FILES = [
+  '/edition/1.jpg',
+  '/edition/2.jpg',
+  '/edition/3.jpg',
+  '/edition/4.jpg',
+  '/edition/5.jpg',
+  '/edition/6.jpg',
+  '/edition/7.jpg',
+] as const
+
+function buildGalleryFromEditionFolder(year: number): GalleryPhoto[] {
+  return EDITION_GALLERY_FILES.map((src, index) => ({
     id: `${year}-photo-${index + 1}`,
-    src: `https://picsum.photos/seed/wsci-gallery-${year}-${index + 1}/900/650`,
-    alt: caption,
-    caption,
+    src,
+    alt: `Edition ${year} - photo ${index + 1}`,
+    caption: `Edition ${year} - photo ${index + 1}`,
   }))
 }
 
 // 2026 n’a pas encore commencé : pas de galerie pour le moment.
 const GALLERY_2026: GalleryPhoto[] = []
 
-const GALLERY_2025 = buildGallery(2025, [
-  'Finale nationale 2025',
-  'Compétiteurs en action',
-  'Épreuves de menuiserie',
-  'Épreuves de cuisine',
-  'Village des métiers',
-  'Remise des médailles',
-  'Encadrement pédagogique',
-  'Public et partenaires',
-  'Coulisses de la compétition',
-  'Cérémonie officielle',
-])
+const GALLERY_2025 = buildGalleryFromEditionFolder(2025)
 
-const GALLERY_2024 = buildGallery(2024, [
-  'Édition 2024 — phases finales',
-  'Compétitions par corps de métiers',
-  'Stands d’exposition',
-  'Apprenants en compétition',
-  'Jury et évaluation',
-  'Clôture de l’édition',
-  'Moments institutionnels',
-  'Highlights techniques',
-])
+const GALLERY_2024 = buildGalleryFromEditionFolder(2024)
 
-const GALLERY_2023 = buildGallery(2023, [
-  'Olympiades des métiers 2023',
-  'Ateliers techniques',
-  'Compétiteurs régionaux',
-  'Formation pratique',
-  'Exposition des savoir-faire',
-  'Cérémonie de clôture',
-  'Partenaires engagés',
-  'Ambiance événement',
-])
+const GALLERY_2023 = buildGalleryFromEditionFolder(2023)
 
 export const EDITION_NAV_YEARS = [2026, 2025, 2024, 2023] as const
 

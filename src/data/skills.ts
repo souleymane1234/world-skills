@@ -34,6 +34,9 @@ const DISCIPLINE_IMAGE_FILES = [
   'domotique.jpeg',
   'electricité.jpeg',
   'entrepreneuriat.jpg',
+  'Installation sanitaire.jpeg',
+  'maconnerie.jpeg',
+  'menuiserie de bois.jpeg',
   'peinture.jpeg',
 ] as const
 
@@ -50,6 +53,12 @@ const FILE_INDEX = DISCIPLINE_IMAGE_FILES.map((file) => ({
   file,
   normalized: normalize(file.replace(/\.[^.]+$/, '')),
 }))
+
+const SKILL_IMAGE_BY_ID: Partial<Record<string, string>> = {
+  maconnerie: 'maçonnerie.jpeg',
+  'menuiserie-bois': 'menuiserie de bois.jpeg',
+  'installation-sanitaire': 'Installation sanitaire.jpeg',
+}
 
 export function getSkillImageCandidates(id: string, name: string): string[] {
   const idNormalized = normalize(id.replace(/-/g, ' '))
@@ -70,9 +79,11 @@ export function getSkillImageCandidates(id: string, name: string): string[] {
     `${strictByIdBase}.webp`,
     `${strictByIdBase}.avif`,
   ]
-
+  const forcedFile = SKILL_IMAGE_BY_ID[id]
+  if (forcedFile) {
+    return [`/image discipline/${forcedFile}`, ...strictCandidates]
+  }
   if (!matched) return strictCandidates
-
   return [`/image discipline/${matched.file}`, ...strictCandidates]
 }
 

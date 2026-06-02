@@ -27,11 +27,12 @@ export function HeroVideo({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [hasUserInteracted, setHasUserInteracted] = useState(false)
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false)
   const shouldMute =
     controls
       ? false
       : soundOnTopMuteOnScroll
-        ? isScrolled || !hasUserInteracted
+        ? isScrolled || autoplayBlocked
         : true
 
   useEffect(() => {
@@ -62,13 +63,38 @@ export function HeroVideo({
     if (!video || controls) return
     const tryPlay = async () => {
       try {
+        if (soundOnTopMuteOnScroll && !isScrolled && !autoplayBlocked) {
+          video.muted = false
+        } else {
+          video.muted = shouldMute
+        }
         await video.play()
       } catch {
-        // Ignore autoplay rejection; muted fallback will keep a stable UI.
+        // Fallback: some browsers block unmuted autoplay on initial load/refresh.
+        if (soundOnTopMuteOnScroll && !isScrolled) {
+          setAutoplayBlocked(true)
+        }
+        video.muted = true
+        try {
+          await video.play()
+        } catch {
+          // Keep silent fail; user interaction will retry.
+        }
       }
     }
     void tryPlay()
-  }, [shouldMute, controls, src])
+  }, [controls, src, soundOnTopMuteOnScroll, isScrolled, autoplayBlocked, shouldMute])
+
+  useEffect(() => {
+    if (!soundOnTopMuteOnScroll || controls || !hasUserInteracted || isScrolled) return
+    const video = videoRef.current
+    if (!video) return
+    setAutoplayBlocked(false)
+    video.muted = false
+    void video.play().catch(() => {
+      // No-op if browser still blocks playback.
+    })
+  }, [soundOnTopMuteOnScroll, controls, hasUserInteracted, isScrolled])
 
   return (
     <div className={`site-hero-video${controls ? ' site-hero-video--controls' : ''}`}>
@@ -82,7 +108,7 @@ export function HeroVideo({
         loop={!controls}
         controls={controls}
         playsInline
-        preload="metadata"
+        preload="auto"
         aria-label="Vidéo de présentation WorldSkills Côte d'Ivoire"
       />
       <div className="site-hero-video__overlay">
