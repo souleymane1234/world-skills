@@ -621,8 +621,39 @@
 }
 
 @media (max-width: 640px) {
+  .concours-page__section {
+    padding: 20px 12px;
+  }
+
   .concours-page__timeline--finale-cards {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .concours-page__step,
+  .concours-page__step--finale-card {
+    min-height: auto;
+    padding: 10px;
+  }
+
+  .concours-page__step h3 {
+    margin-bottom: 4px;
+    font-size: 1rem;
+  }
+
+  .concours-page__step-date {
+    margin-bottom: 2px;
+    font-size: 0.75rem;
+  }
+
+  .concours-page__step-label {
+    margin: 6px 0 4px;
+    font-size: 0.72rem;
+  }
+
+  .concours-page__list {
+    gap: 6px;
+    padding-left: 16px;
   }
 }
 
