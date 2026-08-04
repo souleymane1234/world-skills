@@ -8,9 +8,10 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px 24px;
-  padding: 14px max(24px, env(safe-area-inset-right)) 14px
-    max(24px, env(safe-area-inset-left));
+  gap: 10px 16px;
+  padding: 6px max(20px, env(safe-area-inset-right)) 6px
+    max(20px, env(safe-area-inset-left));
+  min-height: 56px;
   border-bottom: 1px solid transparent;
   background: transparent;
   backdrop-filter: none;
@@ -39,7 +40,7 @@
 .site-navbar__brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   text-decoration: none;
   color: var(--text-h);
   transition: color 0.28s ease;
@@ -69,8 +70,8 @@
 .site-navbar__logo {
   flex-shrink: 0;
   display: block;
-  width: 72px;
-  height: 72px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
   transition:
@@ -91,7 +92,7 @@
 .site-navbar__title {
   font-family: var(--heading);
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   letter-spacing: -0.02em;
   transition: color 0.2s ease;
 }
@@ -167,10 +168,10 @@
 
 .site-navbar__link {
   display: block;
-  padding: 8px 14px;
+  padding: 6px 12px;
   border-radius: 8px;
   font-family: var(--sans);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: var(--text);
   text-decoration: none;
@@ -226,10 +227,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 16px;
-  border-radius: 10px;
+  padding: 7px 12px;
+  border-radius: 8px;
   text-decoration: none;
   font-weight: 700;
+  font-size: 0.9rem;
   color: var(--text-h);
   border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
   background: color-mix(in srgb, var(--accent) 12%, var(--bg));

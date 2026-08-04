@@ -50,7 +50,7 @@ export function VotePage() {
   )
 
   const resolvedEmission = useResolvedEmission()
-  const amountPerVote = resolvedEmission.pointsPerVote
+  const amountPerVote = resolvedEmission.voteAmountPerVote
 
   const apiVote = useCandidateFromApi(USE_MOCK_DATA ? null : candidateId, amountPerVote)
 

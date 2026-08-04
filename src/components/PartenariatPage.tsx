@@ -1,4 +1,5 @@
-import { HeroVideo } from './HeroVideo'
+import { useEffect } from 'react'
+import { ContactSection } from './ContactSection'
 import { PromoBanner } from './PromoBanner'
 import { SectionBridge } from './SectionBridge'
 import { PartnersTrustCarousel } from './PartnersTrustCarousel'
@@ -115,12 +116,17 @@ const AVANTAGES_PARTENAIRE = [
 ] as const
 
 export function PartenariatPage() {
+  useEffect(() => {
+    if (window.location.hash !== '#contact') return
+    const el = document.getElementById('contact')
+    if (!el) return
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }, [])
+
   return (
-    <main className="concours-page" aria-labelledby="partenariat-title">
-      <HeroVideo
-        subtitle="Engagement entreprises & institutions"
-        title="Soutenez l'excellence technique"
-      />
+    <main className="concours-page concours-page--nav-offset partenariat-page" aria-labelledby="partenariat-title">
       <PromoBanner
         title="Investissez dans les métiers de demain"
         subtitle="Secteur privé, ONG : rejoignez WorldSkills Côte d'Ivoire"
@@ -140,7 +146,7 @@ export function PartenariatPage() {
               un cadre structuré pour les entreprises et institutions engagées.
             </p>
             <div className="concours-page__actions">
-              <a href="/#contact" className="partenariat-page__cta-link">
+              <a href="#contact" className="partenariat-page__cta-link">
                 Nous contacter
               </a>
               <a href="/competition" className="partenariat-page__cta-secondary">Voir la compétition</a>
@@ -281,7 +287,7 @@ export function PartenariatPage() {
               ))}
             </div>
             <div className="partenariat-page__footer-cta">
-              <a className="partenariat-page__cta-link" href="/#contact">
+              <a className="partenariat-page__cta-link" href="#contact">
                 Demander une proposition sur mesure
               </a>
             </div>
@@ -291,6 +297,7 @@ export function PartenariatPage() {
         <SectionBridge variant="wave" />
         <PartnersTrustCarousel />
         <SectionBridge variant="ribbon" />
+        <ContactSection embedded />
       </section>
     </main>
   )

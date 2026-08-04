@@ -14,16 +14,16 @@ const FOOTER_COLUMNS = [
   {
     title: 'Navigation',
     links: [
-      { href: '#accueil', label: 'Accueil' },
-      { href: '/metiers', label: 'Métiers' },
+      { href: '/#accueil', label: 'Accueil' },
       { href: '/competition', label: 'Compétition' },
       { href: '/actualites', label: 'Actualités' },
+      { href: '/partenariat', label: 'Partenariat' },
     ],
   },
   {
     title: 'Partenaires',
     links: [
-      { href: '#partenaires', label: 'Nos partenaires' },
+      { href: '/#partenaires', label: 'Nos partenaires' },
       { href: '/partenariat', label: 'Devenir partenaire' },
       { href: '/actualites', label: 'Espace presse' },
       { href: 'https://www.worldskills.org', label: 'WorldSkills International' },
@@ -32,9 +32,9 @@ const FOOTER_COLUMNS = [
   {
     title: 'Contact',
     links: [
-      { href: '#contact', label: 'Inscriptions établissements' },
-      { href: '#contact', label: 'Sponsoring' },
-      { href: '#contact', label: 'Presse & médias' },
+      { href: '/partenariat#contact', label: 'Inscriptions établissements' },
+      { href: '/partenariat#contact', label: 'Sponsoring' },
+      { href: '/partenariat#contact', label: 'Presse & médias' },
       { href: 'mailto:contact@worldskills.ci', label: 'contact@worldskills.ci' },
     ],
   },
@@ -45,7 +45,7 @@ export function Footer() {
     <footer className="site-footer" aria-label="Pied de page">
       <div className="site-footer__main">
         <section className="site-footer__brand" aria-label="WorldSkills Côte d'Ivoire">
-          <a className="site-footer__brand-logo" href="#accueil" aria-label="Accueil">
+          <a className="site-footer__brand-logo" href="/#accueil" aria-label="Accueil">
             <img
               src="/logo-removebg-preview.png"
               alt="WorldSkills Côte d'Ivoire"
@@ -85,15 +85,15 @@ export function Footer() {
 
       <div className="site-footer__bottom">
         <div className="site-footer__legal">
-          <a href="#contact">Mentions légales</a>
-          <a href="#contact">Politique de confidentialité</a>
+          <a href="/partenariat#contact">Mentions légales</a>
+          <a href="/partenariat#contact">Politique de confidentialité</a>
         </div>
         <p className="site-footer__copy">
           {CURRENT_YEAR} WorldSkills Côte d&apos;Ivoire · METFPA. Tous droits réservés.
         </p>
       </div>
 
-      <a className="site-footer__to-top" href="#accueil" aria-label="Retour en haut">
+      <a className="site-footer__to-top" href="/#accueil" aria-label="Retour en haut">
         ^
       </a>
     </footer>

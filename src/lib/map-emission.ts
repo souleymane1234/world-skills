@@ -65,9 +65,13 @@ function candidateUserAge(user: { age?: number | null; dateOfBirth?: string | nu
   return Math.max(0, years)
 }
 
-function candidateDisplayName(c: Pick<EditionCandidateDto, 'user'>): string {
-  const full = [c.user.firstName, c.user.lastName].filter(Boolean).join(' ').trim()
-  return full || c.user.pseudo
+function candidateDisplayName(
+  c: Pick<EditionCandidateDto, 'user' | 'candidateName' | 'candidatePreName'>,
+): string {
+  const fromFields = [c.candidatePreName, c.candidateName].filter(Boolean).join(' ').trim()
+  if (fromFields) return fromFields
+  const full = [c.user?.firstName, c.user?.lastName].filter(Boolean).join(' ').trim()
+  return full || c.user?.pseudo || 'Candidat'
 }
 
 function isEditionPast(endDate: string, isActive: boolean): boolean {

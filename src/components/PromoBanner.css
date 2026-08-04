@@ -4,7 +4,7 @@
 }
 
 .site-promo-banner--ws {
-  padding: clamp(28px, 5vw, 48px) clamp(16px, 4vw, 48px);
+  padding: clamp(22px, 4vw, 36px) clamp(16px, 4vw, 48px);
   background: linear-gradient(
     120deg,
     color-mix(in srgb, var(--ws-blue) 12%, var(--bg)) 0%,
@@ -37,6 +37,72 @@
   font-weight: 600;
   color: var(--text-h);
   line-height: 1.2;
+}
+
+.site-promo-banner__status {
+  margin: 0;
+  max-width: 42rem;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--ws-orange) 35%, var(--border));
+  background: color-mix(in srgb, var(--ws-orange) 10%, var(--bg));
+  color: var(--text-h);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.site-promo-banner__metier-meta {
+  margin: -8px 0 0;
+  display: grid;
+  gap: 4px;
+}
+
+.site-promo-banner__metier-domain {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ws-orange);
+}
+
+.site-promo-banner__metier-name {
+  margin: 0;
+  font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+  font-weight: 700;
+  color: var(--text-h);
+  line-height: 1.25;
+}
+
+.site-promo-banner--with-criteria .site-promo-banner__title {
+  margin-bottom: 14px;
+}
+
+.site-promo-banner__criteria {
+  margin: 0 0 18px;
+}
+
+.site-promo-banner__criteria-title {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.site-promo-banner__criteria-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+@media (min-width: 720px) {
+  .site-promo-banner__criteria-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 22px;
+  }
 }
 
 .site-promo-banner__cta {

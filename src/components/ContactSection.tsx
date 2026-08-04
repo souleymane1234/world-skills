@@ -1,6 +1,11 @@
 import './ContactSection.css'
 
-export function ContactSection() {
+type ContactSectionProps = {
+  /** Sur la page partenariat : éviter le lien « Devenir partenaire » redondant. */
+  embedded?: boolean
+}
+
+export function ContactSection({ embedded = false }: ContactSectionProps) {
   return (
     <section id="contact" className="ws-contact" aria-labelledby="ws-contact-title">
       <div className="ws-contact__inner">
@@ -31,11 +36,16 @@ export function ContactSection() {
               </li>
             </ul>
             <div className="ws-contact__actions">
-              <a href="/partenariat" className="ws-contact__btn ws-contact__btn--primary">
-                Devenir partenaire
-              </a>
-              <a href="/competition" className="ws-contact__btn ws-contact__btn--ghost">
-                Règlement &amp; calendrier
+              {!embedded ? (
+                <a href="/partenariat" className="ws-contact__btn ws-contact__btn--primary">
+                  Devenir partenaire
+                </a>
+              ) : null}
+              <a
+                href="/competition"
+                className={`ws-contact__btn${embedded ? ' ws-contact__btn--primary' : ' ws-contact__btn--ghost'}`}
+              >
+                Voir la compétition
               </a>
             </div>
           </article>

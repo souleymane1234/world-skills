@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { DEFAULT_VOTE_UNIT_PRICE, USE_MOCK_DATA } from '../config/app-config'
 import { ApiHttpError } from '../lib/api/errors/api-http-error'
@@ -7,7 +8,10 @@ import {
   mapEditionListItemToTab,
   type EditionCatalogTab,
 } from '../lib/map-emission'
-import { resolveConfiguredEmissionId } from '../lib/resolve-latest-emission'
+import {
+  pickActiveNestedEdition,
+  resolveConfiguredEmissionId,
+} from '../lib/resolve-latest-emission'
 
 const EDITION_LIST_PARAMS = { page: 1, limit: 50 } as const
 const RANKING_PARAMS = { page: 1, limit: 100 } as const
@@ -23,8 +27,10 @@ export const emissionQueryKeys = {
   emissionsList: ['emission', 'list', 'public'] as const,
   emission: (id: string) => ['emission', id] as const,
   editions: (id: string) => ['emission', id, 'editions'] as const,
+  activeEdition: (id: string) => ['emission', id, 'active-edition'] as const,
   editionDetail: (editionId: string) => ['edition', editionId] as const,
   editionRanking: (editionId: string) => ['edition', editionId, 'ranking'] as const,
+  categories: (editionId: string) => ['edition', editionId, 'categories'] as const,
   candidate: (candidateId: string) => ['candidate', candidateId] as const,
 }
 
@@ -43,6 +49,11 @@ export function useResolvedEmission() {
     ? resolveConfiguredEmissionId(listQuery.data.data)
     : null
 
+  const nestedEdition = useMemo(
+    () => pickActiveNestedEdition(selected?.editions),
+    [selected?.editions],
+  )
+
   const detailQuery = useQuery({
     queryKey: selected ? emissionQueryKeys.emission(selected.id) : ['emission', 'none'],
     queryFn: () => emissionRequest.getById(selected!.id),
@@ -57,6 +68,12 @@ export function useResolvedEmission() {
     selected?.pointsPerVote ??
     DEFAULT_VOTE_UNIT_PRICE
 
+  /** Prix FCFA d’un vote : priorité au champ édition voteAmountPerVote. */
+  const voteAmountPerVote =
+    nestedEdition?.voteAmountPerVote ??
+    pointsPerVote ??
+    DEFAULT_VOTE_UNIT_PRICE
+
   const emissionDescription =
     detailQuery.data?.data.description?.trim() ||
     selected?.description?.trim() ||
@@ -64,12 +81,81 @@ export function useResolvedEmission() {
 
   return {
     emission: selected,
+    nestedEdition,
     emissionDescription,
     pointsPerVote,
+    voteAmountPerVote,
     isLoading: listQuery.isLoading || (Boolean(selected) && detailQuery.isLoading),
     isError: listQuery.isError || detailQuery.isError,
     error: listQuery.error ?? detailQuery.error,
   }
+}
+
+/**
+ * Édition active : résumé issu de GET /emission[].editions,
+ * enrichi par GET /emission/editions/{id} quand disponible.
+ */
+export function useActiveEdition() {
+  const { emission, nestedEdition } = useResolvedEmission()
+  const editionId = nestedEdition?.id ?? null
+
+  const detailQuery = useQuery({
+    queryKey: editionId ? emissionQueryKeys.editionDetail(editionId) : ['edition', 'active-none'],
+    queryFn: async () => {
+      const res = await emissionRequest.getEditionById(editionId as string)
+      return res.data
+    },
+    enabled: !USE_MOCK_DATA && Boolean(editionId),
+    staleTime: EMISSION_STALE_MS,
+    retry: shouldRetryEmission,
+    refetchOnWindowFocus: false,
+  })
+
+  const data = detailQuery.data ?? nestedEdition ?? null
+
+  return {
+    ...detailQuery,
+    data,
+    nestedEdition,
+    emission,
+    isLoading: Boolean(emission) && !nestedEdition ? false : detailQuery.isLoading && !nestedEdition,
+    isPending: detailQuery.isPending && !nestedEdition,
+  }
+}
+
+/** @deprecated Prefer useActiveEdition().data?.id */
+export function useActiveEditionId() {
+  const query = useActiveEdition()
+  return {
+    ...query,
+    data: query.data?.id ?? null,
+  }
+}
+
+/** Catégories + tags (métiers) autorisés pour une édition. */
+export function useEmissionCategories(editionId: string | null) {
+  return useQuery({
+    queryKey: editionId
+      ? emissionQueryKeys.categories(editionId)
+      : ['edition', 'categories', 'none'],
+    queryFn: async () => {
+      const res = await emissionRequest.listCategories({
+        editionId: editionId as string,
+        page: 1,
+        limit: 100,
+      })
+      return [...res.data].sort((a, b) => a.sortOrder - b.sortOrder).map((category) => ({
+        ...category,
+        tags: [...category.tags]
+          .filter((tag) => tag.active)
+          .sort((a, b) => a.sortOrder - b.sortOrder),
+      }))
+    },
+    enabled: !USE_MOCK_DATA && Boolean(editionId),
+    staleTime: EMISSION_STALE_MS,
+    retry: shouldRetryEmission,
+    refetchOnWindowFocus: false,
+  })
 }
 
 export function useEmissionEditionsCatalog(emissionId: string | null) {
@@ -89,7 +175,10 @@ export function useEmissionEditionsCatalog(emissionId: string | null) {
 export function useEditionFromApi(editionId: string | null, pointsPerVote: number) {
   const detailQuery = useQuery({
     queryKey: editionId ? emissionQueryKeys.editionDetail(editionId) : ['edition', 'none'],
-    queryFn: () => emissionRequest.getEditionById(editionId as string),
+    queryFn: async () => {
+      const res = await emissionRequest.getEditionById(editionId as string)
+      return res.data
+    },
     enabled: !USE_MOCK_DATA && Boolean(editionId),
     staleTime: EMISSION_STALE_MS,
     retry: shouldRetryEmission,
@@ -109,12 +198,14 @@ export function useEditionFromApi(editionId: string | null, pointsPerVote: numbe
   const isError = detailQuery.isError || rankingQuery.isError
   const error = detailQuery.error ?? rankingQuery.error
 
+  const voteUnit = detailQuery.data?.voteAmountPerVote ?? pointsPerVote
+
   const edition =
-    detailQuery.data?.data && editionId
+    detailQuery.data && editionId
       ? mapEditionFullDetailToEdition(
-          detailQuery.data.data,
+          detailQuery.data,
           rankingQuery.data?.data ?? [],
-          pointsPerVote,
+          voteUnit,
         )
       : null
 

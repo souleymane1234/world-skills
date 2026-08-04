@@ -48,7 +48,10 @@ export function getAuthEventName(): string {
 }
 
 export function isCandidateLoggedIn(): boolean {
-  return window.localStorage.getItem(SESSION_KEY) === '1'
+  return (
+    window.localStorage.getItem(SESSION_KEY) === '1' ||
+    Boolean(window.localStorage.getItem('wsci-access-token'))
+  )
 }
 
 export function getCandidateAccount(): CandidateAccount | null {
@@ -107,6 +110,10 @@ export function loginCandidate(email: string, password: string): boolean {
 
 export function logoutCandidate(): void {
   window.localStorage.removeItem(SESSION_KEY)
+  window.localStorage.removeItem('wsci-access-token')
+  window.localStorage.removeItem('wsci-refresh-token')
+  window.localStorage.removeItem('wsci-auth-user')
+  // Aligné avec clearAuthSession (JWT)
   notifyAuthChanged()
 }
 

@@ -2,15 +2,19 @@ import type { HttpClient } from '../../ports/http-client.port'
 import { EMISSION_API_PATHS, type EmissionApiPaths } from './emission.paths'
 import type {
   ActiveEditionEnvelopeDto,
+  ApplyToEditionBodyDto,
+  ApplyToEditionEnvelopeDto,
   EditionCandidatesEnvelopeDto,
   EditionFullDetailEnvelopeDto,
   EditionListEnvelopeDto,
   EditionRankingEnvelopeDto,
   EmissionCandidateDetailEnvelopeDto,
+  EmissionCategoriesEnvelopeDto,
   EmissionDetailEnvelopeDto,
   EmissionListEnvelopeDto,
   ListEditionCandidatesQuery,
   ListEditionRankingQuery,
+  ListEmissionCategoriesQuery,
   ListEmissionEditionsQuery,
   ListEmissionsQuery,
   VoteConfirmBodyDto,
@@ -36,6 +40,13 @@ export interface EmissionApi {
     editionId: string,
     params?: ListEditionCandidatesQuery,
   ): Promise<EditionCandidatesEnvelopeDto>
+  listCategories(
+    params: ListEmissionCategoriesQuery,
+  ): Promise<EmissionCategoriesEnvelopeDto>
+  applyToEdition(
+    editionId: string,
+    body: ApplyToEditionBodyDto,
+  ): Promise<ApplyToEditionEnvelopeDto>
   getCandidateById(candidateId: string): Promise<EmissionCandidateDetailEnvelopeDto>
   initiateCandidateVote(
     candidateId: string,
@@ -119,6 +130,26 @@ export function createEmissionApi(
           limit: params?.limit,
           tagId: params?.tagId,
         },
+      })
+    },
+
+    listCategories(params) {
+      return http.request<EmissionCategoriesEnvelopeDto>({
+        method: 'GET',
+        path: paths.categories(),
+        query: {
+          editionId: params.editionId,
+          page: params.page,
+          limit: params.limit,
+        },
+      })
+    },
+
+    applyToEdition(editionId, body) {
+      return http.request<ApplyToEditionEnvelopeDto>({
+        method: 'POST',
+        path: paths.editionApply(editionId),
+        body,
       })
     },
 

@@ -13,6 +13,8 @@ const SUBPAGE_PREFIXES = [
   '/contact',
   '/connexion',
   '/profil',
+  '/showroom',
+  '/vote',
 ] as const
 
 export function Navbar() {
@@ -30,11 +32,9 @@ export function Navbar() {
 
   const navLinks = [
     { href: `${homePrefix}accueil`, label: 'Accueil' },
-    { href: '/metiers', label: 'Métiers' },
     { href: '/competition', label: 'Compétition' },
     { href: '/actualites', label: 'Actualités' },
     { href: '/partenariat', label: 'Partenariat' },
-    { href: '/contact', label: 'Contact' },
     candidateLoggedIn
       ? { href: '/profil', label: 'Profil' }
       : { href: '/connexion', label: 'Connexion' },
@@ -68,6 +68,14 @@ export function Navbar() {
     }
     if (href === '/actualites') {
       return pathname === '/actualites' || pathname.startsWith('/actualites/')
+    }
+    if (href === '/partenariat') {
+      return (
+        pathname === '/partenariat' ||
+        pathname.startsWith('/partenariat/') ||
+        pathname === '/contact' ||
+        pathname.startsWith('/contact/')
+      )
     }
     return pathname === href || pathname.startsWith(`${href}/`)
   }
@@ -118,25 +126,8 @@ export function Navbar() {
               </a>
             </li>
           ))}
-          <li className="site-navbar__item--mobile-only">
-            <a
-              className={`site-navbar__link${isLinkActive('/billetterie') ? ' site-navbar__link--active' : ''}`}
-              href="/billetterie"
-              onClick={() => setMenuOpen(false)}
-            >
-              Bielleterie
-            </a>
-          </li>
         </ul>
       </nav>
-
-      <a
-        className={`site-navbar__ticket-btn${isLinkActive('/billetterie') ? ' site-navbar__ticket-btn--active' : ''}`}
-        href="/billetterie"
-        onClick={() => setMenuOpen(false)}
-      >
-        Bielleterie
-      </a>
     </header>
   )
 }

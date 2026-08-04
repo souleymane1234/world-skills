@@ -1,6 +1,8 @@
 import type {
+  ApplyToEditionBodyDto,
   ListEditionCandidatesQuery,
   ListEditionRankingQuery,
+  ListEmissionCategoriesQuery,
   ListEmissionEditionsQuery,
   ListEmissionsQuery,
 } from './api/modules/emission/emission.types'
@@ -54,6 +56,12 @@ export const emissionRequest = {
   },
   getEditionCandidates(editionId: string, params?: ListEditionCandidatesQuery) {
     return throttled(() => emissionApi.getEditionCandidates(editionId, params))
+  },
+  listCategories(params: ListEmissionCategoriesQuery) {
+    return throttled(() => emissionApi.listCategories(params))
+  },
+  applyToEdition(editionId: string, body: ApplyToEditionBodyDto) {
+    return throttled(() => emissionApi.applyToEdition(editionId, body))
   },
   getCandidateById(candidateId: string) {
     return throttled(() => emissionApi.getCandidateById(candidateId))

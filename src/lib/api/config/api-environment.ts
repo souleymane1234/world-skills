@@ -25,7 +25,7 @@ export function buildApiEnvironment(overrides?: Partial<ApiEnvironment>): ApiEnv
   const baseUrlRaw =
     overrides?.baseUrl ??
     readEnvString('VITE_API_BASE_URL') ??
-    'https://missplayce-dev.up.railway.app'
+    'https://world-skills-dev.up.railway.app'
 
   const timeoutMs = overrides?.timeoutMs ?? readEnvInt('VITE_API_TIMEOUT_MS', 30_000)
 

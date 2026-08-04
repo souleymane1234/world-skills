@@ -64,6 +64,7 @@ export interface EmissionCategoryTagDto {
   categoryId: string;
   name: string;
   code: string;
+  imageUrl?: string | null;
   active: boolean;
   sortOrder: number;
 }
@@ -72,6 +73,7 @@ export interface EmissionCategoryDto {
   id: string;
   name: string;
   code: string;
+  imageUrl?: string | null;
   active: boolean;
   sortOrder: number;
   tags: EmissionCategoryTagDto[];
@@ -178,7 +180,10 @@ export interface EmissionNestedEditionDto {
   title: string;
   imageUrl?: string | null;
   candidaturePrice?: number | null;
+  maxCandidates?: number | null;
   quizPrice?: number | null;
+  /** Montant FCFA d’un vote (édition). */
+  voteAmountPerVote?: number | null;
   quizEnabled?: boolean;
   dailyFreeQuizAttempts?: number;
   requireDocuments?: boolean;
@@ -202,8 +207,10 @@ export interface EmissionNestedEditionDto {
   previewCandidates?: EditionPreviewCandidateDto[];
   candidatesCount?: number;
   hasApplied?: boolean;
-  applicationStatus?: string | null;
+  applicationStatus?: "EN_ATTENTE" | "VALIDE" | "REFUSEE" | null;
   isAccepted?: boolean;
+  /** UUID candidature de l’utilisateur connecté (JWT), sinon null. */
+  myCandidateId?: string | null;
 }
 
 export interface EmissionListItemDto {
@@ -211,13 +218,17 @@ export interface EmissionListItemDto {
   title: string;
   imageUrl?: string | null;
   logoUrl?: string | null;
-  socialLinks?: EmissionSocialLinkDto[];
+  socialLinks?: EmissionSocialLinkDto[] | null;
   status?: string;
   description: string;
   pointsPerVote: number;
   isActive: boolean;
   isPublic: boolean;
   adminApprovedAt?: string | null;
+  awaitingAdminApproval?: boolean;
+  canPublishEditions?: boolean;
+  isCatalogVisible?: boolean;
+  allowedCountries?: string[];
   createdAt: string;
   updatedAt: string;
   video: VideoDto | null;
@@ -247,6 +258,7 @@ export interface EmissionActiveEditionDto {
   quizEnabled?: boolean;
   dailyFreeQuizAttempts?: number;
   requireDocuments?: boolean;
+  isPaidEdition?: boolean;
   hasQuizzes?: boolean;
   quizzes?: EditionQuizSummaryDto[] | null;
   status: string;
@@ -316,6 +328,8 @@ export interface ListPeopleGroupsQuery {
 }
 
 export interface ListEmissionCategoriesQuery {
+  /** Obligatoire — seules les catégories autorisées pour cette édition sont renvoyées. */
+  editionId: string;
   page?: number;
   limit?: number;
 }
@@ -328,46 +342,68 @@ export interface ListEmissionTagsQuery {
 
 /** POST /emission/editions/:editionId/apply */
 export interface ApplyToEditionBodyDto {
-  pseudo: string;
-  candidateName: string;
-  candidatePreName: string;
+  pseudo: string
+  candidateName: string
+  candidatePreName: string
   /** API field name (ISO date, ex: 2002-05-18). */
-  age: string;
-  candidatePicture: string;
-  description: string;
-  videoId: string;
-  countryId: string;
-  residenceCountryId: string;
-  categoryId: string;
-  tagId: string;
+  age: string
+  candidatePicture: string
+  description: string
+  videoId: string
+  countryId: string
+  residenceCountryId: string
+  categoryId: string
+  tagId: string
   /** Documents justificatifs (CNI, autorisation, etc.) quand l'édition les exige. */
-  documentUrls?: string[];
+  documentUrls?: string[]
+  /** Paiement — uniquement si édition payante (candidaturePrice > 0). */
+  provider?: 'ORANGE' | 'MOOV' | 'MTN' | 'WAVE'
+  phoneNumber?: string
+  otp?: string
+  invitationCode?: string
+}
+
+export interface ApplyPaymentDto {
+  id: string
+  transactionType?: string
+  provider?: string
+  amount?: number
+  status?: string
+  reference?: string | null
+  phoneNumber?: string | null
+  paymentUrl?: string | null
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface ApplyToEditionResponseDto {
-  id: string;
-  editionId: string;
-  video?: VideoDto | null;
-  candidatePicture: string;
-  description: string;
-  candidateName?: string;
-  candidatePreName?: string;
-  countryId?: string;
-  countryName?: string;
-  residenceCountryId?: string;
-  residenceCountry?: string;
-  status: string;
-  isFinalist?: boolean;
-  totalVotes?: number;
-  finalistVotes?: number;
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  editionId: string
+  video?: VideoDto | null
+  candidatePicture: string
+  description: string
+  candidateName?: string
+  candidatePreName?: string
+  countryId?: string
+  countryName?: string
+  residenceCountryId?: string
+  residenceCountry?: string
+  status: string
+  isFinalist?: boolean
+  totalVotes?: number
+  finalistVotes?: number
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ApplyToEditionEnvelopeDto {
-  success: boolean;
-  message: string;
-  data: ApplyToEditionResponseDto;
+  success: boolean
+  message: string
+  data: ApplyToEditionResponseDto
+  payment?: ApplyPaymentDto | null
+  paymentRequired?: boolean
+  paymentConfirmed?: boolean
+  nextAction?: string | null
 }
 
 export interface EditionCandidateUserDto {
@@ -380,6 +416,12 @@ export interface EditionCandidateUserDto {
   age?: number | null;
   /** ISO date — utilisé pour calculer l’âge si `age` est absent. */
   dateOfBirth?: string | null;
+}
+
+/** Catégorie + tags autorisés sur une édition (GET /editions/:id). */
+export interface EditionCandidateCategoryDto {
+  category: Omit<EmissionCategoryDto, 'tags'>
+  tags: EmissionCategoryTagDto[]
 }
 
 /** Candidature rattachée à une édition (GET /emission/editions/:id). */
@@ -403,33 +445,45 @@ export interface EditionCandidateDto {
   totalVotes: number;
   finalistVotes: number;
   quizPoints?: number;
+  totalPoints?: number;
   createdAt: string;
   updatedAt: string;
   user: EditionCandidateUserDto;
   /** Référentiel candidature (si inclus par l’API). */
-  category?: { id: string; name: string } | null;
-  tag?: { id: string; name: string } | null;
+  category?: (Omit<EmissionCategoryDto, 'tags'> & { tags?: EmissionCategoryTagDto[] }) | null;
+  tag?: EmissionCategoryTagDto | null;
 }
 
 /** GET /emission/candidates/:id — candidat + édition imbriquée. */
 export interface EmissionCandidateDetailDto {
   id: string;
   editionId: string;
+  userId?: string;
   video?: VideoDto | null;
   videoId?: string | null;
   candidatePicture: string;
   description: string;
+  candidateName?: string;
+  candidatePreName?: string;
+  documentUrls?: string[] | null;
+  countryId?: string;
+  countryName?: string;
+  residenceCountryId?: string;
+  residenceCountry?: string;
+  age?: number | null;
   status: string;
   isFinalist: boolean;
   totalVotes: number;
   finalistVotes?: number;
+  quizPoints?: number;
+  totalPoints?: number;
   createdAt: string;
   updatedAt: string;
   user: EditionCandidateUserDto;
   edition: EditionRankingEditionMetaDto;
   /** Référentiel candidature (si inclus par l’API). */
-  category?: { id: string; name: string } | null;
-  tag?: { id: string; name: string } | null;
+  category?: (Omit<EmissionCategoryDto, 'tags'> & { tags?: EmissionCategoryTagDto[] }) | null;
+  tag?: EmissionCategoryTagDto | null;
 }
 
 export interface EmissionCandidateDetailEnvelopeDto {
@@ -446,7 +500,9 @@ export interface EditionFullDetailDto {
   title: string;
   imageUrl?: string | null;
   candidaturePrice?: number | null;
+  maxCandidates?: number | null;
   quizPrice?: number | null;
+  voteAmountPerVote?: number | null;
   quizEnabled?: boolean;
   dailyFreeQuizAttempts?: number;
   requireDocuments?: boolean;
@@ -460,16 +516,21 @@ export interface EditionFullDetailDto {
   sponsors: EditionSponsorDto[];
   video?: VideoDto | null;
   status: string;
+  isPublic?: boolean;
   currentStage: string;
   finalistsCount?: number | null;
   isActive: boolean;
   startDate: string;
   endDate: string;
+  stageStartDate?: string | null;
+  stageEndDate?: string | null;
   createdAt: string;
   updatedAt: string;
   hasApplied?: boolean;
   applicationStatus?: "EN_ATTENTE" | "VALIDE" | "REFUSEE" | null;
   isAccepted: boolean;
+  myCandidateId?: string | null;
+  candidateCategories?: EditionCandidateCategoryDto[];
   candidates: EditionCandidateDto[];
   finalists: EditionCandidateDto[];
 }
@@ -480,29 +541,38 @@ export interface EditionFullDetailEnvelopeDto {
   data: EditionFullDetailDto;
 }
 
-/** Métadonnées d’édition renvoyées avec le classement. */
+/** Métadonnées d’édition renvoyées avec le classement / détail candidat. */
 export interface EditionRankingEditionMetaDto {
   id: string;
   title: string;
   imageUrl?: string | null;
   candidaturePrice?: number | null;
+  maxCandidates?: number | null;
   quizPrice?: number | null;
+  voteAmountPerVote?: number | null;
   quizEnabled?: boolean;
   dailyFreeQuizAttempts?: number;
   requireDocuments?: boolean;
   hasQuizzes?: boolean;
   quizzes?: EditionQuizSummaryDto[] | null;
   isPaidEdition?: boolean;
+  isPublic?: boolean;
   status: string;
   currentStage: string;
   startDate: string;
   endDate: string;
+  stageStartDate?: string | null;
+  stageEndDate?: string | null;
   createdAt: string;
   lots: EditionLotDto[];
   gameRules: string;
   principles: string;
   sponsors: EditionSponsorDto[];
   video?: VideoDto | null;
+  hasApplied?: boolean;
+  applicationStatus?: "EN_ATTENTE" | "VALIDE" | "REFUSEE" | null;
+  isAccepted?: boolean;
+  myCandidateId?: string | null;
 }
 
 /** Entrée de classement : même schéma candidat + rang officiel. */

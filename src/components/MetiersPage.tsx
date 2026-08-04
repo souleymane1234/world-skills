@@ -1,24 +1,53 @@
 import { useMemo, useState } from 'react'
-import { getSkillImageCandidates, SKILL_CATEGORY_LABELS, SKILLS } from '../data/skills'
+import { getSkillImageCandidates, SKILLS } from '../data/skills'
+import {
+  useActiveEditionId,
+  useEmissionCategories,
+} from '../hooks/use-emission-queries'
 import { HeroVideo } from './HeroVideo'
 import { SectionBridge } from './SectionBridge'
 import './MetiersPage.css'
 import './ConcoursPage.css'
 
-const CATEGORIES = Object.keys(SKILL_CATEGORY_LABELS) as Array<keyof typeof SKILL_CATEGORY_LABELS>
-const CATEGORY_META: Record<
-  (typeof CATEGORIES)[number],
-  { emoji: string; className: string }
-> = {
-  'technologie-tertiaire': { emoji: '📈', className: 'metiers-page__category-title--tertiaire' },
-  'hotellerie-agroalimentaire': { emoji: '🍽️', className: 'metiers-page__category-title--hotellerie' },
-  'technologie-industrielle': { emoji: '⚙️', className: 'metiers-page__category-title--industrielle' },
-  'arts-mode-esthetique': { emoji: '🎨', className: 'metiers-page__category-title--arts' },
-  batiment: { emoji: '🏗️', className: 'metiers-page__category-title--batiment' },
+const CATEGORY_STYLES = [
+  { emoji: '📈', className: 'metiers-page__category-title--tertiaire' },
+  { emoji: '🍽️', className: 'metiers-page__category-title--hotellerie' },
+  { emoji: '⚙️', className: 'metiers-page__category-title--industrielle' },
+  { emoji: '🎨', className: 'metiers-page__category-title--arts' },
+  { emoji: '🏗️', className: 'metiers-page__category-title--batiment' },
+] as const
+
+function normalizeLabel(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
 }
 
-function SkillCardImage({ id, name, alt }: { id: string; name: string; alt: string }) {
-  const candidates = useMemo(() => getSkillImageCandidates(id, name), [id, name])
+function resolveLocalSkillId(tagName: string): string | null {
+  const byName = SKILLS.find(
+    (skill) => normalizeLabel(skill.name) === normalizeLabel(tagName),
+  )
+  return byName?.id ?? null
+}
+
+function SkillCardImage({
+  name,
+  imageUrl,
+  alt,
+}: {
+  name: string
+  imageUrl?: string | null
+  alt: string
+}) {
+  const candidates = useMemo(() => {
+    const remote = imageUrl?.trim() ? [imageUrl.trim()] : []
+    const localId = resolveLocalSkillId(name)
+    const local = localId ? getSkillImageCandidates(localId, name) : []
+    return [...remote, ...local, '/logo-worldskills.svg']
+  }, [name, imageUrl])
   const [index, setIndex] = useState(0)
   const src = candidates[index] ?? '/logo-worldskills.svg'
 
@@ -39,6 +68,13 @@ function SkillCardImage({ id, name, alt }: { id: string; name: string; alt: stri
 }
 
 export function MetiersPage() {
+  const activeEditionQuery = useActiveEditionId()
+  const categoriesQuery = useEmissionCategories(activeEditionQuery.data ?? null)
+  const categories = categoriesQuery.data ?? []
+  const isLoading = activeEditionQuery.isLoading || categoriesQuery.isLoading
+  const isError = activeEditionQuery.isError || categoriesQuery.isError
+  const totalTags = categories.reduce((sum, category) => sum + category.tags.length, 0)
+
   return (
     <main className="concours-page metiers-page" aria-labelledby="metiers-title">
       <HeroVideo
@@ -50,38 +86,73 @@ export function MetiersPage() {
       <section className="concours-page__stack">
         <section className="concours-page__section">
           <div className="concours-page__inner metiers-page__intro">
-            <p className="concours-page__eyebrow">25 disciplines</p>
+            <p className="concours-page__eyebrow">
+              {totalTags > 0 ? `${totalTags} disciplines` : 'Disciplines'}
+            </p>
             <h1 id="metiers-title">Olympiades des métiers 2026</h1>
             <p className="concours-page__lead">
-              Chaque métier est présenté sous forme de fiche avec son visuel,
-              son titre et sa catégorie professionnelle.
+              Domaines et métiers issus du référentiel officiel de l&apos;édition
+              active.
             </p>
           </div>
         </section>
 
-        {CATEGORIES.map((category) => {
-          const items = SKILLS.filter((skill) => skill.category === category)
-          if (items.length === 0) return null
-          const meta = CATEGORY_META[category]
+        {isLoading ? (
+          <section className="concours-page__section">
+            <div className="concours-page__inner">
+              <p className="metiers-page__note">Chargement des domaines et métiers…</p>
+            </div>
+          </section>
+        ) : null}
+
+        {isError && categories.length === 0 ? (
+          <section className="concours-page__section">
+            <div className="concours-page__inner">
+              <p className="metiers-page__note">
+                Impossible de charger les métiers pour le moment. Réessayez plus tard.
+              </p>
+            </div>
+          </section>
+        ) : null}
+
+        {!isLoading && !isError && categories.length === 0 ? (
+          <section className="concours-page__section">
+            <div className="concours-page__inner">
+              <p className="metiers-page__note">
+                Aucun domaine / métier n&apos;est encore publié pour cette édition.
+              </p>
+            </div>
+          </section>
+        ) : null}
+
+        {categories.map((category, categoryIndex) => {
+          if (category.tags.length === 0) return null
+          const meta = CATEGORY_STYLES[categoryIndex % CATEGORY_STYLES.length]
 
           return (
-            <section key={category} className="concours-page__section metiers-page__cards-section">
+            <section
+              key={category.id}
+              className="concours-page__section metiers-page__cards-section"
+            >
               <div className="concours-page__inner">
                 <h2 className={`metiers-page__category-title ${meta.className}`}>
                   <span className="metiers-page__category-emoji" aria-hidden="true">
                     {meta.emoji}
                   </span>{' '}
-                  {SKILL_CATEGORY_LABELS[category]}
+                  {category.name}
                 </h2>
                 <div className="metiers-page__cards-grid">
-                  {items.map((skill) => (
-                    <article key={skill.id} className="metiers-page__card">
-                      <SkillCardImage id={skill.id} name={skill.name} alt={skill.name} />
+                  {category.tags.map((tag) => (
+                    <article key={tag.id} className="metiers-page__card">
+                      <SkillCardImage
+                        name={tag.name}
+                        imageUrl={tag.imageUrl}
+                        alt={tag.name}
+                      />
                       <div className="metiers-page__card-body">
-                        <h3 className="metiers-page__card-title">{skill.name}</h3>
+                        <h3 className="metiers-page__card-title">{tag.name}</h3>
                         <p className="metiers-page__card-category">
-                          <span aria-hidden="true">{meta.emoji}</span>{' '}
-                          {SKILL_CATEGORY_LABELS[skill.category]}
+                          <span aria-hidden="true">{meta.emoji}</span> {category.name}
                         </p>
                       </div>
                     </article>

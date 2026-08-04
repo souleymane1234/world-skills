@@ -1,57 +1,226 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
+  FaBriefcase,
+  FaEnvelope,
+  FaIdCard,
+  FaTrophy,
+  FaArrowRight,
+} from 'react-icons/fa6'
+import { ApiHttpError } from '../lib/api'
+import type { StudentProfileResponseDto } from '../lib/api/modules/profile'
+import {
+  clearAuthSession,
+  getAccessToken,
   getAuthEventName,
-  getCandidateAccount,
-  isCandidateLoggedIn,
-  logoutCandidate,
-  updateCandidateProfile,
-  type CandidateProfile,
-} from '../lib/candidate-auth'
-import './AuthPages.css'
+  getAuthUser,
+  isApiLoggedIn,
+  setAuthSession,
+} from '../lib/auth-session'
+import { isCandidateLoggedIn, logoutCandidate } from '../lib/candidate-auth'
+import { profileApi } from '../services/api-client'
+import './ProfilPage.css'
 
-function profileToTextarea(list: string[]): string {
-  return list.join('\n')
+type ProfileForm = {
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string
+  city: string
+  country: string
+  gender: string
+  nationality: string
+  address: string
+  dateOfBirth: string
+  academicLevel: string
+  bio: string
+  videoPresentationUrl: string
+  profileImage: string
+  interests: string
 }
 
-function normalizeProfile(profile: CandidateProfile): CandidateProfile {
+type ProfileSection = 'infos' | 'contact' | 'participation' | 'interests'
+
+const SECTIONS: {
+  id: ProfileSection
+  label: string
+  title: string
+  desc: string
+  icon: typeof FaIdCard
+}[] = [
+  {
+    id: 'infos',
+    label: 'Infos personnelles',
+    title: 'Infos personnelles',
+    desc: 'Identité et informations de base pour votre dossier candidat.',
+    icon: FaIdCard,
+  },
+  {
+    id: 'contact',
+    label: 'Contact',
+    title: 'Coordonnées',
+    desc: 'Comment le comité peut vous joindre rapidement.',
+    icon: FaEnvelope,
+  },
+  {
+    id: 'participation',
+    label: 'Parcours',
+    title: 'Parcours',
+    desc: 'Niveau académique et présentation pour la compétition.',
+    icon: FaBriefcase,
+  },
+  {
+    id: 'interests',
+    label: 'Centres d’intérêt',
+    title: 'Centres d’intérêt',
+    desc: 'Sujets et compétences qui valorisent votre parcours.',
+    icon: FaTrophy,
+  },
+]
+
+function toDateInputValue(value: string | null | undefined): string {
+  if (!value) return ''
+  const match = /^(\d{4}-\d{2}-\d{2})/.exec(value)
+  return match?.[1] ?? ''
+}
+
+function mapGenderToUi(value: string | null | undefined): string {
+  if (!value) return ''
+  const v = value.trim().toUpperCase()
+  if (v === 'M' || v === 'HOMME') return 'M'
+  if (v === 'F' || v === 'FEMME') return 'F'
+  return value
+}
+
+function emptyForm(email = ''): ProfileForm {
   return {
-    title: profile.title ?? '',
-    fullName: profile.fullName ?? '',
-    email: profile.email ?? '',
-    phone: profile.phone ?? '',
-    city: profile.city ?? '',
-    country: profile.country ?? "Cote d'Ivoire",
-    gender: profile.gender ?? '',
-    preferredLanguage: profile.preferredLanguage ?? 'Francais',
-    address: profile.address ?? '',
-    birthDate: profile.birthDate ?? '',
-    school: profile.school ?? '',
-    bio: profile.bio ?? '',
-    realizations: profile.realizations ?? [],
+    firstName: '',
+    lastName: '',
+    email,
+    phoneNumber: '',
+    city: '',
+    country: "Côte d'Ivoire",
+    gender: '',
+    nationality: 'Ivoirienne',
+    address: '',
+    dateOfBirth: '',
+    academicLevel: '',
+    bio: '',
+    videoPresentationUrl: '',
+    profileImage: '',
+    interests: '',
   }
 }
 
-type ProfileSection = 'infos' | 'contact' | 'participation' | 'realisations'
+function formFromAuthUser(): ProfileForm {
+  const user = getAuthUser()
+  return {
+    ...emptyForm(user?.email ?? ''),
+    firstName: user?.firstName ?? '',
+    lastName: user?.lastName ?? '',
+    phoneNumber: user?.phoneNumber ?? '',
+    city: user?.city ?? '',
+    country: user?.country ?? "Côte d'Ivoire",
+    gender: mapGenderToUi(user?.gender),
+    nationality: user?.nationality ?? 'Ivoirienne',
+    address: user?.address ?? '',
+    dateOfBirth: toDateInputValue(user?.dateOfBirth),
+    academicLevel: user?.academicLevel ?? '',
+    bio: user?.bio ?? '',
+    profileImage: user?.profileImage ?? '',
+  }
+}
+
+function formFromApiProfile(
+  profile: StudentProfileResponseDto,
+  emailFallback: string,
+): ProfileForm {
+  return {
+    firstName: profile.firstName ?? '',
+    lastName: profile.lastName ?? '',
+    email: emailFallback,
+    phoneNumber: profile.phoneNumber ?? '',
+    city: profile.city ?? '',
+    country: profile.country ?? "Côte d'Ivoire",
+    gender: mapGenderToUi(profile.gender),
+    nationality: profile.nationality ?? '',
+    address: profile.address ?? '',
+    dateOfBirth: toDateInputValue(profile.dateOfBirth),
+    academicLevel: profile.academicLevel ?? '',
+    bio: profile.bio ?? '',
+    videoPresentationUrl: profile.videoPresentationUrl ?? '',
+    profileImage: profile.profileImage ?? '',
+    interests: (profile.interests ?? []).join('\n'),
+  }
+}
+
+function computeCompleteness(form: ProfileForm): number {
+  const checks = [
+    form.firstName,
+    form.lastName,
+    form.phoneNumber,
+    form.city,
+    form.dateOfBirth,
+    form.gender,
+    form.academicLevel,
+    form.bio,
+    form.address,
+    form.interests.trim(),
+  ]
+  const filled = checks.filter((v) => Boolean(String(v).trim())).length
+  return Math.round((filled / checks.length) * 100)
+}
+
+function displayName(form: ProfileForm): string {
+  const name = `${form.firstName} ${form.lastName}`.trim()
+  return name || 'Mon profil'
+}
+
+function syncAuthUserFromProfile(profile: StudentProfileResponseDto): void {
+  const token = getAccessToken()
+  const current = getAuthUser()
+  if (!token || !current) return
+  setAuthSession({
+    accessToken: token,
+    user: {
+      ...current,
+      firstName: profile.firstName ?? current.firstName,
+      lastName: profile.lastName ?? current.lastName,
+      phoneNumber: profile.phoneNumber ?? current.phoneNumber,
+      profileImage: profile.profileImage ?? current.profileImage,
+      studentProfileId: profile.id ?? current.studentProfileId,
+      bio: profile.bio ?? current.bio,
+      city: profile.city ?? current.city,
+      country: profile.country ?? current.country,
+      address: profile.address ?? current.address,
+      gender: profile.gender ?? current.gender,
+      nationality: profile.nationality ?? current.nationality,
+      dateOfBirth: profile.dateOfBirth ?? current.dateOfBirth,
+      academicLevel: profile.academicLevel ?? current.academicLevel,
+    },
+  })
+}
 
 export function ProfilPage() {
-  const [loggedIn, setLoggedIn] = useState(() => isCandidateLoggedIn())
-  const [saved, setSaved] = useState(false)
-  const [activeSection, setActiveSection] = useState<ProfileSection>('infos')
-  const account = useMemo(() => getCandidateAccount(), [loggedIn])
-  const [form, setForm] = useState<CandidateProfile | null>(
-    account?.profile ? normalizeProfile(account.profile) : null,
+  const [loggedIn, setLoggedIn] = useState(
+    () => isApiLoggedIn() || isCandidateLoggedIn(),
   )
-  const [realisationsText, setRealisationsText] = useState(
-    profileToTextarea(account?.profile.realizations ?? []),
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState('')
+  const [activeSection, setActiveSection] = useState<ProfileSection>('infos')
+  const [form, setForm] = useState<ProfileForm | null>(() =>
+    isApiLoggedIn() || isCandidateLoggedIn() ? formFromAuthUser() : null,
   )
 
   useEffect(() => {
     const onChanged = () => {
-      const nextLogged = isCandidateLoggedIn()
+      const nextLogged = isApiLoggedIn() || isCandidateLoggedIn()
       setLoggedIn(nextLogged)
-      const nextAccount = getCandidateAccount()
-      setForm(nextAccount?.profile ? normalizeProfile(nextAccount.profile) : null)
-      setRealisationsText(profileToTextarea(nextAccount?.profile.realizations ?? []))
+      if (!nextLogged) {
+        setForm(null)
+        setLoading(false)
+      }
     }
     window.addEventListener(getAuthEventName(), onChanged)
     window.addEventListener('storage', onChanged)
@@ -61,186 +230,298 @@ export function ProfilPage() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!loggedIn || !isApiLoggedIn()) {
+      setLoading(false)
+      return
+    }
+
+    let cancelled = false
+    setLoading(true)
+    setError('')
+
+    void (async () => {
+      try {
+        const profile = await profileApi.get()
+        if (cancelled) return
+        const email = getAuthUser()?.email ?? ''
+        setForm(formFromApiProfile(profile, email))
+        syncAuthUserFromProfile(profile)
+      } catch (err) {
+        if (cancelled) return
+        // 404 : profil pas encore créé — on garde le formulaire prérempli via auth.
+        if (ApiHttpError.isInstance(err) && err.status === 404) {
+          setForm((prev) => prev ?? formFromAuthUser())
+          return
+        }
+        setError(
+          ApiHttpError.isInstance(err)
+            ? err.message
+            : 'Impossible de charger le profil.',
+        )
+        setForm((prev) => prev ?? formFromAuthUser())
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [loggedIn])
+
   if (!loggedIn || !form) {
     return (
-      <main className="auth-page">
-        <section className="auth-page__shell">
-          <p className="auth-page__eyebrow">Espace candidat</p>
+      <main className="profil-page">
+        <div className="profil-page__gate">
+          <p className="profil-page__eyebrow">Espace candidat</p>
           <h1>Profil candidat</h1>
-          <p className="auth-page__lead">
-            Vous devez vous connecter avant d&apos;accéder à votre profil.
-          </p>
-          <a href="/connexion" className="auth-page__btn auth-page__btn--primary">
+          <p>Connectez-vous pour consulter et mettre à jour votre profil.</p>
+          <a href="/connexion" className="profil-page__btn profil-page__btn--primary">
             Aller à la connexion
           </a>
-        </section>
+        </div>
       </main>
     )
   }
 
+  const completeness = computeCompleteness(form)
+  const name = displayName(form)
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? '')
+    .join('')
+  const activeMeta = SECTIONS.find((s) => s.id === activeSection) ?? SECTIONS[0]
+  const metaBits = [form.academicLevel, form.city, form.country].filter(Boolean)
+
   return (
-    <main className="auth-page">
-      <section className="auth-page__shell auth-page__shell--profile">
+    <main className="profil-page">
+      <div className="profil-page__inner">
+        <header className="profil-page__hero" aria-labelledby="profil-hero-title">
+          <div className="profil-page__hero-inner">
+            {form.profileImage ? (
+              <img
+                className="profil-page__avatar profil-page__avatar--photo"
+                src={form.profileImage}
+                alt=""
+              />
+            ) : (
+              <div className="profil-page__avatar" aria-hidden="true">
+                {initials || 'C'}
+              </div>
+            )}
+            <div className="profil-page__hero-copy">
+              <p className="profil-page__eyebrow">Espace candidat</p>
+              <h1 id="profil-hero-title">{name}</h1>
+              <p className="profil-page__hero-meta">
+                {metaBits.length > 0
+                  ? metaBits.join(' · ')
+                  : 'Complétez votre profil pour préparer votre candidature.'}
+              </p>
+              <div className="profil-page__chips">
+                {form.email ? <span className="profil-page__chip">{form.email}</span> : null}
+                {form.nationality ? (
+                  <span className="profil-page__chip">{form.nationality}</span>
+                ) : null}
+                {form.gender === 'M' ? (
+                  <span className="profil-page__chip">Homme</span>
+                ) : null}
+                {form.gender === 'F' ? (
+                  <span className="profil-page__chip">Femme</span>
+                ) : null}
+              </div>
+              <div
+                className="profil-page__progress"
+                role="meter"
+                aria-valuenow={completeness}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Complétude du profil"
+              >
+                <div className="profil-page__progress-label">
+                  <span>Profil complété</span>
+                  <span>{completeness}%</span>
+                </div>
+                <div className="profil-page__progress-track">
+                  <div
+                    className="profil-page__progress-fill"
+                    style={{ width: `${completeness}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {loading ? (
+          <p className="profil-page__status">Chargement du profil…</p>
+        ) : null}
+        {error ? (
+          <p className="profil-page__status profil-page__status--error" role="alert">
+            {error}
+          </p>
+        ) : null}
+
         <form
-          className="auth-page__profile-layout"
-          onSubmit={(event) => {
+          className="profil-page__layout"
+          onSubmit={async (event) => {
             event.preventDefault()
-            const next: CandidateProfile = {
-              ...form,
-              fullName: form.fullName.trim(),
-              email: form.email.trim().toLowerCase(),
-              realizations: realisationsText
+            if (!isApiLoggedIn()) {
+              setError('Session expirée. Reconnectez-vous pour enregistrer.')
+              return
+            }
+            setSaving(true)
+            setSaved(false)
+            setError('')
+            try {
+              const interests = form.interests
                 .split('\n')
                 .map((line) => line.trim())
-                .filter(Boolean),
+                .filter(Boolean)
+              const updated = await profileApi.update({
+                firstName: form.firstName.trim() || undefined,
+                lastName: form.lastName.trim() || undefined,
+                phoneNumber: form.phoneNumber.trim() || undefined,
+                bio: form.bio.trim() || undefined,
+                videoPresentationUrl: form.videoPresentationUrl.trim() || undefined,
+                dateOfBirth: form.dateOfBirth || undefined,
+                gender: form.gender || undefined,
+                nationality: form.nationality.trim() || undefined,
+                address: form.address.trim() || undefined,
+                city: form.city.trim() || undefined,
+                country: form.country.trim() || undefined,
+                profileImage: form.profileImage.trim() || undefined,
+                interests,
+                academicLevel: form.academicLevel.trim() || undefined,
+              })
+              setForm(formFromApiProfile(updated, form.email))
+              syncAuthUserFromProfile(updated)
+              setSaved(true)
+              window.setTimeout(() => setSaved(false), 2200)
+            } catch (err) {
+              setError(
+                ApiHttpError.isInstance(err)
+                  ? err.message
+                  : 'Impossible d’enregistrer le profil.',
+              )
+            } finally {
+              setSaving(false)
             }
-            const ok = updateCandidateProfile(next)
-            if (!ok) return
-            setForm(next)
-            setSaved(true)
-            window.setTimeout(() => setSaved(false), 1800)
           }}
         >
-          <aside className="auth-page__profile-sidebar">
-            <h1>{form.fullName || 'Mon profil candidat'}</h1>
-            <div className="auth-page__profile-avatar" aria-hidden="true">
-              <span>{(form.fullName || 'C').slice(0, 1).toUpperCase()}</span>
-            </div>
-            <nav className="auth-page__profile-menu" aria-label="Sections du profil">
-              <button
-                type="button"
-                className={activeSection === 'infos' ? 'is-active' : ''}
-                onClick={() => setActiveSection('infos')}
-              >
-                Infos personnelles
-              </button>
-              <button
-                type="button"
-                className={activeSection === 'contact' ? 'is-active' : ''}
-                onClick={() => setActiveSection('contact')}
-              >
-                Contact
-              </button>
-              <button
-                type="button"
-                className={activeSection === 'participation' ? 'is-active' : ''}
-                onClick={() => setActiveSection('participation')}
-              >
-                Participation
-              </button>
-              <button
-                type="button"
-                className={activeSection === 'realisations' ? 'is-active' : ''}
-                onClick={() => setActiveSection('realisations')}
-              >
-                Realisations
-              </button>
+          <aside className="profil-page__sidebar">
+            <p className="profil-page__sidebar-label">Sections</p>
+            <nav className="profil-page__menu" aria-label="Sections du profil">
+              {SECTIONS.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={`profil-page__menu-btn${activeSection === id ? ' is-active' : ''}`}
+                  onClick={() => setActiveSection(id)}
+                >
+                  <span className="profil-page__menu-icon" aria-hidden="true">
+                    <Icon />
+                  </span>
+                  {label}
+                </button>
+              ))}
             </nav>
+            <div className="profil-page__sidebar-foot">
+              <p>Les métiers et candidatures se gèrent depuis la page Compétition.</p>
+              <a href="/competition" className="profil-page__link-comp">
+                Voir la compétition <FaArrowRight aria-hidden="true" />
+              </a>
+            </div>
           </aside>
 
-          <div className="auth-page__profile-content">
-            <header className="auth-page__profile-head">
-              <p className="auth-page__eyebrow">Espace candidat</p>
-              <p className="auth-page__lead">
-                Mettez a jour vos informations pour preparer votre candidature.
-              </p>
-            </header>
+          <div className="profil-page__content">
+            <section className="profil-page__panel" aria-labelledby="profil-panel-title">
+              <div className="profil-page__panel-head">
+                <h2 id="profil-panel-title">{activeMeta.title}</h2>
+                <p>{activeMeta.desc}</p>
+              </div>
 
-            {activeSection === 'infos' ? (
-              <section className="auth-page__profile-card">
-                <h2 className="auth-page__profile-card-title">Infos personnelles</h2>
-                <div className="auth-page__profile-rows">
-                  <label className="auth-page__profile-row">
-                    <span>Titre</span>
-                    <select
-                      value={form.title}
-                      onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    >
-                      <option value="">Selectionnez</option>
-                      <option value="M.">M.</option>
-                      <option value="Mme">Mme</option>
-                      <option value="Mlle">Mlle</option>
-                    </select>
-                  </label>
-                  <label className="auth-page__profile-row">
-                    <span>Nom complet</span>
+              {activeSection === 'infos' ? (
+                <div className="profil-page__fields">
+                  <label className="profil-page__field">
+                    <span>Prénom</span>
                     <input
-                      value={form.fullName}
-                      onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                      value={form.firstName}
+                      onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                       required
+                      autoComplete="given-name"
                     />
                   </label>
-                  <label className="auth-page__profile-row">
+                  <label className="profil-page__field">
+                    <span>Nom</span>
+                    <input
+                      value={form.lastName}
+                      onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                      required
+                      autoComplete="family-name"
+                    />
+                  </label>
+                  <label className="profil-page__field">
                     <span>Date de naissance</span>
                     <input
                       type="date"
-                      value={form.birthDate}
-                      onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
+                      value={form.dateOfBirth}
+                      onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
                     />
                   </label>
-                  <label className="auth-page__profile-row">
+                  <label className="profil-page__field">
                     <span>Genre</span>
                     <select
                       value={form.gender}
                       onChange={(e) => setForm({ ...form, gender: e.target.value })}
                     >
-                      <option value="">Selectionnez</option>
-                      <option value="Homme">Homme</option>
-                      <option value="Femme">Femme</option>
+                      <option value="">Sélectionnez</option>
+                      <option value="M">Homme</option>
+                      <option value="F">Femme</option>
                     </select>
                   </label>
-                  <label className="auth-page__profile-row">
+                  <label className="profil-page__field">
+                    <span>Nationalité</span>
+                    <input
+                      value={form.nationality}
+                      onChange={(e) => setForm({ ...form, nationality: e.target.value })}
+                    />
+                  </label>
+                  <label className="profil-page__field">
                     <span>Pays</span>
                     <input
                       value={form.country}
                       onChange={(e) => setForm({ ...form, country: e.target.value })}
                     />
                   </label>
-                  <label className="auth-page__profile-row">
-                    <span>Langue preferee</span>
-                    <select
-                      value={form.preferredLanguage}
-                      onChange={(e) =>
-                        setForm({ ...form, preferredLanguage: e.target.value })
-                      }
-                    >
-                      <option value="Francais">Francais</option>
-                      <option value="Anglais">Anglais</option>
-                    </select>
-                  </label>
                 </div>
-              </section>
-            ) : null}
+              ) : null}
 
-            {activeSection === 'contact' ? (
-              <section className="auth-page__profile-card">
-                <h2 className="auth-page__profile-card-title">Infos de contact</h2>
-                <div className="auth-page__profile-rows">
-                  <label className="auth-page__profile-row">
+              {activeSection === 'contact' ? (
+                <div className="profil-page__fields">
+                  <label className="profil-page__field">
                     <span>E-mail</span>
+                    <input type="email" value={form.email} disabled readOnly />
+                  </label>
+                  <label className="profil-page__field">
+                    <span>Téléphone</span>
                     <input
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      required
+                      value={form.phoneNumber}
+                      onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
+                      placeholder="Ex. : +2250102030405"
+                      autoComplete="tel"
                     />
                   </label>
-                  <label className="auth-page__profile-row">
-                    <span>Telephone</span>
-                    <input
-                      value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                      placeholder="Ex : 07 00 00 00 00"
-                    />
-                  </label>
-                  <label className="auth-page__profile-row">
+                  <label className="profil-page__field">
                     <span>Ville</span>
                     <input
                       value={form.city}
                       onChange={(e) => setForm({ ...form, city: e.target.value })}
                     />
                   </label>
-                  <label className="auth-page__profile-row">
+                  <label className="profil-page__field profil-page__field--full">
                     <span>Adresse</span>
                     <input
                       value={form.address}
@@ -249,70 +530,94 @@ export function ProfilPage() {
                     />
                   </label>
                 </div>
-              </section>
-            ) : null}
+              ) : null}
 
-            {activeSection === 'participation' ? (
-              <section className="auth-page__profile-card">
-                <h2 className="auth-page__profile-card-title">
-                  Infos et donnees de participation
-                </h2>
-                <div className="auth-page__profile-rows">
-                  <label className="auth-page__profile-row">
-                    <span>Etablissement</span>
+              {activeSection === 'participation' ? (
+                <div className="profil-page__fields">
+                  <label className="profil-page__field profil-page__field--full">
+                    <span>Niveau académique</span>
                     <input
-                      value={form.school}
-                      onChange={(e) => setForm({ ...form, school: e.target.value })}
+                      value={form.academicLevel}
+                      onChange={(e) => setForm({ ...form, academicLevel: e.target.value })}
+                      placeholder="Ex. : Licence 3, BTS, CAP…"
                     />
                   </label>
-                  <label className="auth-page__profile-row auth-page__profile-row--textarea">
-                    <span>Presentation personnelle</span>
+                  <label className="profil-page__field profil-page__field--full">
+                    <span>Présentation personnelle</span>
                     <textarea
-                      rows={4}
+                      rows={5}
                       value={form.bio}
                       onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                      placeholder="Decrivez votre parcours, votre motivation et votre niveau."
+                      placeholder="Décrivez votre parcours, votre motivation et votre niveau."
+                    />
+                  </label>
+                  <label className="profil-page__field profil-page__field--full">
+                    <span>Vidéo de présentation (URL)</span>
+                    <input
+                      type="url"
+                      value={form.videoPresentationUrl}
+                      onChange={(e) =>
+                        setForm({ ...form, videoPresentationUrl: e.target.value })
+                      }
+                      placeholder="https://…"
+                    />
+                  </label>
+                  <label className="profil-page__field profil-page__field--full">
+                    <span>Photo de profil (URL)</span>
+                    <input
+                      type="url"
+                      value={form.profileImage}
+                      onChange={(e) => setForm({ ...form, profileImage: e.target.value })}
+                      placeholder="https://…"
                     />
                   </label>
                 </div>
-              </section>
-            ) : null}
+              ) : null}
 
-            {activeSection === 'realisations' ? (
-              <section className="auth-page__profile-card">
-                <h2 className="auth-page__profile-card-title">Realisations (projets)</h2>
-                <label className="auth-page__profile-row auth-page__profile-row--textarea">
-                  <span>Une ligne par realisation</span>
-                  <textarea
-                    rows={6}
-                    value={realisationsText}
-                    onChange={(e) => setRealisationsText(e.target.value)}
-                    placeholder={'Ex :\nProjet domotique 2025\nStage technique 2024'}
-                  />
-                </label>
-              </section>
-            ) : null}
+              {activeSection === 'interests' ? (
+                <div className="profil-page__fields">
+                  <label className="profil-page__field profil-page__field--full">
+                    <span>Centres d’intérêt</span>
+                    <textarea
+                      rows={7}
+                      value={form.interests}
+                      onChange={(e) => setForm({ ...form, interests: e.target.value })}
+                      placeholder={'Ex. :\nInformatique\nProgrammation\nDesign'}
+                    />
+                    <p className="profil-page__hint">Une ligne par centre d’intérêt.</p>
+                  </label>
+                </div>
+              ) : null}
+            </section>
 
-            <div className="auth-page__actions auth-page__actions--profile">
-              <button type="submit" className="auth-page__btn auth-page__btn--primary">
-                Enregistrer mon profil
+            <div className="profil-page__actions">
+              <button
+                type="submit"
+                className="profil-page__btn profil-page__btn--primary"
+                disabled={saving || loading}
+              >
+                {saving ? 'Enregistrement…' : 'Enregistrer mon profil'}
               </button>
               <button
                 type="button"
-                className="auth-page__btn auth-page__btn--ghost"
+                className="profil-page__btn profil-page__btn--ghost"
                 onClick={() => {
+                  clearAuthSession()
                   logoutCandidate()
                   window.location.href = '/'
                 }}
               >
-                Se deconnecter
+                Se déconnecter
               </button>
+              {saved ? (
+                <p className="profil-page__toast" role="status">
+                  Profil enregistré.
+                </p>
+              ) : null}
             </div>
-
-            {saved ? <p className="auth-page__message">Profil enregistre.</p> : null}
           </div>
         </form>
-      </section>
+      </div>
     </main>
   )
 }

@@ -1,3 +1,4 @@
+import type { EmissionNestedEditionDto } from './api/modules/emission/emission.types'
 import type { EmissionListItemDto } from './api/modules/emission/emission.types'
 import { EMISSION_ID } from '../config/app-config'
 
@@ -29,4 +30,22 @@ export function resolveConfiguredEmissionId(
     if (forced) return forced
   }
   return pickLatestPublicEmission(items)
+}
+
+/**
+ * Édition « courante » depuis data[].editions de GET /emission.
+ * Préfère EN_COURS / publique, sinon la première du résumé.
+ */
+export function pickActiveNestedEdition(
+  editions: EmissionNestedEditionDto[] | null | undefined,
+): EmissionNestedEditionDto | null {
+  if (!editions?.length) return null
+  const publicOnes = editions.filter((e) => e.isPublic !== false)
+  const pool = publicOnes.length > 0 ? publicOnes : editions
+  return (
+    pool.find((e) => e.status === 'EN_COURS') ??
+    pool.find((e) => e.status === 'OUVERTE') ??
+    pool[0] ??
+    null
+  )
 }

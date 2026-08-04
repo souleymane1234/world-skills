@@ -8,13 +8,13 @@ import { ActualitesAccess } from './components/ActualitesAccess'
 import { ActualiteDetailPage } from './components/ActualiteDetailPage'
 import { ActualitesPage } from './components/ActualitesPage'
 import { ConcoursPage } from './components/ConcoursPage'
-import { MetiersPage } from './components/MetiersPage'
+import { CandidateShowroomPage } from './components/CandidateShowroomPage'
+import { VotePage } from './components/VotePage'
 import { PartenariatPage } from './components/PartenariatPage'
 import { PartnersTrustCarousel } from './components/PartnersTrustCarousel'
 import { AcademyPromo } from './components/AcademyPromo'
 import { PromoBanner } from './components/PromoBanner'
 import { SectionBridge } from './components/SectionBridge'
-import { ContactSection } from './components/ContactSection'
 import { ConnexionPage } from './components/ConnexionPage'
 import { ProfilPage } from './components/ProfilPage'
 import { Footer } from './components/Footer'
@@ -56,6 +56,22 @@ function App() {
     )
   }
 
+  if (pathname.startsWith('/showroom/')) {
+    return (
+      <PageShell>
+        <CandidateShowroomPage />
+      </PageShell>
+    )
+  }
+
+  if (pathname.startsWith('/vote/')) {
+    return (
+      <PageShell>
+        <VotePage />
+      </PageShell>
+    )
+  }
+
   if (
     pathname.startsWith('/competition') ||
     pathname.startsWith('/concours')
@@ -68,25 +84,19 @@ function App() {
   }
 
   if (pathname.startsWith('/metiers')) {
-    return (
-      <PageShell>
-        <MetiersPage />
-      </PageShell>
-    )
+    window.location.replace('/competition')
+    return null
+  }
+
+  if (pathname.startsWith('/contact')) {
+    window.location.replace('/partenariat#contact')
+    return null
   }
 
   if (pathname.startsWith('/partenariat')) {
     return (
       <PageShell>
         <PartenariatPage />
-      </PageShell>
-    )
-  }
-
-  if (pathname.startsWith('/contact')) {
-    return (
-      <PageShell>
-        <ContactSection />
       </PageShell>
     )
   }
