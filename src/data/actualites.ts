@@ -17,7 +17,7 @@ export const ACTUALITES: ActualiteItem[] = [
     title: 'Olympiades des métiers 5e édition',
     slug: 'olympiades-des-metiers-5e-edition',
     image:
-      'https://scontent.fabj3-2.fna.fbcdn.net/v/t39.30808-6/581435147_1141417824829922_7309119020482348035_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=CbF92XNDHF0Q7kNvwGj_gWv&_nc_oc=AdqaTDuJIwyXANKGNA_q3MTa-CzGwueRj1q4MKMOaKUu6qR7npT9zhn8wOm8bvq7Grvivgdvd5l1ZBHMW0IEWwqN&_nc_zt=23&_nc_ht=scontent.fabj3-2.fna&_nc_gid=EYb-EfQv0d4ishUVfu7daQ&_nc_ss=7b289&oh=00_Af-MMxwfSZa0kaGrhRZa3ebG4SySqk-V98vZI9UBOxpj7A&oe=6A2496DE',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTT7gNGjEq0bD-MCwHmyhNPMNnynD-89SU9c2I3ho9eu_uJr3KaKmsQUCai&s=10',
     source: 'METFPA',
     publishedAt: '2025-11-12',
     link: '',
@@ -28,24 +28,10 @@ export const ACTUALITES: ActualiteItem[] = [
   },
   {
     id: 2,
-    title: 'Annonce WorldSkillsCI 4e édition',
-    slug: 'annonce-worldskillsci-4e-edition',
-    image:
-      'https://scontent.fabj3-2.fna.fbcdn.net/v/t39.30808-6/581336319_1140874858217552_3207561049671607049_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=dfTeUCZrqUQQ7kNvwFTdDVv&_nc_oc=AdpYrmeqjCXdNEX8gGIN74sLVCfl-e5udCO7ovr5m7nxrR7Jl_H2tyFZ7KqpDwa5CIVTT5LMePCIgVP_KoHYlyk9&_nc_zt=23&_nc_ht=scontent.fabj3-2.fna&_nc_gid=HWSCUUh2Z3uplW_efiYXXA&_nc_ss=7b289&oh=00_Af_lHY08947fB6gu9iyOnj38mZ3FiOoSZVKJp_YMMOlkDg&oe=6A248250',
-    source: 'METFPA',
-    publishedAt: '2024-10-22',
-    link: '',
-    category: 'WorldSkills',
-    description: "Annonce officielle de la 4e édition des WorldSkills Côte d'Ivoire.",
-    content:
-      'La 4e édition des WorldSkills Côte d’Ivoire s’est tenue du 22 au 25 octobre 2024 au Parc des Expositions d’Abidjan.',
-  },
-  {
-    id: 3,
     title: 'Candidat MGH WorldSkills 2025',
     slug: 'candidat-mgh-worldskills-2025',
     image:
-      'https://scontent.fabj3-2.fna.fbcdn.net/v/t39.30808-6/589813197_875306375021917_3765662843297122933_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=5b-ZEanrb68Q7kNvwFSUBdA&_nc_oc=AdqZTt1YPU9n-FCkpzPXbum0q5HASUsUrDEWyk_15Hd0FdjLrDXLGWsvnrq3j6LfmYHSlkRhCz1gKZvdeI6Y9qjf&_nc_zt=23&_nc_ht=scontent.fabj3-2.fna&_nc_gid=pVvN13xjtEY5ANRLGLGrqw&_nc_ss=7b289&oh=00_Af8dIhhVQeaiPtiqSvfRlWuM2jhxJgmFrbSM-9p4xVgrzg&oe=6A247CD6',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5gLpuPkhH088f-iXdKZRLNti_EC9YvJ0LzDaswrwgnfvLp17j0cqTDK8C&s=10',
     source: 'LMGH',
     publishedAt: '2025-11-26',
     link: '',
@@ -55,21 +41,7 @@ export const ACTUALITES: ActualiteItem[] = [
       'Le Lycée Moderne d’Hôtellerie de Grand-Bassam présente ses candidats engagés dans les Olympiades des Métiers 2025.',
   },
   {
-    id: 5,
-    title: 'Vainqueurs WorldSkills 2022',
-    slug: 'vainqueurs-worldskills-2022',
-    image:
-      'https://scontent.fabj3-2.fna.fbcdn.net/v/t39.30808-6/593420727_879035687982319_1238062288344791554_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_ohc=1sE27v2rhwgQ7kNvwFnQ2Ek&_nc_oc=AdpgBtvOfDlpNyK49nTr7TWjJTMrZ6RXpVKI7jLoEGqtWQI_oUn4OXBcX3lZr0cmhv0AkoVFyuY6Py1KJxDyIFio&_nc_zt=23&_nc_ht=scontent.fabj3-2.fna&_nc_gid=P9FHkrsCTHcrpMSYJrdTYQ&_nc_ss=7b289&oh=00_Af8mLhjdLscCieNW0Wlq8yaEwWgsHd8TROUDS3Itqrz_rg&oe=6A248A09',
-    source: 'METFPA',
-    publishedAt: '2022-12-21',
-    link: '',
-    category: 'Résultats',
-    description: "Annonce des vainqueurs de l'édition 2022.",
-    content:
-      'Les meilleurs compétiteurs de l’édition 2022 ont été récompensés dans plusieurs catégories.',
-  },
-  {
-    id: 6,
+    id: 3,
     title: '68 équipes qualifiées pour les phases finales',
     slug: '68-equipes-qualifiees-phases-finales',
     image: 'https://www.fratmat.info/uploads/images/2024/11/09/217944.jpg',
@@ -82,7 +54,7 @@ export const ACTUALITES: ActualiteItem[] = [
       'Les présélections régionales ont permis de retenir 68 équipes pour les phases finales.',
   },
   {
-    id: 8,
+    id: 4,
     title: 'Olympiades arts et métiers Man',
     slug: 'olympiades-arts-et-metiers-man',
     image:
@@ -96,7 +68,7 @@ export const ACTUALITES: ActualiteItem[] = [
       'Les épreuves ont réuni plusieurs établissements techniques et professionnels autour de différentes disciplines.',
   },
   {
-    id: 9,
+    id: 5,
     title: 'Les Olympiades des métiers valorisent les talents des jeunes',
     slug: 'olympiades-des-metiers-valorisent-les-talents-des-jeunes',
     image: 'https://ivoire.ci/uploads/images/202511/image_870x_6929f98dd7d4f.jpg',
@@ -109,15 +81,15 @@ export const ACTUALITES: ActualiteItem[] = [
       'Les Olympiades des métiers ont pour objectif de révéler les talents et de valoriser les compétences professionnelles.',
   },
   {
-    id: 10,
+    id: 6,
     title: "WorldSkills Côte d'Ivoire 2024 : la DVS mobilise les entreprises",
     slug: 'worldskills-cote-divoire-2024-la-dvs-mobilise-les-entreprises',
     image:
-      'https://jdeditionsmagazine.tv/wp-content/uploads/2024/10/JD-Mag-Cote-dIvoire-Enseignement-Technique-Olympiades-des-Metiers-WorldSkills-Cote-dIvoire-2024-La-DVS-mobilise-les-entreprises.jpg',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRupc_56oSqVkCGIoVdgOR0fXjfFBBLffIZGA4Ifusep4tFJV0nbubqRzI&s=10',
     source: 'JD Éditions Magazine',
     publishedAt: '2024-10-24',
     link:
-      'https://jdeditionsmagazine.tv/wp-content/uploads/2024/10/JD-Mag-Cote-dIvoire-Enseignement-Technique-Olympiades-des-Metiers-WorldSkills-Cote-dIvoire-2024-La-DVS-mobilise-les-entreprises.jpg',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRupc_56oSqVkCGIoVdgOR0fXjfFBBLffIZGA4Ifusep4tFJV0nbubqRzI&s=10',
     category: 'Partenariat',
     description: 'Mobilisation des entreprises pour accompagner les compétiteurs.',
     content:
