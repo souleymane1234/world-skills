@@ -41,6 +41,17 @@
   }
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #4a5568;

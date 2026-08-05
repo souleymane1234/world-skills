@@ -1,5 +1,8 @@
 .concours-page {
   background: var(--bg);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 .concours-page--nav-offset {
@@ -182,7 +185,7 @@
 
 .concours-page__past-editions {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
   gap: 16px;
 }
 
@@ -319,7 +322,7 @@
 
 .concours-page__gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   gap: 14px;
 }
 
@@ -389,7 +392,7 @@
   text-align: left;
   cursor: pointer;
   padding: 0;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .concours-page__metier-card:hover {
@@ -409,7 +412,7 @@
 .concours-page__metier-badge {
   position: absolute;
   top: 4px;
-  right: -6px;
+  right: 6px;
   z-index: 2;
   margin: 0;
   padding: 6px 10px;
@@ -550,7 +553,7 @@
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
   gap: 14px;
 }
 

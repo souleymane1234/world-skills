@@ -1,6 +1,8 @@
 .site-promo-banner {
   width: 100%;
+  max-width: 100%;
   background: var(--bg);
+  overflow-x: clip;
 }
 
 .site-promo-banner--ws {

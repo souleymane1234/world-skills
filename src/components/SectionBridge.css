@@ -1,7 +1,9 @@
 .section-bridge {
   display: block;
   width: 100%;
+  max-width: 100%;
   flex-shrink: 0;
+  overflow-x: clip;
 }
 
 .section-bridge--wave {

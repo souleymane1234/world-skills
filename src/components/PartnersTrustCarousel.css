@@ -59,7 +59,7 @@
 
 .partners-trust__viewport {
   overflow: hidden;
-  margin: 0 -16px;
+  margin: 0;
   padding: 12px 0;
   mask-image: linear-gradient(
     90deg,

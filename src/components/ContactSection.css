@@ -1,5 +1,6 @@
 .ws-contact {
   width: 100%;
+  max-width: 100%;
   margin-top: 55px;
   margin-bottom: 32px;
   padding: clamp(32px, 5vw, 56px) clamp(16px, 4vw, 48px);
@@ -8,6 +9,7 @@
     color-mix(in srgb, var(--accent-bg) 30%, var(--bg));
   border-top: 1px solid var(--border);
   text-align: left;
+  overflow-x: clip;
 }
 
 .ws-contact__inner {
@@ -42,7 +44,7 @@
 
 .ws-contact__grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
 }
 
@@ -86,6 +88,7 @@
 .ws-contact__channels a {
   color: var(--ws-blue);
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .ws-contact__actions {
@@ -110,7 +113,8 @@
 .ws-contact__form input,
 .ws-contact__form select,
 .ws-contact__form textarea {
-  width: min(100%, 480px);
+  width: 100%;
+  max-width: 480px;
   font: inherit;
   color: var(--text);
   background: var(--bg);

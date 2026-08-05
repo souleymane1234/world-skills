@@ -1,9 +1,11 @@
 .ws-act {
   width: 100%;
+  max-width: 100%;
   padding: clamp(32px, 5vw, 56px) clamp(16px, 4vw, 48px);
   background: linear-gradient(135deg, var(--ws-blue-deep) 0%, var(--ws-blue) 55%, #0a4d8c 100%);
   color: #fff;
   text-align: left;
+  overflow-x: clip;
 }
 
 .ws-act__inner {

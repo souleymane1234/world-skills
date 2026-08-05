@@ -1,9 +1,11 @@
 .ws-skills-preview {
   width: 100%;
+  max-width: 100%;
   padding: clamp(28px, 4vw, 48px) clamp(16px, 4vw, 48px);
   background: var(--bg);
   border-top: 1px solid var(--border);
   text-align: left;
+  overflow-x: clip;
 }
 
 .ws-skills-preview__inner {
