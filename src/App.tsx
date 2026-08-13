@@ -101,7 +101,7 @@ function App() {
     )
   }
 
-  if (pathname.startsWith('/connexion')) {
+  if (pathname.startsWith('/connexion') || pathname.startsWith('/inscription')) {
     return <ConnexionPage />
   }
 

@@ -15,8 +15,22 @@ function splitFullName(fullName: string): { firstName: string; lastName: string 
   return { firstName: parts[0], lastName: parts.slice(1).join(' ') }
 }
 
+function getInitialAuthMode(): 'login' | 'register' {
+  const pathname = window.location.pathname
+  const mode = new URLSearchParams(window.location.search).get('mode')
+  if (pathname.startsWith('/inscription') || mode === 'register') return 'register'
+  return 'login'
+}
+
+function syncAuthUrl(mode: 'login' | 'register') {
+  const nextPath = mode === 'register' ? '/inscription' : '/connexion'
+  if (window.location.pathname !== nextPath) {
+    window.history.replaceState(null, '', nextPath)
+  }
+}
+
 export function ConnexionPage() {
-  const [mode, setMode] = useState<'login' | 'register'>('login')
+  const [mode, setMode] = useState<'login' | 'register'>(getInitialAuthMode)
   const [loggedIn, setLoggedIn] = useState(() => isCandidateLoggedIn())
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -108,6 +122,7 @@ export function ConnexionPage() {
                 onClick={() => {
                   setMode('login')
                   setMessage('')
+                  syncAuthUrl('login')
                 }}
               >
                 Connexion
@@ -120,6 +135,7 @@ export function ConnexionPage() {
                 onClick={() => {
                   setMode('register')
                   setMessage('')
+                  syncAuthUrl('register')
                 }}
               >
                 Inscription

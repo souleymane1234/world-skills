@@ -15,7 +15,7 @@ export function MissTradiDescription() {
           <div className="mtd-desc__headline-text">
             <p className="mtd-desc__eyebrow">À propos</p>
             <h2 id="mtd-desc-title" className="mtd-desc__title">
-              Miss Tradi Culture
+              worldskills-Côte d&apos;Ivoire
             </h2>
           </div>
           <a className="mtd-desc__cta-link" href="#concours">

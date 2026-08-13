@@ -98,7 +98,7 @@ export function CandidatureModal({ open, onClose }: CandidatureModalProps) {
             height={64}
           />
           <div>
-            <p className="candidature-modal__eyebrow">Miss Tradi Culture 2026</p>
+            <p className="candidature-modal__eyebrow">worldskills-Côte d&apos;Ivoire 2026</p>
             <h2 id={titleId} className="candidature-modal__title">
               Candidature
             </h2>

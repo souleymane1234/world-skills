@@ -1,4 +1,5 @@
 import type {
+  ApplyAsExpertBodyDto,
   ApplyToEditionBodyDto,
   ListEditionCandidatesQuery,
   ListEditionRankingQuery,
@@ -62,6 +63,9 @@ export const emissionRequest = {
   },
   applyToEdition(editionId: string, body: ApplyToEditionBodyDto) {
     return throttled(() => emissionApi.applyToEdition(editionId, body))
+  },
+  applyAsExpert(editionId: string, body?: ApplyAsExpertBodyDto) {
+    return throttled(() => emissionApi.applyAsExpert(editionId, body))
   },
   getCandidateById(candidateId: string) {
     return throttled(() => emissionApi.getCandidateById(candidateId))

@@ -9,7 +9,10 @@ type PromoBannerProps = {
   ctaLabel?: string
   ctaOnClick?: () => void
   showCta?: boolean
-  /** Message à la place du CTA (ex. candidature déjà soumise). */
+  secondaryCtaLabel?: string
+  secondaryCtaOnClick?: () => void
+  showSecondaryCta?: boolean
+  /** Message à la place du CTA principal (ex. candidature déjà soumise). */
   statusNotice?: string | null
   criteria?: readonly string[]
   criteriaTitle?: string
@@ -23,12 +26,18 @@ export function PromoBanner({
   ctaLabel = 'Découvrir le programme',
   ctaOnClick,
   showCta = true,
+  secondaryCtaLabel = 'Devenir expert',
+  secondaryCtaOnClick,
+  showSecondaryCta = false,
   statusNotice,
   criteria,
   criteriaTitle = 'Conditions de participation',
   children,
 }: PromoBannerProps) {
   const { ref, isVisible } = useRevealOnView<HTMLDivElement>()
+  const showPrimary = Boolean(showCta && !statusNotice)
+  const showSecondary = Boolean(showSecondaryCta && secondaryCtaOnClick)
+  const showActions = Boolean(statusNotice || showPrimary || showSecondary)
 
   return (
     <div
@@ -53,24 +62,38 @@ export function PromoBanner({
             </ul>
           </div>
         ) : null}
-        {statusNotice ? (
-          <p className="site-promo-banner__status" role="status">
-            {statusNotice}
-          </p>
-        ) : showCta ? (
-          ctaOnClick ? (
-            <button
-              type="button"
-              className="site-promo-banner__cta site-promo-banner__cta--button"
-              onClick={ctaOnClick}
-            >
-              {ctaLabel}
-            </button>
-          ) : (
-            <a className="site-promo-banner__cta" href={ctaHref}>
-              {ctaLabel}
-            </a>
-          )
+        {showActions ? (
+          <div className="site-promo-banner__actions">
+            {statusNotice ? (
+              <p className="site-promo-banner__status" role="status">
+                {statusNotice}
+              </p>
+            ) : null}
+            {showPrimary ? (
+              ctaOnClick ? (
+                <button
+                  type="button"
+                  className="site-promo-banner__cta site-promo-banner__cta--button"
+                  onClick={ctaOnClick}
+                >
+                  {ctaLabel}
+                </button>
+              ) : (
+                <a className="site-promo-banner__cta" href={ctaHref}>
+                  {ctaLabel}
+                </a>
+              )
+            ) : null}
+            {showSecondary ? (
+              <button
+                type="button"
+                className="site-promo-banner__cta site-promo-banner__cta--secondary site-promo-banner__cta--button"
+                onClick={secondaryCtaOnClick}
+              >
+                {secondaryCtaLabel}
+              </button>
+            ) : null}
+          </div>
         ) : null}
       </div>
     </div>

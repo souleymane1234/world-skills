@@ -25,10 +25,17 @@ export function ContactSection({ embedded = false }: ContactSectionProps) {
               <li>
                 <strong>E-mail</strong>
                 <a href="mailto:contact@worldskills.ci">contact@worldskills.ci</a>
+                <a href="mailto:worldskills@ongreveletontalent.com">
+                  worldskills@ongreveletontalent.com
+                </a>
               </li>
               <li>
                 <strong>Lieu de la finale</strong>
                 <span>Parc des Expositions d&apos;Abidjan</span>
+              </li>
+              <li>
+                <strong>ONG</strong>
+                <span>Révèle Ton Talent</span>
               </li>
               <li>
                 <strong>Ministère</strong>

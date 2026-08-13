@@ -1,10 +1,8 @@
 import './PartnersTrustCarousel.css'
 
-const TRUST_LOGO_COUNT = 10
-
-const TRUST_LOGOS = Array.from({ length: TRUST_LOGO_COUNT }, (_, i) => ({
-  id: `port-${i + 1}`,
-  src: `/trustCaroussel/port-${i + 1}.png`,
+const TRUST_LOGOS = [1, 2, 10].map((n) => ({
+  id: `port-${n}`,
+  src: `/trustCaroussel/port-${n}.png`,
 }))
 
 type PartnersTrustCarouselProps = {
@@ -28,7 +26,7 @@ export function PartnersTrustCarousel({ includeAnchorId = true }: PartnersTrustC
             Nos partenaires
           </h2>
           <p className="partners-trust__intro">
-            Entreprises et structures qui soutiennent Miss Tradi Culture et
+            Entreprises et structures qui soutiennent worldskills-Côte d&apos;Ivoire et
             donnent de la visibilité à l&apos;édition.
           </p>
         </header>

@@ -37,7 +37,7 @@ export function AdventureSection() {
           <img
             className="adv-section__img"
             src={AFFICHE_SRC}
-            alt="Miss Tradi — comment postuler"
+            alt="worldskills-Côte d'Ivoire — comment postuler"
             loading="lazy"
             decoding="async"
           />

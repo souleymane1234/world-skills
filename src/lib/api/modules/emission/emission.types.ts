@@ -406,6 +406,44 @@ export interface ApplyToEditionEnvelopeDto {
   nextAction?: string | null
 }
 
+/** POST /emission/editions/:editionId/apply-expert */
+export interface ApplyAsExpertBodyDto {
+  categoryId?: string
+  tagId?: string
+  invitationCode?: string
+}
+
+export type EditionStaffRole = 'EXPERT' | 'JURY' | string
+export type EditionStaffStatus =
+  | 'EN_ATTENTE'
+  | 'ACCEPTE'
+  | 'REFUSE'
+  | string
+
+export interface EditionStaffDto {
+  id: string
+  editionId: string
+  userId: string
+  staffRole: EditionStaffRole
+  categoryId?: string | null
+  tagId?: string | null
+  category?: unknown
+  tag?: unknown
+  status: EditionStaffStatus
+  rejectionReason?: string | null
+  reviewedBy?: string | null
+  reviewedAt?: string | null
+  createdAt: string
+  updatedAt: string
+  user?: unknown
+}
+
+export interface ApplyAsExpertEnvelopeDto {
+  success: boolean
+  message: string
+  data: EditionStaffDto
+}
+
 export interface EditionCandidateUserDto {
   id?: string;
   userId?: string;

@@ -135,6 +135,12 @@ export function ConcoursPage() {
   const [applyError, setApplyError] = useState<string | null>(null)
   const [applySuccessOpen, setApplySuccessOpen] = useState(false)
   const [applySuccessPayment, setApplySuccessPayment] = useState(false)
+  const [expertOpen, setExpertOpen] = useState(false)
+  const [expertCategoryId, setExpertCategoryId] = useState('')
+  const [expertTagId, setExpertTagId] = useState('')
+  const [expertSubmitting, setExpertSubmitting] = useState(false)
+  const [expertError, setExpertError] = useState<string | null>(null)
+  const [expertSuccessOpen, setExpertSuccessOpen] = useState(false)
   const [selectedMetier, setSelectedMetier] = useState<{
     categoryId: string
     categoryName: string
@@ -276,6 +282,16 @@ export function ConcoursPage() {
     setApplySuccessOpen(false)
     setApplySuccessPayment(false)
   }, [])
+  const closeExpert = useCallback(() => {
+    setExpertOpen(false)
+    setExpertCategoryId('')
+    setExpertTagId('')
+    setExpertError(null)
+    setExpertSubmitting(false)
+  }, [])
+  const closeExpertSuccess = useCallback(() => {
+    setExpertSuccessOpen(false)
+  }, [])
 
   const revealMetierPanel = useCallback(
     (next: typeof selectedMetier) => {
@@ -356,6 +372,18 @@ export function ConcoursPage() {
     }))
   }, [useApiReferentiel, apiCategories, applyCategoryId])
 
+  const tagsForExpertCategory = useMemo(() => {
+    if (useApiReferentiel) {
+      const category = apiCategories.find((item) => item.id === expertCategoryId)
+      return category?.tags ?? []
+    }
+    if (!expertCategoryId) return []
+    return SKILLS.filter((skill) => skill.category === expertCategoryId).map((skill) => ({
+      id: skill.id,
+      name: skill.name,
+    }))
+  }, [useApiReferentiel, apiCategories, expertCategoryId])
+
   const categoryOptions = useMemo(() => {
     if (useApiReferentiel) {
       return apiCategories.map((category) => ({
@@ -405,6 +433,32 @@ export function ConcoursPage() {
   }, [applySuccessOpen, closeApplySuccess])
 
   useEffect(() => {
+    if (!expertOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeExpert()
+    }
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [expertOpen, closeExpert])
+
+  useEffect(() => {
+    if (!expertSuccessOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeExpertSuccess()
+    }
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [expertSuccessOpen, closeExpertSuccess])
+
+  useEffect(() => {
     const onAuthChanged = () => {
       setCandidateLoggedIn(isCandidateLoggedIn())
       void activeEditionQuery.refetch()
@@ -423,6 +477,9 @@ export function ConcoursPage() {
         showCta={!selectedMetier && !hasApplied}
         ctaLabel="Soumettre ma candidature"
         ctaOnClick={() => setApplyOpen(true)}
+        showSecondaryCta={!selectedMetier}
+        secondaryCtaLabel="Devenir expert"
+        secondaryCtaOnClick={() => setExpertOpen(true)}
         criteria={selectedMetier ? undefined : CRITERES}
         statusNotice={
           !selectedMetier && applicationStatusNotice
@@ -1212,6 +1269,203 @@ export function ConcoursPage() {
                   type="button"
                   className="concours-page__modal-btn concours-page__modal-btn--primary"
                   onClick={closeApplySuccess}
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {expertOpen && (
+          <div
+            className="concours-page__modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Devenir expert"
+            onClick={closeExpert}
+          >
+            <div
+              className="concours-page__modal-card"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="concours-page__modal-header">
+                <h2>Devenir expert</h2>
+                <button
+                  type="button"
+                  className="concours-page__modal-close"
+                  onClick={closeExpert}
+                  aria-label="Fermer"
+                >
+                  ×
+                </button>
+              </div>
+              {candidateLoggedIn ? (
+                <form
+                  className="concours-page__modal-form"
+                  onSubmit={async (event) => {
+                    event.preventDefault()
+                    if (!editionId) {
+                      setExpertError("Édition active introuvable. Réessayez dans un instant.")
+                      return
+                    }
+                    if (!expertCategoryId || !expertTagId) {
+                      setExpertError('Veuillez choisir un domaine et un métier.')
+                      return
+                    }
+
+                    setExpertSubmitting(true)
+                    setExpertError(null)
+                    try {
+                      await emissionRequest.applyAsExpert(editionId, {
+                        categoryId: expertCategoryId,
+                        tagId: expertTagId,
+                      })
+                      closeExpert()
+                      setExpertSuccessOpen(true)
+                    } catch (error) {
+                      const message = ApiHttpError.isInstance(error)
+                        ? error.message
+                        : 'Impossible d’envoyer votre candidature expert.'
+                      const alreadyStaff =
+                        /déjà candidaté comme staff|deja candidate comme staff|déjà candidat staff|deja candidat staff/i.test(
+                          message,
+                        )
+                      setExpertError(
+                        alreadyStaff
+                          ? 'Vous avez déjà une candidature expert sur cette édition.'
+                          : message,
+                      )
+                    } finally {
+                      setExpertSubmitting(false)
+                    }
+                  }}
+                >
+                  <div className="concours-page__modal-body">
+                    <div className="concours-page__modal-grid">
+                      <label>
+                        Domaine
+                        <select
+                          value={expertCategoryId}
+                          required
+                          disabled={referentielLoading}
+                          onChange={(event) => {
+                            setExpertCategoryId(event.currentTarget.value)
+                            setExpertTagId('')
+                            setExpertError(null)
+                          }}
+                        >
+                          <option value="" disabled>
+                            {referentielLoading
+                              ? 'Chargement des catégories…'
+                              : 'Choisir un domaine'}
+                          </option>
+                          {categoryOptions.map((category) => (
+                            <option key={category.id} value={category.id}>
+                              {category.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        Métier
+                        <select
+                          value={expertTagId}
+                          required
+                          onChange={(event) => {
+                            setExpertTagId(event.currentTarget.value)
+                            setExpertError(null)
+                          }}
+                          disabled={!expertCategoryId || referentielLoading}
+                        >
+                          <option value="" disabled>
+                            {expertCategoryId
+                              ? 'Choisir un métier'
+                              : 'Choisir un domaine d’abord'}
+                          </option>
+                          {tagsForExpertCategory.map((tag) => (
+                            <option key={tag.id} value={tag.id}>
+                              {tag.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    {expertError ? (
+                      <p className="concours-page__modal-error" role="alert">
+                        {expertError}
+                      </p>
+                    ) : null}
+                    <div className="concours-page__modal-actions">
+                      <button
+                        type="button"
+                        className="concours-page__modal-btn"
+                        onClick={closeExpert}
+                        disabled={expertSubmitting}
+                      >
+                        Annuler
+                      </button>
+                      <button
+                        type="submit"
+                        className="concours-page__modal-btn concours-page__modal-btn--primary"
+                        disabled={
+                          expertSubmitting ||
+                          !editionId ||
+                          !expertCategoryId ||
+                          !expertTagId
+                        }
+                      >
+                        {expertSubmitting ? 'Envoi en cours…' : 'Postuler comme expert'}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              ) : (
+                <div className="concours-page__auth-gate">
+                  <p>
+                    Connectez-vous pour postuler comme expert et accompagner les
+                    candidats.
+                  </p>
+                  <div className="concours-page__modal-actions">
+                    <a
+                      href="/connexion"
+                      className="concours-page__modal-btn concours-page__modal-btn--primary"
+                    >
+                      Créer un compte / Se connecter
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {expertSuccessOpen && (
+          <div
+            className="concours-page__modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Candidature expert envoyée"
+            onClick={closeExpertSuccess}
+          >
+            <div
+              className="concours-page__success-card"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="concours-page__success-icon" aria-hidden="true">
+                ✓
+              </div>
+              <h2 className="concours-page__success-title">Demande expert envoyée</h2>
+              <p className="concours-page__success-text">
+                Votre candidature expert a été soumise et est en attente de validation
+                par l&apos;organisation. Une seule demande expert est possible par
+                édition.
+              </p>
+              <div className="concours-page__success-actions">
+                <button
+                  type="button"
+                  className="concours-page__modal-btn concours-page__modal-btn--primary"
+                  onClick={closeExpertSuccess}
                 >
                   Fermer
                 </button>

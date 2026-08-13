@@ -11,6 +11,9 @@ export const EMISSION_API_PATHS = {
   /** POST candidature à une édition (Bearer requis). */
   editionApply: (editionId: string) =>
     `/api/v1/emission/editions/${encodeURIComponent(editionId)}/apply`,
+  /** POST candidature Expert à une édition (Bearer requis). */
+  editionApplyExpert: (editionId: string) =>
+    `/api/v1/emission/editions/${encodeURIComponent(editionId)}/apply-expert`,
   /** Classement paginé des candidates (rangs serveur). */
   editionRanking: (editionId: string) =>
     `/api/v1/emission/editions/${encodeURIComponent(editionId)}/ranking`,

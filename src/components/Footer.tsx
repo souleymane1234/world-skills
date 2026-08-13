@@ -89,7 +89,7 @@ export function Footer() {
           <a href="/partenariat#contact">Politique de confidentialité</a>
         </div>
         <p className="site-footer__copy">
-          {CURRENT_YEAR} WorldSkills Côte d&apos;Ivoire · METFPA. Tous droits réservés.
+          {CURRENT_YEAR} WorldSkills Côte d&apos;Ivoire · ONG RTT · METFPA. Tous droits réservés.
         </p>
       </div>
 

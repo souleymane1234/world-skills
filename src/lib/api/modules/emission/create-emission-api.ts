@@ -2,6 +2,8 @@ import type { HttpClient } from '../../ports/http-client.port'
 import { EMISSION_API_PATHS, type EmissionApiPaths } from './emission.paths'
 import type {
   ActiveEditionEnvelopeDto,
+  ApplyAsExpertBodyDto,
+  ApplyAsExpertEnvelopeDto,
   ApplyToEditionBodyDto,
   ApplyToEditionEnvelopeDto,
   EditionCandidatesEnvelopeDto,
@@ -47,6 +49,10 @@ export interface EmissionApi {
     editionId: string,
     body: ApplyToEditionBodyDto,
   ): Promise<ApplyToEditionEnvelopeDto>
+  applyAsExpert(
+    editionId: string,
+    body?: ApplyAsExpertBodyDto,
+  ): Promise<ApplyAsExpertEnvelopeDto>
   getCandidateById(candidateId: string): Promise<EmissionCandidateDetailEnvelopeDto>
   initiateCandidateVote(
     candidateId: string,
@@ -149,6 +155,14 @@ export function createEmissionApi(
       return http.request<ApplyToEditionEnvelopeDto>({
         method: 'POST',
         path: paths.editionApply(editionId),
+        body,
+      })
+    },
+
+    applyAsExpert(editionId, body = {}) {
+      return http.request<ApplyAsExpertEnvelopeDto>({
+        method: 'POST',
+        path: paths.editionApplyExpert(editionId),
         body,
       })
     },

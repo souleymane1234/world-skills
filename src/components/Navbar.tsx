@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { getAuthEventName, isCandidateLoggedIn } from '../lib/candidate-auth'
+import { FaUser } from 'react-icons/fa6'
+import { getAuthEventName, isCandidateLoggedIn, logoutCandidate } from '../lib/candidate-auth'
+import { clearAuthSession } from '../lib/auth-session'
 import './Navbar.css'
 
 const SCROLL_SOLID_THRESHOLD_PX = 32
@@ -12,6 +14,7 @@ const SUBPAGE_PREFIXES = [
   '/partenariat',
   '/contact',
   '/connexion',
+  '/inscription',
   '/profil',
   '/showroom',
   '/vote',
@@ -35,10 +38,10 @@ export function Navbar() {
     { href: '/competition', label: 'Compétition' },
     { href: '/actualites', label: 'Actualités' },
     { href: '/partenariat', label: 'Partenariat' },
-    candidateLoggedIn
-      ? { href: '/profil', label: 'Profil' }
-      : { href: '/connexion', label: 'Connexion' },
-  ] as const
+    ...(candidateLoggedIn
+      ? [{ href: '/profil', label: 'Profil' }]
+      : [{ href: '/inscription', label: 'Inscription' }]),
+  ]
 
   useEffect(() => {
     const onScroll = () => {
@@ -68,6 +71,12 @@ export function Navbar() {
     }
     if (href === '/actualites') {
       return pathname === '/actualites' || pathname.startsWith('/actualites/')
+    }
+    if (href === '/inscription') {
+      return pathname === '/inscription' || pathname.startsWith('/inscription/')
+    }
+    if (href === '/connexion') {
+      return pathname === '/connexion' || pathname.startsWith('/connexion/')
     }
     if (href === '/partenariat') {
       return (
@@ -118,7 +127,7 @@ export function Navbar() {
           {navLinks.map(({ href, label }) => (
             <li key={href + label}>
               <a
-                className={`site-navbar__link${label === 'Connexion' ? ' site-navbar__link--cta' : ''}${isLinkActive(href) ? ' site-navbar__link--active' : ''}`}
+                className={`site-navbar__link${label === 'Inscription' ? ' site-navbar__link--cta' : ''}${isLinkActive(href) ? ' site-navbar__link--active' : ''}`}
                 href={href}
                 onClick={() => setMenuOpen(false)}
               >
@@ -126,6 +135,35 @@ export function Navbar() {
               </a>
             </li>
           ))}
+          {candidateLoggedIn ? (
+            <li>
+              <button
+                type="button"
+                className="site-navbar__link site-navbar__link--logout"
+                onClick={() => {
+                  setMenuOpen(false)
+                  clearAuthSession()
+                  logoutCandidate()
+                  window.location.href = '/'
+                }}
+              >
+                Déconnexion
+              </button>
+            </li>
+          ) : (
+            <li>
+              <a
+                className={`site-navbar__icon-btn${isLinkActive('/connexion') ? ' is-active' : ''}`}
+                href="/connexion"
+                aria-label="Connexion"
+                title="Connexion"
+                onClick={() => setMenuOpen(false)}
+              >
+                <FaUser aria-hidden="true" />
+                <span className="site-navbar__icon-btn-label">Connexion</span>
+              </a>
+            </li>
+          )}
         </ul>
       </nav>
     </header>

@@ -107,6 +107,13 @@
   }
 }
 
+.site-promo-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
 .site-promo-banner__cta {
   display: inline-flex;
   padding: 12px 22px;
@@ -124,9 +131,28 @@
   font-family: inherit;
 }
 
-.site-promo-banner__cta:hover {
+.site-promo-banner__cta--secondary {
+  background: transparent;
+  color: var(--text-h);
+  border: 1px solid color-mix(in srgb, var(--ws-blue) 35%, var(--border));
+  box-shadow: none;
+}
+
+.site-promo-banner__cta:not(.site-promo-banner__cta--secondary):hover {
   filter: brightness(1.08);
   color: #fff;
+}
+
+.site-promo-banner__cta--secondary:hover {
+  background: color-mix(in srgb, var(--ws-blue) 10%, var(--bg));
+  border-color: color-mix(in srgb, var(--ws-blue) 55%, var(--border));
+  color: var(--text-h);
+  filter: none;
+}
+
+.site-promo-banner__actions .site-promo-banner__status {
+  flex: 1 1 100%;
+  margin: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
