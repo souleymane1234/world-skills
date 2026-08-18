@@ -19,23 +19,23 @@
 }
 
 .metiers-page__category-title--tertiaire {
-  color: var(--ws-blue);
+  color: var(--cat-mobility);
 }
 
 .metiers-page__category-title--hotellerie {
-  color: var(--ws-green);
+  color: var(--cat-agritech);
 }
 
 .metiers-page__category-title--industrielle {
-  color: var(--accent);
+  color: var(--cat-industry);
 }
 
 .metiers-page__category-title--arts {
-  color: var(--gold-deep);
+  color: var(--cat-creative);
 }
 
 .metiers-page__category-title--batiment {
-  color: var(--ws-orange);
+  color: var(--cat-digital);
 }
 
 .metiers-page__cards-grid {

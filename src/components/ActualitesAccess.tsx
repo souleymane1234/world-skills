@@ -8,7 +8,7 @@ export function ActualitesAccess() {
   const { ref, isVisible } = useRevealOnView<HTMLElement>()
   const items = [...ACTUALITES]
     .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
-    .slice(0, 3)
+    .slice(0, 4)
 
   return (
     <section
@@ -35,28 +35,40 @@ export function ActualitesAccess() {
           {items.map((item) => (
             <li key={item.id} className="act-access__card-item">
               <article className="act-access__news-card">
-                <div className="act-access__news-visual">
+                <a
+                  className="act-access__news-media"
+                  href={`${ACTUALITES_VOIR_PLUS_HREF}/${item.slug}`}
+                  tabIndex={-1}
+                  aria-hidden="true"
+                >
                   <img
                     className="act-access__news-img"
                     src={item.image}
-                    alt={item.title}
+                    alt=""
                     width={640}
                     height={400}
                     loading="lazy"
                     decoding="async"
                   />
-                </div>
+                  <span className="act-access__news-cat">{item.category}</span>
+                </a>
                 <div className="act-access__news-body">
-                  <div className="act-access__news-meta">
-                    <span className="act-access__news-cat">{item.category}</span>
-                    <time dateTime={item.publishedAt}>
-                      {new Date(item.publishedAt).toLocaleDateString('fr-FR')}
-                    </time>
-                  </div>
-                  <h3 className="act-access__news-title">{item.title}</h3>
+                  <time dateTime={item.publishedAt}>
+                    {new Date(item.publishedAt).toLocaleDateString('fr-FR', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </time>
+                  <h3 className="act-access__news-title">
+                    <a href={`${ACTUALITES_VOIR_PLUS_HREF}/${item.slug}`}>
+                      {item.title}
+                    </a>
+                  </h3>
                   <p className="act-access__news-excerpt">{item.description}</p>
                   <a className="act-access__news-link" href={`${ACTUALITES_VOIR_PLUS_HREF}/${item.slug}`}>
                     Lire la suite
+                    <span aria-hidden="true">→</span>
                   </a>
                 </div>
               </article>

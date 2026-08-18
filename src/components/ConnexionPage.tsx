@@ -80,7 +80,7 @@ export function ConnexionPage() {
         <header className="auth-modal__header">
           <img
             className="auth-modal__logo"
-            src="/logo-removebg-preview.png"
+            src="/logo.png"
             alt="WorldSkills Côte d'Ivoire"
           />
           <div className="auth-modal__header-copy">

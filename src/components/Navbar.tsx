@@ -15,6 +15,8 @@ const SUBPAGE_PREFIXES = [
   '/contact',
   '/connexion',
   '/inscription',
+  '/inscription-candidat',
+  '/candidature',
   '/profil',
   '/showroom',
   '/vote',
@@ -97,11 +99,26 @@ export function Navbar() {
         onClick={() => setMenuOpen(false)}
       >
         <img
-          className="site-navbar__logo"
-          src="/logo-removebg-preview.png"
-          width={56}
+          className="site-navbar__logo site-navbar__logo--arms"
+          src="/Amoirie.png"
+          width={140}
+          height={140}
+          alt="Armoiries de la République de Côte d'Ivoire"
+        />
+        <span className="site-navbar__divider" aria-hidden="true" />
+        <img
+          className="site-navbar__logo site-navbar__logo--skills"
+          src="/logo.png"
+          width={280}
+          height={72}
+          alt="Côte d'Ivoire Skills — Les Olympiades des Métiers"
+        />
+        <img
+          className="site-navbar__logo site-navbar__logo--ortt"
+          src="/ortt.png"
+          width={160}
           height={56}
-          alt="WorldSkills Côte d'Ivoire"
+          alt="Révèle Ton Talent"
         />
       </a>
 

@@ -1,119 +1,142 @@
 import { useEffect } from 'react'
 import { ContactSection } from './ContactSection'
-import { PromoBanner } from './PromoBanner'
 import { SectionBridge } from './SectionBridge'
 import { PartnersTrustCarousel } from './PartnersTrustCarousel'
 import './ConcoursPage.css'
 import './PartenariatPage.css'
 
-const PACKS = [
+const PARTNERSHIP_CATEGORIES = [
   {
-    titre: 'Partenaire Bronze',
-    resume: 'Visibilité institutionnelle et premier niveau d’engagement.',
-    points: [
-      'Visibilité institutionnelle et médiatique',
-      'Présence dans les supports officiels de communication',
-      'Valorisation de l’image citoyenne de l’entreprise',
-      'Appui matériel et logistique (consommables / supports de démonstration)',
-    ],
+    title: 'Partenaire strategique',
+    subtitle: "Partenaire global de l'evenement et de son rayonnement.",
+    tone: 'green',
+    icon: 'badge',
   },
   {
-    titre: 'Partenaire Argent',
-    resume: 'Accompagnement technique + impact direct sur la formation.',
-    points: [
-      'Pack Bronze +',
-      'Mise à disposition d’experts',
-      'Encadrement technique des candidats',
-      'Participation aux jurys et évaluations',
-      'Espace d’exposition (stand + branding) au Parc des Expositions',
-    ],
+    title: 'Partenaire challenge',
+    subtitle: "Porteur d'un challenge metier et co-createur de solutions.",
+    tone: 'orange',
+    icon: 'star',
   },
   {
-    titre: 'Partenaire Or',
-    resume: 'Partenaire stratégique de l’excellence et de l’insertion.',
-    points: [
-      'Pack Argent +',
-      'Appui financier ou sponsoring des activités et compétitions',
-      'Soutien à la remise des prix',
-      'Opportunités de stages et recrutement de jeunes talents',
-      'Positionnement comme acteur du développement des compétences en Côte d’Ivoire',
-    ],
+    title: 'Partenaire metier',
+    subtitle: 'Soutien specifique a un ou plusieurs metiers en competition.',
+    tone: 'blue',
+    icon: 'tool',
+  },
+  {
+    title: 'Partenaire innovation & technologie',
+    subtitle: 'Fournisseur de technologies et de solutions innovantes.',
+    tone: 'green',
+    icon: 'laptop',
+  },
+  {
+    title: 'Partenaire formation & expertise',
+    subtitle: 'Renforcement des competences et accompagnement des talents.',
+    tone: 'orange',
+    icon: 'cap',
+  },
+  {
+    title: 'Partenaire impact & institutionnel',
+    subtitle: "Engagement pour l'impact jeunesse, l'inclusion et le developpement.",
+    tone: 'blue',
+    icon: 'users',
   },
 ] as const
 
-const OBJECTIF_GENERAL =
-  'Mobiliser les entreprises de production autour du développement des compétences techniques et professionnelles des jeunes afin de renforcer l’employabilité, l’innovation et la compétitivité de la Côte d’Ivoire.'
-
-const OBJECTIFS_SPECIFIQUES = [
-  'Renforcer les liens entre les entreprises et les établissements de formation.',
-  'Promouvoir les standards internationaux de compétences professionnelles.',
-  'Offrir aux jeunes une formation pratique adaptée aux réalités industrielles.',
-  'Valoriser les métiers techniques et industriels.',
-  'Identifier et accompagner les jeunes talents.',
-  'Encourager l’innovation et l’excellence professionnelle.',
-  'Permettre aux entreprises de contribuer à la formation de futurs techniciens qualifiés.',
+const WHY_PARTNER_POINTS = [
+  {
+    title: 'Une visibilite a 360°',
+    text: 'Medias, digital, reseaux sociaux, affichage, relations publiques, presence sur site et plus.',
+    tone: 'green',
+    icon: 'megaphone',
+  },
+  {
+    title: 'Un impact durable',
+    text: "Votre soutien contribue a la formation, a l'employabilite et a l'excellence des jeunes ivoiriens.",
+    tone: 'orange',
+    icon: 'target',
+  },
+  {
+    title: "Un reseau d'influence",
+    text: 'Rencontrez des decideurs, entrepreneurs, institutions et acteurs cles du secteur public et prive.',
+    tone: 'blue',
+    icon: 'network',
+  },
 ] as const
 
-const CONTEXTE_JUSTIFICATION =
-  'Dans le cadre de la promotion de l’excellence professionnelle, de l’employabilité des jeunes et du rapprochement entre l’école et l’industrie, le Comité d’Organisation des Olympiades des Métiers 2026 organise la 6ème édition des Olympiades des Métiers de Côte d’Ivoire, inspirée des standards internationaux de WorldSkills International.'
+function CategoryIcon({ kind }: { kind: (typeof PARTNERSHIP_CATEGORIES)[number]['icon'] }) {
+  switch (kind) {
+    case 'badge':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="6" y="6" width="12" height="12" rx="3" />
+        </svg>
+      )
+    case 'star':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m12 4 2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8Z" />
+        </svg>
+      )
+    case 'tool':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m14.8 4.6 4.6 4.6-2 2-4.6-4.6M3.8 20.2l6-6 3.3 3.3-6 6H3.8Z" />
+          <path d="m11.6 7.8-5 5" />
+        </svg>
+      )
+    case 'laptop':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="5" y="6" width="14" height="9" rx="1.6" />
+          <path d="M3.5 18h17" />
+        </svg>
+      )
+    case 'cap':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m4 10 8-4 8 4-8 4-8-4Z" />
+          <path d="M8 12.2v3.3c0 1.4 1.8 2.5 4 2.5s4-1.1 4-2.5v-3.3" />
+        </svg>
+      )
+    default:
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="9" cy="10" r="2.3" />
+          <circle cx="15.5" cy="10" r="2.3" />
+          <path d="M5.5 18a3.8 3.8 0 0 1 3.8-3.8h5.4a3.8 3.8 0 0 1 3.8 3.8" />
+        </svg>
+      )
+  }
+}
 
-const CONTEXTE_POINTS = [
-  'Renforcer les compétences techniques des jeunes apprenants.',
-  'Valoriser les métiers professionnels.',
-  'Favoriser l’implication des entreprises de production dans la formation pratique et l’insertion professionnelle.',
-] as const
-
-const ACTEURS_PLATEFORME = [
-  'Les entreprises de production.',
-  'Les établissements de formation technique et professionnelle.',
-  'Les institutions publiques.',
-  'Les professionnels des métiers.',
-  'Les experts nationaux et internationaux.',
-] as const
-
-const IMPORTANCE_PARTENARIAT = [
-  'Le développement des compétences',
-  'L’amélioration de la qualité des formations',
-  'L’adaptation des programmes aux besoins du marché',
-  'L’insertion professionnelle des jeunes',
-  'Le rapprochement de l’école et du monde professionnel',
-  'La promotion des innovations technologiques',
-  'La détection de futurs collaborateurs qualifiés',
-  'L’amélioration de la compétitivité industrielle nationale',
-] as const
-
-const CONTRIBUTIONS = {
-  technique: [
-    'Mise à disposition d’experts',
-    'Encadrement technique des candidats',
-    'Participation aux jurys et évaluations',
-  ],
-  materiel: [
-    'Équipements techniques',
-    'Consommables',
-    'Matériels industriels',
-    'Supports de démonstration',
-  ],
-  financier: [
-    'Financement d’activités',
-    'Accompagnement des compétitions',
-    'Soutien à la remise des prix',
-  ],
-  insertion: [
-    'Opportunités de stages',
-    'Recrutement de jeunes talents',
-    'Visites d’entreprises',
-  ],
-} as const
-
-const AVANTAGES_PARTENAIRE = [
-  'Visibilité institutionnelle et médiatique',
-  'Espace d’exposition (stand + branding) au Parc des Expositions',
-  'Valorisation de l’image citoyenne',
-  'Accès privilégié aux meilleurs talents',
-  'Présence dans les supports officiels de communication',
-  'Positionnement comme acteur du développement des compétences en Côte d’Ivoire',
-] as const
+function ReasonIcon({ kind }: { kind: (typeof WHY_PARTNER_POINTS)[number]['icon'] }) {
+  switch (kind) {
+    case 'megaphone':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 11.2V8.6A1.6 1.6 0 0 1 5.6 7h3l7.6-3.2a1 1 0 0 1 1.4.9v13.2a1 1 0 0 1-1.4.9l-7.6-3.2h-3A1.6 1.6 0 0 1 4 14v-2.8Z" />
+        </svg>
+      )
+    case 'target':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="7.5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="12" cy="12" r="1.5" />
+        </svg>
+      )
+    default:
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="8.5" cy="9.5" r="2.2" />
+          <circle cx="15.5" cy="9.5" r="2.2" />
+          <path d="M4.8 18a3.7 3.7 0 0 1 3.7-3.7h7a3.7 3.7 0 0 1 3.7 3.7" />
+        </svg>
+      )
+  }
+}
 
 export function PartenariatPage() {
   useEffect(() => {
@@ -127,24 +150,11 @@ export function PartenariatPage() {
 
   return (
     <main className="concours-page concours-page--nav-offset partenariat-page" aria-labelledby="partenariat-title">
-      <PromoBanner
-        title="Investissez dans les métiers de demain"
-        subtitle="Secteur privé, ONG : rejoignez WorldSkills Côte d'Ivoire"
-        ctaHref="#contact"
-        ctaLabel="Nous contacter"
-      />
-      <SectionBridge variant="ribbon" />
-
       <section id="partenaires" className="concours-page__stack">
         <section className="concours-page__section concours-page__hero">
           <div className="concours-page__inner partenariat-page__hero-card">
             <p className="concours-page__eyebrow">Partenariat</p>
             <h1 id="partenariat-title">Associez-vous aux Olympiades des métiers</h1>
-            <p className="concours-page__lead">
-              Visibilité nationale, impact sur la formation professionnelle et
-              accès aux talents techniques : WorldSkills Côte d&apos;Ivoire offre
-              un cadre structuré pour les entreprises et institutions engagées.
-            </p>
             <div className="concours-page__actions">
               <a href="#contact" className="partenariat-page__cta-link">
                 Nous contacter
@@ -155,149 +165,61 @@ export function PartenariatPage() {
         </section>
 
         <section className="concours-page__section">
-          <div className="concours-page__inner partenariat-page__grid">
-            <article className="partenariat-page__card">
-              <h2>Contexte et justification</h2>
-              <p>{CONTEXTE_JUSTIFICATION}</p>
-              <ul className="partenariat-page__list">
-                {CONTEXTE_POINTS.map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
-              </ul>
-            </article>
-
-            <article className="partenariat-page__card">
-              <h2>Acteurs de la plateforme</h2>
-              <p>
-                Les Olympiades des Métiers 2026 constituent une plateforme stratégique
-                de collaboration entre :
-              </p>
-              <ul className="partenariat-page__list">
-                {ACTEURS_PLATEFORME.map((acteur) => (
-                  <li key={acteur}>{acteur}</li>
-                ))}
-              </ul>
-              <p className="partenariat-page__muted">
-                Le Comité d’Organisation souhaite associer les entreprises en qualité de
-                partenaires techniques et institutionnels.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <SectionBridge variant="wave" />
-
-        <section className="concours-page__section">
-          <div className="concours-page__inner partenariat-page__objective-card">
-            <h2>Objectif général du partenariat</h2>
-            <p>{OBJECTIF_GENERAL}</p>
-          </div>
-        </section>
-
-        <SectionBridge variant="wave" />
-
-        <section className="concours-page__section">
-          <div className="concours-page__inner partenariat-page__card">
-            <h2>Objectifs spécifiques</h2>
-            <ul className="partenariat-page__list partenariat-page__list--two-cols">
-              {OBJECTIFS_SPECIFIQUES.map((objectif) => (
-                <li key={objectif}>{objectif}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <SectionBridge variant="wave" />
-
-        <section className="concours-page__section">
-          <div className="concours-page__inner partenariat-page__grid">
-            <article className="partenariat-page__card">
-              <h2>Importance du partenariat avec les entreprises de production</h2>
-              <ul className="partenariat-page__list">
-                {IMPORTANCE_PARTENARIAT.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-
-            <article className="partenariat-page__card">
-              <h2>Avantages pour l’entreprise partenaire</h2>
-              <ul className="partenariat-page__list">
-                {AVANTAGES_PARTENAIRE.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        <SectionBridge variant="wave" />
-
-        <section className="concours-page__section">
-          <div className="concours-page__inner partenariat-page__card">
-            <h2>Contributions attendues de l’entreprise partenaire</h2>
-            <div className="partenariat-page__packs">
-              <article className="partenariat-page__pack">
-                <h3>Appui technique</h3>
-                <ul className="partenariat-page__list">
-                  {CONTRIBUTIONS.technique.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </article>
-              <article className="partenariat-page__pack">
-                <h3>Appui matériel et logistique</h3>
-                <ul className="partenariat-page__list">
-                  {CONTRIBUTIONS.materiel.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </article>
-              <article className="partenariat-page__pack">
-                <h3>Appui financier / sponsoring</h3>
-                <ul className="partenariat-page__list">
-                  {CONTRIBUTIONS.financier.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </article>
-            </div>
-            <ul className="partenariat-page__list partenariat-page__list--spaced">
-              {CONTRIBUTIONS.insertion.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="concours-page__section">
-          <div className="concours-page__inner">
-            <h2>Packs partenaires</h2>
-            <div className="partenariat-page__packs">
-              {PACKS.map((pack) => (
-                <article key={pack.titre} className="partenariat-page__pack">
-                  <h3>{pack.titre}</h3>
-                  <p className="partenariat-page__muted">{pack.resume}</p>
-                  <ul className="partenariat-page__list">
-                    {pack.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
+          <div className="concours-page__inner partenariat-page__card partenariat-page__categories">
+            <h2>Nos catégories de partenariat</h2>
+            <div className="partenariat-page__categories-grid">
+              {PARTNERSHIP_CATEGORIES.map((category) => (
+                <article
+                  key={category.title}
+                  className={`partenariat-page__category-card partenariat-page__category-card--${category.tone}`}
+                >
+                  <span className="partenariat-page__category-icon" aria-hidden="true">
+                    <CategoryIcon kind={category.icon} />
+                  </span>
+                  <h3>{category.title}</h3>
+                  <p>{category.subtitle}</p>
                 </article>
               ))}
             </div>
-            <div className="partenariat-page__footer-cta">
-              <a className="partenariat-page__cta-link" href="#contact">
-                Demander une proposition sur mesure
-              </a>
-            </div>
           </div>
         </section>
 
         <SectionBridge variant="wave" />
-        <PartnersTrustCarousel />
-        <SectionBridge variant="ribbon" />
+
+        <section className="concours-page__section">
+          <div className="concours-page__inner partenariat-page__why-layout">
+            <article className="partenariat-page__card partenariat-page__why-card">
+              <h2>Pourquoi devenir partenaire de Côte d&apos;Ivoire Skills 2026 ?</h2>
+              <div className="partenariat-page__reasons-grid">
+                {WHY_PARTNER_POINTS.map((reason) => (
+                  <div key={reason.title} className={`partenariat-page__reason partenariat-page__reason--${reason.tone}`}>
+                    <span aria-hidden="true" className="partenariat-page__reason-icon">
+                      <ReasonIcon kind={reason.icon} />
+                    </span>
+                    <h3>{reason.title}</h3>
+                    <p>{reason.text}</p>
+                  </div>
+                ))}
+              </div>
+            </article>
+
+            <aside className="partenariat-page__contact-cta">
+              <h2>Intéressé par un partenariat ?</h2>
+              <p>
+                Contactez notre équipe pour discuter d&apos;un partenariat adapté à vos
+                objectifs et à votre impact.
+              </p>
+              <a className="partenariat-page__cta-link" href="#contact">
+                Nous contacter
+              </a>
+            </aside>
+          </div>
+        </section>
+
+        <SectionBridge variant="wave" />
         <ContactSection embedded />
+        <SectionBridge variant="wave" />
+        <PartnersTrustCarousel />
       </section>
     </main>
   )

@@ -43,7 +43,7 @@ function enrichCompetitors(list: CompetitorInput[]): Competitor[] {
       quizPoints: item.quizPoints ?? 0,
       mentorName: item.mentorName ?? 'Encadrement',
       mentorSubtitle: item.mentorSubtitle ?? 'METFPA',
-      videoSrc: item.videoSrc ?? '/video.mp4',
+      videoSrc: item.videoSrc ?? '/worldskills.mp4',
       ...item,
     }
   })
@@ -145,7 +145,7 @@ export const EDITIONS: Edition[] = [
     description:
       'Édition en cours : candidatures en ligne, formation, compétition nationale et sélection de 300 finalistes et exposants.',
     coverImageSrc: '/miss.jpg',
-    videoSrc: '/video.mp4',
+    videoSrc: '/worldskills.mp4',
     videoPosterSrc: '/miss.jpg',
     dates: '02 — 04 octobre 2026',
     location: 'Parc des Expositions d’Abidjan',
@@ -170,7 +170,7 @@ export const EDITIONS: Edition[] = [
     description:
       'Organisées par le METFPA via la Direction de la Vie scolaire, les Olympiades des métiers réunissent les meilleurs apprenants des établissements de formation professionnelle. Présélections régionales à Abidjan, Bouaké, Gagnoa et Korhogo, puis finale nationale au Parc des Expositions d’Abidjan.',
     coverImageSrc: '/miss.jpg',
-    videoSrc: '/video.mp4',
+    videoSrc: '/worldskills.mp4',
     videoPosterSrc: '/miss.jpg',
     dates: '26 — 29 novembre 2025',
     location: 'Parc des Expositions d’Abidjan',
@@ -267,7 +267,7 @@ export const EDITIONS: Edition[] = [
     description:
       'Phases finales sur cinq corps de métiers après un mois de présélections. Village partenaires et stands d’exposition au Parc des Expositions d’Abidjan.',
     coverImageSrc: '/miss.jpg',
-    videoSrc: '/video.mp4',
+    videoSrc: '/worldskills.mp4',
     videoPosterSrc: '/miss.jpg',
     dates: 'Novembre 2024',
     location: 'Parc des Expositions d’Abidjan',
@@ -318,7 +318,7 @@ export const EDITIONS: Edition[] = [
     description:
       'Édition marquée par l’élargissement des disciplines et la mobilisation des établissements de formation professionnelle.',
     coverImageSrc: '/miss.jpg',
-    videoSrc: '/video.mp4',
+    videoSrc: '/worldskills.mp4',
     videoPosterSrc: '/miss.jpg',
     dates: 'Octobre 2023',
     location: 'Abidjan',

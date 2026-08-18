@@ -1,13 +1,19 @@
-import { WORLD_SKILLS_STATS } from '../data/skills'
+import {
+  FaGlobe,
+  FaTrophy,
+  FaUsers,
+  FaBuilding,
+} from 'react-icons/fa6'
+import type { IconType } from 'react-icons'
 import { useRevealOnView } from '../hooks/useRevealOnView'
 import './StatsBanner.css'
 
-const STATS = [
-  { value: String(WORLD_SKILLS_STATS.disciplines), label: 'Disciplines' },
-  { value: `${WORLD_SKILLS_STATS.competitors}+`, label: 'Compétiteurs' },
-  { value: String(WORLD_SKILLS_STATS.finalistsAndExhibitors), label: 'Finalistes et exposants' },
-  { value: `${WORLD_SKILLS_STATS.editionNumber}e`, label: 'Édition' },
-] as const
+const STATS: ReadonlyArray<{ value: string; label: string; icon: IconType }> = [
+  { value: '10 000+', label: 'Jeunes talents attendus', icon: FaUsers },
+  { value: '200+', label: 'Entreprises partenaires', icon: FaBuilding },
+  { value: '50+', label: 'Métiers en compétition', icon: FaTrophy },
+  { value: '1', label: 'Objectif commun : l\u2019excellence', icon: FaGlobe },
+]
 
 export function StatsBanner() {
   const { ref, isVisible } = useRevealOnView<HTMLElement>()
@@ -20,10 +26,13 @@ export function StatsBanner() {
       aria-label="Chiffres clés"
     >
       <ul className="ws-stats__grid">
-        {STATS.map(({ value, label }) => (
+        {STATS.map(({ value, label, icon: Icon }) => (
           <li key={label} className="ws-stats__item">
-            <span className="ws-stats__value">{value}</span>
-            <span className="ws-stats__label">{label}</span>
+            <Icon className="ws-stats__icon" aria-hidden="true" />
+            <div>
+              <span className="ws-stats__value">{value}</span>
+              <span className="ws-stats__label">{label}</span>
+            </div>
           </li>
         ))}
       </ul>

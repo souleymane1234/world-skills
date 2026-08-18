@@ -189,7 +189,7 @@ export function mapEditionFullDetailToEdition(
     tagline: descriptionText || detail.title,
     description: descriptionText,
     coverImageSrc: detail.imageUrl?.trim() || '',
-    videoSrc: detail.video?.url ?? '/video.mp4',
+    videoSrc: detail.video?.url ?? '/worldskills.mp4',
     videoPosterSrc: detail.imageUrl?.trim() || '/miss.jpg',
     dates:
       detail.startDate?.trim() && detail.endDate?.trim()

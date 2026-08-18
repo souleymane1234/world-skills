@@ -37,23 +37,6 @@ export function AboutSection() {
             l&apos;organisation de la 6<sup>e</sup> édition à l&apos;ONG Révèle Ton Talent.
           </p>
         </div>
-
-        <ul className="ws-about__highlights">
-          <li>
-            <span className="ws-about__highlight-label">Excellence</span>
-            Standards professionnels exigeants, alignés sur WorldSkills
-            International.
-          </li>
-          <li>
-            <span className="ws-about__highlight-label">Formation–emploi</span>
-            Adéquation compétences–employabilité, au cœur de l&apos;Académie des
-            Talents (ACT).
-          </li>
-          <li>
-            <span className="ws-about__highlight-label">Territoires</span>
-            Présélections à Abidjan, Bouaké, Gagnoa et Korhogo.
-          </li>
-        </ul>
       </div>
     </section>
   )

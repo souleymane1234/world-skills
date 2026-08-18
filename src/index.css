@@ -1,43 +1,88 @@
 :root {
-  --text: #4a5568;
-  --text-h: #0a1628;
-  --bg: #fff;
-  --border: #e2e8f0;
-  --code-bg: #f1f5f9;
-  --accent: #c07030;
-  --accent-bg: rgba(192, 112, 48, 0.12);
-  --accent-border: rgba(192, 112, 48, 0.45);
-  --social-bg: rgba(241, 245, 249, 0.8);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --color-primary: #f58220;
+  --color-primary-hover: #d96e12;
+  --color-secondary: #009a44;
+  --color-accent: #ffc107;
+  --color-dark: #0b1f3a;
+  --color-dark-secondary: #102a4d;
+  --color-white: #ffffff;
+  --color-background: #f9fafb;
+  --color-background-secondary: #f5f5f5;
+  --color-border: #e5e7eb;
+  --color-text: #222222;
+  --color-text-muted: #6b7280;
 
-  /* WorldSkills + touches Côte d'Ivoire */
-  --ws-blue: #0072ce;
-  --ws-blue-deep: #005a9e;
-  --ws-orange: #c07030;
-  --ws-green: #009a44;
-  --gold: #f5a623;
-  --gold-deep: #c47f0a;
-  --gold-light: #fde8b8;
-  --gold-line: color-mix(in srgb, var(--gold) 45%, transparent);
-  --gold-glow: color-mix(in srgb, var(--ws-blue) 35%, transparent);
+  --cat-industry: #f58220;
+  --cat-mobility: #2563eb;
+  --cat-digital: #6366f1;
+  --cat-agritech: #16a34a;
+  --cat-creative: #db2777;
 
-  --sans: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --heading: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --radius-btn: 8px;
+  --radius-input: 8px;
+  --radius-card: 16px;
+  --radius-media: 16px;
+  --radius-media-lg: 24px;
+  --radius-badge: 999px;
+  --radius-panel: 24px;
+
+  --shadow: 0 10px 30px rgb(0 0 0 / 0.06);
+  --shadow-hover: 0 20px 40px rgb(0 0 0 / 0.1);
+
+  --container: 1280px;
+  --container-pad: 24px;
+  --navbar-height: 132px;
+  --space-section: clamp(40px, 5vw, 64px);
+
+  --ease: 0.25s ease;
+
+  /* Compatibilité avec les composants existants */
+  --text: var(--color-text-muted);
+  --text-h: var(--color-text);
+  --bg: var(--color-white);
+  --border: var(--color-border);
+  --code-bg: var(--color-background-secondary);
+  --accent: var(--color-primary);
+  --accent-bg: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  --accent-border: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  --social-bg: var(--color-background);
+  --ws-blue: var(--color-dark);
+  --ws-blue-deep: var(--color-dark-secondary);
+  --ws-orange: var(--color-primary);
+  --ws-green: var(--color-secondary);
+  --gold: var(--color-primary);
+  --gold-deep: var(--color-primary-hover);
+  --gold-light: var(--color-accent);
+  --gold-line: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  --gold-glow: color-mix(in srgb, var(--color-primary) 35%, transparent);
+
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Montserrat', var(--sans);
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
+  font: 16px/1.6 var(--sans);
+  letter-spacing: 0;
   color-scheme: light;
-  color: var(--text);
-  background: var(--bg);
+  color: var(--color-text);
+  background: var(--color-white);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+@media (max-width: 1023px) {
+  :root {
+    --container-pad: 20px;
+    --navbar-height: 88px;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --container-pad: 16px;
+    --space-section: 40px;
+    --navbar-height: 64px;
   }
 }
 
@@ -52,28 +97,6 @@ img {
   height: auto;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #4a5568;
-    --text-h: #0a1628;
-    --bg: #fff;
-    --border: #e2e8f0;
-    --code-bg: #f1f5f9;
-    --accent: #c07030;
-    --accent-bg: rgba(192, 112, 48, 0.12);
-    --accent-border: rgba(192, 112, 48, 0.45);
-    --social-bg: rgba(241, 245, 249, 0.8);
-    --shadow:
-      rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-    --gold: #f5a623;
-    --gold-deep: #c47f0a;
-    --gold-light: #fde8b8;
-    --gold-line: color-mix(in srgb, var(--gold) 45%, transparent);
-    --gold-glow: color-mix(in srgb, var(--ws-blue) 35%, transparent);
-  }
-}
-
 #accueil,
 #actualites,
 #metiers,
@@ -82,8 +105,9 @@ img {
 #edition,
 #partenariat,
 #contact,
-#chiffres {
-  scroll-margin-top: 64px;
+#chiffres,
+#inscriptions {
+  scroll-margin-top: calc(var(--navbar-height) + 8px);
 }
 
 #root {
@@ -118,6 +142,8 @@ body {
   max-width: 100%;
   overflow-x: hidden;
   font-family: var(--sans);
+  color: var(--color-text);
+  background: var(--color-white);
 }
 
 button,
@@ -134,28 +160,38 @@ h4,
 h5,
 h6 {
   font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+  font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin: 0 0 16px;
 }
+
 h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 800;
+  margin: 0 0 12px;
 }
+
+h3 {
+  font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+h4 {
+  font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
 p {
   margin: 0;
 }
@@ -164,9 +200,14 @@ code {
   font-family: var(--mono);
   display: inline-flex;
   border-radius: 4px;
-  color: var(--text-h);
-  font-size: 15px;
+  color: var(--color-text);
+  font-size: 14px;
   line-height: 135%;
   padding: 4px 8px;
-  background: var(--code-bg);
+  background: var(--color-background-secondary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
 }

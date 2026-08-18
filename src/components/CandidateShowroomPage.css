@@ -1,6 +1,6 @@
 .showroom-page {
   min-height: 100vh;
-  padding: calc(72px + env(safe-area-inset-top, 0px)) 16px 48px;
+  padding: calc(var(--navbar-height) + env(safe-area-inset-top, 0px)) 16px 48px;
   background: var(--bg);
   color: var(--text);
   text-align: left;
@@ -183,7 +183,7 @@
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border);
-  background: #111;
+  background: var(--color-dark);
 }
 
 .showroom-page__video-frame iframe {

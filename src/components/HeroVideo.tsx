@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './HeroVideo.css'
 
-const DEFAULT_SRC = '/video.mp4'
+const DEFAULT_SRC = '/worldskills.mp4'
 const DEFAULT_SUBTITLE = 'Olympiades des métiers'
 const DEFAULT_TITLE = 'WorldSkills Côte d\'Ivoire'
 
@@ -114,6 +114,16 @@ export function HeroVideo({
       <div className="site-hero-video__overlay">
         <p className="site-hero-video__subtitle">{subtitle}</p>
         <h1 className="site-hero-video__title">{title}</h1>
+        {!controls ? (
+          <div className="site-hero-video__actions">
+            <a className="ui-btn ui-btn--primary" href="/inscription">
+              Je m&apos;inscris
+            </a>
+            <a className="ui-btn ui-btn--ghost" href="/competition">
+              Découvrir la compétition
+            </a>
+          </div>
+        ) : null}
       </div>
     </div>
   )

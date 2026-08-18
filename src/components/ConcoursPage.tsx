@@ -433,6 +433,12 @@ export function ConcoursPage() {
   }, [applySuccessOpen, closeApplySuccess])
 
   useEffect(() => {
+    if (window.location.hash === '#expert') {
+      setExpertOpen(true)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!expertOpen) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') closeExpert()

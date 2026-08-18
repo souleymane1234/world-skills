@@ -1,6 +1,6 @@
 .actu-page {
-  padding: 104px 16px 40px;
-  background: color-mix(in srgb, var(--bg) 92%, var(--gold) 8%);
+  padding: calc(var(--navbar-height) + 24px) var(--container-pad) 64px;
+  background: var(--color-background);
 }
 
 .actu-page__layout {

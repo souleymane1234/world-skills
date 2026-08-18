@@ -92,7 +92,7 @@ export function CandidatureModal({ open, onClose }: CandidatureModalProps) {
         <header className="candidature-modal__header">
           <img
             className="candidature-modal__logo"
-            src="/logo-removebg-preview.png"
+            src="/logo.png"
             alt=""
             width={64}
             height={64}

@@ -1,8 +1,10 @@
 import { useEffect, type ReactNode } from 'react'
 import { HeroVideo } from './components/HeroVideo'
 import { AboutSection } from './components/AboutSection'
+import { InscriptionsSection } from './components/InscriptionsSection'
 import { StatsBanner } from './components/StatsBanner'
 import { SkillsPreview } from './components/SkillsPreview'
+import { AgendaSection } from './components/AgendaSection'
 import { Navbar } from './components/Navbar'
 import { ActualitesAccess } from './components/ActualitesAccess'
 import { ActualiteDetailPage } from './components/ActualiteDetailPage'
@@ -12,10 +14,11 @@ import { CandidateShowroomPage } from './components/CandidateShowroomPage'
 import { VotePage } from './components/VotePage'
 import { PartenariatPage } from './components/PartenariatPage'
 import { PartnersTrustCarousel } from './components/PartnersTrustCarousel'
-import { AcademyPromo } from './components/AcademyPromo'
-import { PromoBanner } from './components/PromoBanner'
+import { SponsoringSection } from './components/SponsoringSection'
+// import { AcademyPromo } from './components/AcademyPromo'
 import { SectionBridge } from './components/SectionBridge'
 import { ConnexionPage } from './components/ConnexionPage'
+import { CandidaturePage } from './components/CandidaturePage'
 import { ProfilPage } from './components/ProfilPage'
 import { Footer } from './components/Footer'
 import './App.css'
@@ -101,6 +104,17 @@ function App() {
     )
   }
 
+  if (
+    pathname.startsWith('/inscription-candidat') ||
+    pathname.startsWith('/candidature')
+  ) {
+    return (
+      <PageShell>
+        <CandidaturePage />
+      </PageShell>
+    )
+  }
+
   if (pathname.startsWith('/connexion') || pathname.startsWith('/inscription')) {
     return <ConnexionPage />
   }
@@ -118,21 +132,25 @@ function App() {
       <Navbar />
       <section id="accueil">
         <HeroVideo soundOnTopMuteOnScroll />
-        <PromoBanner />
-        <SectionBridge variant="ribbon" />
         <AboutSection />
+        <InscriptionsSection />
+        <SectionBridge variant="ribbon" />
         <StatsBanner />
         <SectionBridge variant="wave" />
         <SkillsPreview />
+        <SectionBridge variant="wave" />
+        <AgendaSection />
         <SectionBridge variant="wave" />
       </section>
 
       <SectionBridge variant="wave" />
       <ActualitesAccess />
       <SectionBridge variant="ribbon" />
+      <SponsoringSection />
+      <SectionBridge variant="wave" />
       <PartnersTrustCarousel />
       <SectionBridge variant="wave" />
-      <AcademyPromo />
+      {/* <AcademyPromo /> */}
       <SectionBridge variant="wave" />
 
       <div className="ticks" />
