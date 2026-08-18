@@ -2,7 +2,7 @@
   width: 100%;
   max-width: var(--container);
   margin: 0 auto;
-  padding: calc(var(--navbar-height) + 16px) var(--container-pad) 48px;
+  padding: calc(var(--navbar-height) + 8px) var(--container-pad) 16px;
   text-align: left;
 }
 

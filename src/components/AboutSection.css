@@ -52,7 +52,7 @@
 .ws-about__copy {
   display: grid;
   gap: 16px;
-  padding-top: 28px;
+  padding-top: 0;
 }
 
 .ws-about__summary {

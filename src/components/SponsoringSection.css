@@ -1,5 +1,5 @@
 .sponsoring-section {
-  padding: clamp(34px, 5vw, 58px) var(--container-pad);
+  padding: var(--space-section) var(--container-pad);
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
@@ -10,7 +10,7 @@
 
 .sponsoring-section__header {
   text-align: center;
-  margin-bottom: clamp(20px, 3vw, 30px);
+  margin-bottom: 12px;
 }
 
 .sponsoring-section__eyebrow {
@@ -183,11 +183,6 @@
 }
 
 @media (max-width: 700px) {
-  .sponsoring-section {
-    padding-top: 28px;
-    padding-bottom: 32px;
-  }
-
   .sponsoring-section__grid {
     grid-template-columns: 1fr;
   }

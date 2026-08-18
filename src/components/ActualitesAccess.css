@@ -43,7 +43,7 @@
 }
 
 .act-access__header {
-  margin-bottom: clamp(20px, 3vw, 28px);
+  margin-bottom: 12px;
   display: flex;
   flex-direction: column;
   gap: clamp(14px, 2.5vw, 18px);

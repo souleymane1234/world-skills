@@ -1,7 +1,7 @@
 .ws-stats {
   width: 100%;
   max-width: 100%;
-  padding: 28px var(--container-pad) 0;
+  padding: var(--space-section) var(--container-pad) 0;
   background: transparent;
   color: #fff;
   overflow-x: clip;

@@ -1,6 +1,6 @@
 .vote-page {
   min-height: 100vh;
-  padding: calc(var(--navbar-height) + 16px) 0 48px;
+  padding: calc(var(--navbar-height) + 8px) 0 16px;
   background: var(--bg);
   color: var(--text);
   text-align: left;

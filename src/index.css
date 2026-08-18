@@ -32,7 +32,7 @@
   --container: 1280px;
   --container-pad: 24px;
   --navbar-height: 132px;
-  --space-section: clamp(40px, 5vw, 64px);
+  --space-section: 12px;
 
   --ease: 0.25s ease;
 
@@ -81,7 +81,6 @@
 @media (max-width: 767px) {
   :root {
     --container-pad: 16px;
-    --space-section: 40px;
     --navbar-height: 64px;
   }
 }

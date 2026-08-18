@@ -1,8 +1,8 @@
 .ws-contact {
   width: 100%;
   max-width: 100%;
-  margin-top: 55px;
-  margin-bottom: 32px;
+  margin-top: 0;
+  margin-bottom: 0;
   padding: var(--space-section) var(--container-pad);
   background: var(--color-background);
   border-top: 1px solid var(--border);
@@ -11,9 +11,9 @@
 }
 
 .ws-contact--embedded {
-  margin-top: 10px;
-  margin-bottom: 12px;
-  padding: clamp(28px, 4vw, 44px) var(--container-pad);
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: var(--space-section) var(--container-pad);
   background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
   border: 1px solid color-mix(in srgb, var(--color-border) 82%, #fff);
   border-radius: var(--radius-panel);

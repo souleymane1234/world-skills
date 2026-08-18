@@ -1,6 +1,6 @@
 .showroom-page {
   min-height: 100vh;
-  padding: calc(var(--navbar-height) + env(safe-area-inset-top, 0px)) 16px 48px;
+  padding: calc(var(--navbar-height) + env(safe-area-inset-top, 0px)) 16px 16px;
   background: var(--bg);
   color: var(--text);
   text-align: left;

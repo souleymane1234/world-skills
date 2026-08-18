@@ -16,8 +16,8 @@
 
 .agenda-section__header {
   display: grid;
-  gap: 28px;
-  margin-bottom: 36px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 @media (min-width: 1024px) {
