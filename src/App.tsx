@@ -19,6 +19,7 @@ import { SponsoringSection } from './components/SponsoringSection'
 import { SectionBridge } from './components/SectionBridge'
 import { ConnexionPage } from './components/ConnexionPage'
 import { CandidaturePage } from './components/CandidaturePage'
+import { ExpertPage } from './components/ExpertPage'
 import { ProfilPage } from './components/ProfilPage'
 import { Footer } from './components/Footer'
 import './App.css'
@@ -111,6 +112,14 @@ function App() {
     return (
       <PageShell>
         <CandidaturePage />
+      </PageShell>
+    )
+  }
+
+  if (pathname.startsWith('/inscription-expert')) {
+    return (
+      <PageShell>
+        <ExpertPage />
       </PageShell>
     )
   }

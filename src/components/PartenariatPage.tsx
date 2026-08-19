@@ -65,6 +65,86 @@ const WHY_PARTNER_POINTS = [
   },
 ] as const
 
+const ENGAGEMENT_OPTIONS = [
+  {
+    title: 'SPONSORISEZ L\u2019EVENEMENT',
+    description: 'Associez votre marque a un evenement d\u2019envergure nationale et beneficiez d\u2019une visibilite exceptionnelle.',
+    points: [
+      'Visibilite institutionnelle maximale',
+      'Presence sur tous les supports de communication',
+      'Acces privilegie aux decideurs et talents',
+    ],
+    tone: 'green' as const,
+    icon: 'sponsor' as const,
+  },
+  {
+    title: 'PORTEZ UN CHALLENGE',
+    description: 'Soumettez une problematique reelle a resoudre par les jeunes talents et accelerez l\u2019innovation.',
+    points: [
+      'Naming de votre challenge',
+      'Jury et mentors dedies',
+      'Solutions innovantes pour vos enjeux',
+      'Acces aux meilleurs talents',
+    ],
+    tone: 'orange' as const,
+    icon: 'challenge' as const,
+  },
+  {
+    title: 'ADOPTEZ UN METIER',
+    description: 'Soutenez un ou plusieurs metiers en equipant et accompagnant les conditions de competition.',
+    points: [
+      'Association directe a un metier',
+      'Visibilite sur l\u2019espace de competition',
+      'Mise en avant de votre expertise',
+    ],
+    tone: 'blue' as const,
+    icon: 'metier' as const,
+  },
+  {
+    title: 'INVESTISSEZ DANS LES TALENTS',
+    description: 'Contribuez a la formation, a la preparation et a l\u2019insertion des jeunes competiteurs.',
+    points: [
+      'Soutien a la preparation et a la formation',
+      'Prix et recompenses',
+      'Accompagnement post-competition',
+      'Impact social et employabilite',
+    ],
+    tone: 'accent' as const,
+    icon: 'talent' as const,
+  },
+] as const
+
+function EngagementIcon({ kind }: { kind: (typeof ENGAGEMENT_OPTIONS)[number]['icon'] }) {
+  switch (kind) {
+    case 'sponsor':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2l2.4 7.2H22l-6 4.5 2.3 7.3L12 16.5 5.7 21l2.3-7.3-6-4.5h7.6Z" />
+        </svg>
+      )
+    case 'challenge':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M13 3v7h6l-8 11v-7H5l8-11Z" />
+        </svg>
+      )
+    case 'metier':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z" />
+        </svg>
+      )
+    default:
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      )
+  }
+}
+
 function CategoryIcon({ kind }: { kind: (typeof PARTNERSHIP_CATEGORIES)[number]['icon'] }) {
   switch (kind) {
     case 'badge':
@@ -163,6 +243,38 @@ export function PartenariatPage() {
             </div>
           </div>
         </section>
+
+        <section className="concours-page__section">
+          <div className="concours-page__inner partenariat-page__engagement">
+            <h2 className="partenariat-page__engagement-title">
+              Choisissez votre manière de vous engager
+            </h2>
+            <div className="partenariat-page__engagement-grid">
+              {ENGAGEMENT_OPTIONS.map((option) => (
+                <article
+                  key={option.title}
+                  className={`partenariat-page__engagement-card partenariat-page__engagement-card--${option.tone}`}
+                >
+                  <span className="partenariat-page__engagement-icon" aria-hidden="true">
+                    <EngagementIcon kind={option.icon} />
+                  </span>
+                  <h3>{option.title}</h3>
+                  <p className="partenariat-page__engagement-desc">{option.description}</p>
+                  <ul className="partenariat-page__engagement-points">
+                    {option.points.map((pt) => (
+                      <li key={pt}>{pt}</li>
+                    ))}
+                  </ul>
+                  <a href="#contact" className="partenariat-page__engagement-link">
+                    En savoir plus →
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <SectionBridge variant="wave" />
 
         <section className="concours-page__section">
           <div className="concours-page__inner partenariat-page__card partenariat-page__categories">

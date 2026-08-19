@@ -45,6 +45,9 @@ export interface EmissionApi {
   listCategories(
     params: ListEmissionCategoriesQuery,
   ): Promise<EmissionCategoriesEnvelopeDto>
+  getParticipationOptions(editionId: string): Promise<{ success: boolean; data: Record<string, unknown> }>
+  getMyCandidature(editionId: string): Promise<{ success: boolean; data: Record<string, unknown> | null }>
+  applyCompetitor(editionId: string, body: Record<string, unknown>): Promise<{ success: boolean; data: Record<string, unknown> }>
   applyToEdition(
     editionId: string,
     body: ApplyToEditionBodyDto,
@@ -148,6 +151,28 @@ export function createEmissionApi(
           page: params.page,
           limit: params.limit,
         },
+      })
+    },
+
+    getParticipationOptions(editionId) {
+      return http.request<{ success: boolean; data: Record<string, unknown> }>({
+        method: 'GET',
+        path: paths.editionParticipationOptions(editionId),
+      })
+    },
+
+    getMyCandidature(editionId) {
+      return http.request<{ success: boolean; data: Record<string, unknown> | null }>({
+        method: 'GET',
+        path: paths.editionMyCandidature(editionId),
+      })
+    },
+
+    applyCompetitor(editionId, body) {
+      return http.request<{ success: boolean; data: Record<string, unknown> }>({
+        method: 'POST',
+        path: paths.editionApplyCompetitor(editionId),
+        body,
       })
     },
 

@@ -11,6 +11,15 @@ export const EMISSION_API_PATHS = {
   /** POST candidature à une édition (Bearer requis). */
   editionApply: (editionId: string) =>
     `/api/v1/emission/editions/${encodeURIComponent(editionId)}/apply`,
+  /** GET listes pour le formulaire de participation. */
+  editionParticipationOptions: (editionId: string) =>
+    `/api/v1/emission/editions/${encodeURIComponent(editionId)}/participation-options`,
+  /** GET candidature existante du user connecté (Bearer requis). */
+  editionMyCandidature: (editionId: string) =>
+    `/api/v1/emission/editions/${encodeURIComponent(editionId)}/my-candidature`,
+  /** POST candidature candidat (compétiteur) à une édition (Bearer requis). */
+  editionApplyCompetitor: (editionId: string) =>
+    `/api/v1/emission/editions/${encodeURIComponent(editionId)}/apply-competitor`,
   /** POST candidature Expert à une édition (Bearer requis). */
   editionApplyExpert: (editionId: string) =>
     `/api/v1/emission/editions/${encodeURIComponent(editionId)}/apply-expert`,

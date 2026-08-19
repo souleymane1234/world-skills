@@ -1,6 +1,11 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { SKILLS } from '../data/skills'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { emissionRequest } from '../lib/emission-request'
+import { uploadsApi } from '../services/api-client'
+import { useActiveEdition, useResolvedEmission } from '../hooks/use-emission-queries'
+import { getAccessToken, getAuthEventName, isApiLoggedIn } from '../lib/auth-session'
 import './CandidaturePage.css'
+import './ConcoursPage.css'
 
 const STEPS = [
   'Informations personnelles',
@@ -10,88 +15,77 @@ const STEPS = [
   'Confirmation',
 ] as const
 
-const CITIES = [
-  'Abidjan',
-  'Bouaké',
-  'Yamoussoukro',
-  'San-Pédro',
-  'Daloa',
-  'Korhogo',
-  'Man',
-  'Gagnoa',
-  'Divo',
-  'Abengourou',
-  'Autre',
+const GENDER_OPTIONS = [
+  { value: 'M', label: 'Masculin' },
+  { value: 'F', label: 'Féminin' },
 ] as const
 
-const ESTABLISHMENT_TYPES = [
-  'Lycée technique',
-  'Centre de formation professionnelle',
-  'Université / grande école',
-  'Entreprise / apprentissage',
-  'Autre',
-] as const
-
-const LEVELS = ['CAP', 'BEP', 'Bac professionnel', 'BTS', 'Licence', 'Autre'] as const
+type FileState = File | null
 
 type FormState = {
-  prenom: string
-  nom: string
-  naissance: string
-  sexe: 'masculin' | 'feminin' | ''
-  nationalite: string
-  cni: string
+  pseudo: string
+  firstName: string
+  lastName: string
+  dateOfBirth: string
+  gender: string
+  nationality: string
+  identityNumber: string
   residence: string
-  email: string
-  telephone: string
-  etablissementType: string
-  etablissementNom: string
-  etablissementVille: string
-  niveau: string
-  metierPrincipal: string
-  specialisation: string
-  metiersSecondaires: string[]
-  urgenceNom: string
-  urgenceTel: string
-  urgenceLien: string
-  formation: string
-  experience: string
+  contactEmail: string
+  contactPhone: string
+  countryId: string
+  jobSheetId: string
+  specializationJobTagId: string
+  secondaryJobSheetIds: string[]
+  institutionTypeId: string
+  schoolId: string
+  schoolCity: string
+  levelId: string
+  classe: string
+  emergencyContactName: string
+  emergencyContactPhone: string
+  emergencyContactRelation: string
+  experiences: string
+  complementarySkills: string
   motivation: string
-  identite: File | null
-  photo: File | null
-  cv: File | null
-  diplome: File | null
-  video: File | null
+  identityDocument: FileState
+  photo: FileState
+  cv: FileState
+  diploma: FileState
+  video: FileState
   consent: boolean
 }
 
 const INITIAL_FORM: FormState = {
-  prenom: '',
-  nom: '',
-  naissance: '',
-  sexe: '',
-  nationalite: '',
-  cni: '',
+  pseudo: '',
+  firstName: '',
+  lastName: '',
+  dateOfBirth: '',
+  gender: '',
+  nationality: '',
+  identityNumber: '',
   residence: '',
-  email: '',
-  telephone: '',
-  etablissementType: '',
-  etablissementNom: '',
-  etablissementVille: '',
-  niveau: '',
-  metierPrincipal: '',
-  specialisation: '',
-  metiersSecondaires: [],
-  urgenceNom: '',
-  urgenceTel: '',
-  urgenceLien: '',
-  formation: '',
-  experience: '',
+  contactEmail: '',
+  contactPhone: '',
+  countryId: '',
+  jobSheetId: '',
+  specializationJobTagId: '',
+  secondaryJobSheetIds: [],
+  institutionTypeId: '',
+  schoolId: '',
+  schoolCity: '',
+  levelId: '',
+  classe: '',
+  emergencyContactName: '',
+  emergencyContactPhone: '',
+  emergencyContactRelation: '',
+  experiences: '',
+  complementarySkills: '',
   motivation: '',
-  identite: null,
+  identityDocument: null,
   photo: null,
   cv: null,
-  diplome: null,
+  diploma: null,
   video: null,
   consent: false,
 }
@@ -146,9 +140,75 @@ function FileField({
 }
 
 export function CandidaturePage() {
+  const [loggedIn, setLoggedIn] = useState(isApiLoggedIn)
   const [step, setStep] = useState(0)
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [ageBlockOpen, setAgeBlockOpen] = useState(false)
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
+
+  const onAuthChange = useCallback(() => setLoggedIn(isApiLoggedIn()), [])
+  useEffect(() => {
+    window.addEventListener(getAuthEventName(), onAuthChange)
+    window.addEventListener('storage', onAuthChange)
+    return () => {
+      window.removeEventListener(getAuthEventName(), onAuthChange)
+      window.removeEventListener('storage', onAuthChange)
+    }
+  }, [onAuthChange])
+
+  const { emission } = useResolvedEmission()
+  const emissionId = emission?.id ?? null
+
+  const editionsQuery = useQuery({
+    queryKey: ['editions-applied', emissionId, loggedIn],
+    queryFn: () => emissionRequest.listEditions(emissionId!, { page: 1, limit: 50 }),
+    enabled: Boolean(emissionId) && loggedIn,
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+    retry: false,
+  })
+
+  const activeEditionQuery = useActiveEdition()
+  const editionId = activeEditionQuery.data?.id ?? null
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const activeEditionFromList = useMemo(() => {
+    if (!editionId || !editionsQuery.data?.data) return null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (editionsQuery.data.data as any[]).find((e: any) => e.id === editionId) ?? null
+  }, [editionId, editionsQuery.data])
+
+  const hasApplied: boolean = activeEditionFromList?.hasApplied ?? false
+  const applicationStatus: string | null = activeEditionFromList?.applicationStatus ?? null
+  const candidatureLoading = editionsQuery.isLoading && loggedIn
+
+  const optionsQuery = useQuery({
+    queryKey: ['participation-options', editionId],
+    queryFn: () => emissionRequest.getParticipationOptions(editionId!),
+    enabled: Boolean(editionId),
+    staleTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
+  })
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const options = (optionsQuery.data as any)?.data ?? null
+  const optionsLoading = optionsQuery.isLoading
+
+  const countries: { id: string; name: string; code: string | null }[] = options?.countries ?? []
+  // Use all countries from the API without filtering
+  const jobSheets: { id: string; title: string; specializations?: { id: string; name: string }[] }[] = options?.jobSheets ?? []
+  const institutionTypes: { id: string; name: string }[] = options?.institutionTypes ?? []
+  const schools: { id: string; name: string; city: string }[] = options?.schools ?? []
+  const levels: { id: string; label: string }[] = options?.levels ?? []
+  const classes: string[] = options?.classes ?? []
+
+  const selectedJobSheet = useMemo(
+    () => jobSheets.find((js) => js.id === form.jobSheetId),
+    [jobSheets, form.jobSheetId],
+  )
+  const specializations = selectedJobSheet?.specializations ?? []
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -158,74 +218,127 @@ export function CandidaturePage() {
     setForm((current) => ({ ...current, [key]: value }))
   }
 
-  const toggleSecondarySkill = (id: string) => {
-    setForm((current) => {
-      const selected = current.metiersSecondaires.includes(id)
-        ? current.metiersSecondaires.filter((item) => item !== id)
-        : current.metiersSecondaires.length < 2
-          ? [...current.metiersSecondaires, id]
-          : current.metiersSecondaires
-      return { ...current, metiersSecondaires: selected }
+  const toggleSecondaryJobSheet = (id: string) => {
+    setForm((f) => {
+      const arr = f.secondaryJobSheetIds
+      if (arr.includes(id)) return { ...f, secondaryJobSheetIds: arr.filter((v) => v !== id) }
+      if (arr.length >= 2) return f
+      return { ...f, secondaryJobSheetIds: [...arr, id] }
     })
+  }
+
+  const getAge = (dob: string) => {
+    if (!dob) return null
+    const birth = new Date(dob)
+    const today = new Date()
+    let age = today.getFullYear() - birth.getFullYear()
+    const m = today.getMonth() - birth.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age -= 1
+    return Number.isFinite(age) ? age : null
   }
 
   const canGoNext = () => {
     if (step === 0) {
       return Boolean(
-        form.prenom &&
-          form.nom &&
-          form.naissance &&
-          form.sexe &&
-          form.nationalite &&
-          form.cni &&
-          form.residence &&
-          form.email &&
-          form.telephone,
+        form.firstName && form.lastName && form.dateOfBirth && form.gender &&
+        form.nationality && form.identityNumber && form.residence &&
+        form.contactEmail && form.contactPhone && form.countryId,
       )
     }
     if (step === 1) {
       return Boolean(
-        form.etablissementType &&
-          form.etablissementNom &&
-          form.etablissementVille &&
-          form.niveau &&
-          form.metierPrincipal &&
-          form.urgenceNom &&
-          form.urgenceTel &&
-          form.urgenceLien,
+        form.jobSheetId && form.institutionTypeId && form.levelId && form.classe &&
+        form.emergencyContactName && form.emergencyContactPhone && form.emergencyContactRelation,
       )
     }
     if (step === 2) {
-      return Boolean(form.formation && form.experience && form.motivation)
+      return Boolean(form.experiences && form.motivation)
     }
     if (step === 3) {
-      return Boolean(form.identite && form.photo && form.video)
+      return Boolean(form.identityDocument && form.photo && form.video)
     }
     return form.consent
   }
 
   const goNext = () => {
     if (!canGoNext()) return
+    if (step === 0) {
+      const age = getAge(form.dateOfBirth)
+      if (age !== null && age < 16) {
+        setAgeBlockOpen(true)
+        return
+      }
+    }
     setStep((current) => Math.min(current + 1, STEPS.length - 1))
   }
 
   const goPrev = () => setStep((current) => Math.max(current - 1, 0))
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!canGoNext()) return
-    setSent(true)
+    if (!canGoNext() || !editionId) return
+    setSubmitting(true)
+    setSubmitError(null)
+    try {
+      const [videoRes, photoRes, idDocRes, cvRes, diplomaRes] = await Promise.all([
+        form.video ? uploadsApi.uploadVideo(form.video) : null,
+        form.photo ? uploadsApi.uploadImage(form.photo) : null,
+        form.identityDocument ? uploadsApi.uploadFile(form.identityDocument) : null,
+        form.cv ? uploadsApi.uploadFile(form.cv) : null,
+        form.diploma ? uploadsApi.uploadFile(form.diploma) : null,
+      ])
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const body: Record<string, any> = {
+        pseudo: form.pseudo || undefined,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        dateOfBirth: form.dateOfBirth,
+        gender: form.gender,
+        nationality: form.nationality,
+        identityNumber: form.identityNumber,
+        residence: form.residence,
+        contactEmail: form.contactEmail,
+        contactPhone: form.contactPhone,
+        countryId: form.countryId,
+        jobSheetId: form.jobSheetId,
+        institutionTypeId: form.institutionTypeId,
+        levelId: form.levelId,
+        classe: form.classe,
+        emergencyContactName: form.emergencyContactName,
+        emergencyContactPhone: form.emergencyContactPhone,
+        emergencyContactRelation: form.emergencyContactRelation,
+        experiences: form.experiences,
+        motivation: form.motivation,
+        age: form.dateOfBirth,
+      }
+
+      if (videoRes) body.videoId = videoRes.data.id
+      if (photoRes) body.candidatePicture = photoRes.data.url
+      if (idDocRes) body.identityDocumentUrl = idDocRes.data.url
+      if (cvRes) body.cvUrl = cvRes.data.url
+      if (diplomaRes) body.diplomaUrl = diplomaRes.data.url
+
+      if (form.specializationJobTagId) body.specializationJobTagId = form.specializationJobTagId
+      if (form.secondaryJobSheetIds.length > 0) body.secondaryJobSheetIds = form.secondaryJobSheetIds
+      if (form.schoolId) body.schoolId = form.schoolId
+      if (form.schoolCity) body.schoolCity = form.schoolCity
+      if (form.complementarySkills) body.complementarySkills = form.complementarySkills
+
+      await emissionRequest.applyCompetitor(editionId, body)
+      setSent(true)
+    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const msg = (err as any)?.response?.data?.message
+        ?? (err as any)?.message
+        ?? 'Impossible d\u2019envoyer votre candidature.'
+      setSubmitError(String(msg))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
-  const ageFromBirth = (value: string) => {
-    if (!value) return null
-    const birth = new Date(value)
-    const today = new Date()
-    let age = today.getFullYear() - birth.getFullYear()
-    const monthDiff = today.getMonth() - birth.getMonth()
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age -= 1
-    return Number.isFinite(age) ? age : null
-  }
+  const selectedSkillName = jobSheets.find((js) => js.id === form.jobSheetId)?.title ?? '—'
 
   return (
     <main className="candidature-page" aria-labelledby="candidature-page-title">
@@ -258,28 +371,143 @@ export function CandidaturePage() {
 
       <div className="candidature-page__layout">
         <section className="candidature-page__panel">
-          {sent ? (
-            <div className="candidature-page__success" role="status">
-              <p className="candidature-page__success-icon" aria-hidden="true">
-                ✓
+          {!loggedIn ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16, padding: '64px 24px' }}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'color-mix(in srgb, #f59e0b 12%, transparent)', display: 'grid', placeItems: 'center' }}>
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+              <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Connexion requise</h2>
+              <p style={{ margin: 0, maxWidth: 440, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Vous devez être connecté pour soumettre votre candidature.
+                Connectez-vous ou créez un compte pour continuer.
               </p>
-              <h2>Candidature envoyée</h2>
-              <p>
-                Merci {form.prenom}. Votre dossier sera examiné par l&apos;équipe Côte d&apos;Ivoire
-                Skills. Après validation, vous recevrez votre badge virtuel par e-mail ou WhatsApp.
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
+                <a
+                  href="/connexion"
+                  className="candidature-form__btn"
+                  style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, minWidth: 180 }}
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                  </svg>
+                  Se connecter
+                </a>
+                <a
+                  href="/inscription"
+                  className="candidature-form__btn candidature-form__btn--ghost"
+                  style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, minWidth: 180 }}
+                >
+                  Créer un compte
+                </a>
+              </div>
+            </div>
+          ) : candidatureLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: '64px 24px' }}>
+              <div style={{ width: 40, height: 40, border: '3px solid #e5e7eb', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              <p style={{ color: 'var(--color-text-muted)' }}>Vérification en cours…</p>
+              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            </div>
+          ) : hasApplied ? (
+            <div
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16, padding: '48px 24px' }}
+            >
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'color-mix(in srgb, #2563eb 12%, transparent)', display: 'grid', placeItems: 'center' }}>
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+              </div>
+              <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Vous avez déjà candidaté</h2>
+              <p style={{ margin: 0, maxWidth: 440, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Votre candidature a été soumise pour cette édition. Voici le statut actuel de votre dossier :
               </p>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px',
+                borderRadius: 999, fontSize: '0.95rem', fontWeight: 600,
+                background:
+                  applicationStatus === 'EN_ATTENTE' ? '#fef3c7' :
+                  applicationStatus === 'VALIDE' || applicationStatus === 'VALIDEE' ? '#dcfce7' :
+                  applicationStatus === 'REJETEE' || applicationStatus === 'REJETE' ? '#fee2e2' : '#f3f4f6',
+                color:
+                  applicationStatus === 'EN_ATTENTE' ? '#92400e' :
+                  applicationStatus === 'VALIDE' || applicationStatus === 'VALIDEE' ? '#166534' :
+                  applicationStatus === 'REJETEE' || applicationStatus === 'REJETE' ? '#991b1b' : '#374151',
+              }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'currentColor', opacity: 0.6 }} />
+                {applicationStatus === 'EN_ATTENTE' ? 'En attente de validation' :
+                 applicationStatus === 'VALIDE' || applicationStatus === 'VALIDEE' ? 'Candidature validée' :
+                 applicationStatus === 'REJETEE' || applicationStatus === 'REJETE' ? 'Candidature rejetée' :
+                 String(applicationStatus ?? 'En cours de traitement')}
+              </div>
+              <a
+                href="/"
+                className="candidature-form__btn"
+                style={{ marginTop: 8, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, minWidth: 200 }}
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9.5L12 4l9 5.5" />
+                  <path d="M19 13v6a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-6" />
+                </svg>
+                Retour à l&apos;accueil
+              </a>
+            </div>
+          ) : sent ? (
+            <div
+              className="candidature-page__success"
+              role="status"
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 12, padding: '48px 24px' }}
+            >
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'color-mix(in srgb, #16a34a 12%, transparent)', display: 'grid', placeItems: 'center' }}>
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Candidature envoyée</h2>
+              <p style={{ margin: 0, maxWidth: 420, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Merci <strong>{form.firstName}</strong>. Votre dossier sera examiné par
+                l&apos;équipe Côte d&apos;Ivoire Skills. Après validation, vous recevrez
+                votre badge virtuel par e-mail ou WhatsApp.
+              </p>
+              <a
+                href="/"
+                className="candidature-form__btn"
+                style={{ marginTop: 8, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, minWidth: 200 }}
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9.5L12 4l9 5.5" />
+                  <path d="M19 13v6a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-6" />
+                </svg>
+                Retour à l&apos;accueil
+              </a>
             </div>
           ) : (
             <form onSubmit={onSubmit}>
+              {/* ── ÉTAPE 1 : Informations personnelles ── */}
               {step === 0 ? (
                 <fieldset className="candidature-form">
                   <legend>1. Informations personnelles</legend>
                   <div className="candidature-form__grid">
                     <label>
-                      Prénom(s) <em>*</em>
+                      Pseudo <em>*</em>
                       <input
-                        value={form.prenom}
-                        onChange={(e) => update('prenom', e.target.value)}
+                        value={form.pseudo}
+                        onChange={(e) => update('pseudo', e.target.value)}
+                        placeholder="Ex : Competitor2026"
+                        required
+                      />
+                    </label>
+                    <label>
+                      Prénom <em>*</em>
+                      <input
+                        value={form.firstName}
+                        onChange={(e) => update('firstName', e.target.value)}
                         placeholder="Entrez votre prénom"
                         autoComplete="given-name"
                         required
@@ -288,8 +516,8 @@ export function CandidaturePage() {
                     <label>
                       Nom <em>*</em>
                       <input
-                        value={form.nom}
-                        onChange={(e) => update('nom', e.target.value)}
+                        value={form.lastName}
+                        onChange={(e) => update('lastName', e.target.value)}
                         placeholder="Entrez votre nom"
                         autoComplete="family-name"
                         required
@@ -299,78 +527,90 @@ export function CandidaturePage() {
                       Date de naissance <em>*</em>
                       <input
                         type="date"
-                        value={form.naissance}
-                        onChange={(e) => update('naissance', e.target.value)}
+                        value={form.dateOfBirth}
+                        onChange={(e) => update('dateOfBirth', e.target.value)}
                         required
                       />
                     </label>
-                    <fieldset className="candidature-form__radio">
-                      <legend>
-                        Sexe <em>*</em>
-                      </legend>
-                      <label>
-                        <input
-                          type="radio"
-                          name="sexe"
-                          checked={form.sexe === 'masculin'}
-                          onChange={() => update('sexe', 'masculin')}
-                          required
-                        />
-                        Masculin
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name="sexe"
-                          checked={form.sexe === 'feminin'}
-                          onChange={() => update('sexe', 'feminin')}
-                        />
-                        Féminin
-                      </label>
-                    </fieldset>
                     <label>
-                      Nationalité <em>*</em>
-                      <select
-                        value={form.nationalite}
-                        onChange={(e) => update('nationalite', e.target.value)}
-                        required
-                      >
-                        <option value="">Sélectionnez votre nationalité</option>
-                        <option value="ivoirienne">Ivoirienne</option>
-                        <option value="residente">Résident(e) en Côte d&apos;Ivoire</option>
-                        <option value="autre">Autre</option>
+                      Genre <em>*</em>
+                      <select value={form.gender} onChange={(e) => update('gender', e.target.value)} required>
+                        <option value="">Sélectionnez</option>
+                        {GENDER_OPTIONS.map((g) => (
+                          <option key={g.value} value={g.value}>{g.label}</option>
+                        ))}
                       </select>
                     </label>
                     <label>
-                      Numéro de CNI ou passeport <em>*</em>
+                      Nationalité <em>*</em>
+                      {countries.length > 0 ? (
+                        <select
+                          value={form.nationality}
+                          onChange={(e) => update('nationality', e.target.value)}
+                          required
+                          disabled={optionsLoading}
+                        >
+                          <option value="">{optionsLoading ? 'Chargement…' : 'Sélectionnez'}</option>
+                          {countries.map((c) => (
+                            <option key={c.id} value={c.name}>{c.name}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          value={form.nationality}
+                          onChange={(e) => update('nationality', e.target.value)}
+                          placeholder="Ex : Ivoirienne"
+                          required
+                        />
+                      )}
+                    </label>
+                    <label>
+                      Pays <em>*</em>
+                      {countries.length > 0 ? (
+                        <select
+                          value={form.countryId}
+                          onChange={(e) => update('countryId', e.target.value)}
+                          required
+                          disabled={optionsLoading}
+                        >
+                          <option value="">{optionsLoading ? 'Chargement…' : 'Sélectionnez votre pays'}</option>
+                          {countries.map((c) => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          value={form.countryId}
+                          onChange={(e) => update('countryId', e.target.value)}
+                          placeholder="ID du pays"
+                          required
+                        />
+                      )}
+                    </label>
+                    <label>
+                      N° pièce d&apos;identité <em>*</em>
                       <input
-                        value={form.cni}
-                        onChange={(e) => update('cni', e.target.value)}
-                        placeholder="Entrez votre numéro"
+                        value={form.identityNumber}
+                        onChange={(e) => update('identityNumber', e.target.value)}
+                        placeholder="CNI ou passeport"
                         required
                       />
                     </label>
                     <label>
                       Lieu de résidence <em>*</em>
-                      <select
+                      <input
                         value={form.residence}
                         onChange={(e) => update('residence', e.target.value)}
+                        placeholder="Ex : Yopougon, Abidjan"
                         required
-                      >
-                        <option value="">Sélectionnez votre ville</option>
-                        {CITIES.map((city) => (
-                          <option key={city} value={city}>
-                            {city}
-                          </option>
-                        ))}
-                      </select>
+                      />
                     </label>
                     <label>
                       Email <em>*</em>
                       <input
                         type="email"
-                        value={form.email}
-                        onChange={(e) => update('email', e.target.value)}
+                        value={form.contactEmail}
+                        onChange={(e) => update('contactEmail', e.target.value)}
                         placeholder="exemple@email.com"
                         autoComplete="email"
                         required
@@ -380,8 +620,8 @@ export function CandidaturePage() {
                       Téléphone <em>*</em>
                       <input
                         type="tel"
-                        value={form.telephone}
-                        onChange={(e) => update('telephone', e.target.value)}
+                        value={form.contactPhone}
+                        onChange={(e) => update('contactPhone', e.target.value)}
                         placeholder="+225 07 00 00 00 00"
                         autoComplete="tel"
                         required
@@ -391,6 +631,7 @@ export function CandidaturePage() {
                 </fieldset>
               ) : null}
 
+              {/* ── ÉTAPE 2 : Établissement & métier ── */}
               {step === 1 ? (
                 <div className="candidature-form">
                   <fieldset>
@@ -399,49 +640,57 @@ export function CandidaturePage() {
                       <label>
                         Type d&apos;établissement <em>*</em>
                         <select
-                          value={form.etablissementType}
-                          onChange={(e) => update('etablissementType', e.target.value)}
+                          value={form.institutionTypeId}
+                          onChange={(e) => update('institutionTypeId', e.target.value)}
                           required
+                          disabled={optionsLoading}
                         >
                           <option value="">Sélectionnez</option>
-                          {ESTABLISHMENT_TYPES.map((item) => (
-                            <option key={item} value={item}>
-                              {item}
-                            </option>
+                          {institutionTypes.map((it) => (
+                            <option key={it.id} value={it.id}>{it.name}</option>
                           ))}
                         </select>
                       </label>
                       <label>
-                        Nom de l&apos;établissement <em>*</em>
+                        École / établissement
+                        <select
+                          value={form.schoolId}
+                          onChange={(e) => {
+                            const school = schools.find((s) => s.id === e.target.value)
+                            update('schoolId', e.target.value)
+                            if (school) update('schoolCity', school.city)
+                          }}
+                          disabled={optionsLoading}
+                        >
+                          <option value="">Sélectionnez (optionnel)</option>
+                          {schools.map((s) => (
+                            <option key={s.id} value={s.id}>{s.name} — {s.city}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        Ville de l&apos;établissement
                         <input
-                          value={form.etablissementNom}
-                          onChange={(e) => update('etablissementNom', e.target.value)}
-                          required
+                          value={form.schoolCity}
+                          onChange={(e) => update('schoolCity', e.target.value)}
+                          placeholder="Ex : Abidjan"
                         />
                       </label>
                       <label>
-                        Ville de l&apos;établissement <em>*</em>
-                        <select
-                          value={form.etablissementVille}
-                          onChange={(e) => update('etablissementVille', e.target.value)}
-                          required
-                        >
+                        Niveau <em>*</em>
+                        <select value={form.levelId} onChange={(e) => update('levelId', e.target.value)} required disabled={optionsLoading}>
                           <option value="">Sélectionnez</option>
-                          {CITIES.map((city) => (
-                            <option key={city} value={city}>
-                              {city}
-                            </option>
+                          {levels.map((l) => (
+                            <option key={l.id} value={l.id}>{l.label}</option>
                           ))}
                         </select>
                       </label>
                       <label>
-                        Niveau / classe <em>*</em>
-                        <select value={form.niveau} onChange={(e) => update('niveau', e.target.value)} required>
+                        Classe <em>*</em>
+                        <select value={form.classe} onChange={(e) => update('classe', e.target.value)} required disabled={optionsLoading}>
                           <option value="">Sélectionnez</option>
-                          {LEVELS.map((item) => (
-                            <option key={item} value={item}>
-                              {item}
-                            </option>
+                          {classes.map((c) => (
+                            <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>
                           ))}
                         </select>
                       </label>
@@ -449,57 +698,69 @@ export function CandidaturePage() {
                   </fieldset>
 
                   <fieldset>
-                    <legend>3. Métier(s) choisi(s)</legend>
+                    <legend>Métier(s) choisi(s)</legend>
                     <div className="candidature-form__grid">
                       <label>
                         Métier principal <em>*</em>
                         <select
-                          value={form.metierPrincipal}
-                          onChange={(e) => update('metierPrincipal', e.target.value)}
+                          value={form.jobSheetId}
+                          onChange={(e) => {
+                            update('jobSheetId', e.target.value)
+                            update('specializationJobTagId', '')
+                          }}
                           required
+                          disabled={optionsLoading}
                         >
-                          <option value="">Choisissez le métier dans lequel vous souhaitez concourir</option>
-                          {SKILLS.map((skill) => (
-                            <option key={skill.id} value={skill.id}>
-                              {skill.name}
-                            </option>
+                          <option value="">Choisissez le métier</option>
+                          {jobSheets.map((js) => (
+                            <option key={js.id} value={js.id}>{js.title}</option>
                           ))}
                         </select>
                       </label>
-                      <label>
-                        Spécialisation (si applicable)
-                        <input
-                          value={form.specialisation}
-                          onChange={(e) => update('specialisation', e.target.value)}
-                        />
-                      </label>
-                    </div>
-                    <p className="candidature-form__hint">
-                      Métiers secondaires (optionnel) — jusqu&apos;à 2. {form.metiersSecondaires.length} / 2
-                      sélectionné(s).
-                    </p>
-                    <div className="candidature-form__chips">
-                      {SKILLS.filter((skill) => skill.id !== form.metierPrincipal).map((skill) => (
-                        <label key={skill.id}>
-                          <input
-                            type="checkbox"
-                            checked={form.metiersSecondaires.includes(skill.id)}
-                            onChange={() => toggleSecondarySkill(skill.id)}
-                          />
-                          {skill.name}
+                      {specializations.length > 0 && (
+                        <label>
+                          Spécialisation
+                          <select
+                            value={form.specializationJobTagId}
+                            onChange={(e) => update('specializationJobTagId', e.target.value)}
+                          >
+                            <option value="">Sélectionnez (optionnel)</option>
+                            {specializations.map((s) => (
+                              <option key={s.id} value={s.id}>{s.name}</option>
+                            ))}
+                          </select>
                         </label>
-                      ))}
+                      )}
                     </div>
+                    {jobSheets.length > 0 && (
+                      <>
+                        <p className="candidature-form__hint">
+                          Métiers secondaires (optionnel) — jusqu&apos;à 2. {form.secondaryJobSheetIds.length} / 2 sélectionné(s).
+                        </p>
+                        <div className="candidature-form__chips">
+                          {jobSheets.filter((js) => js.id !== form.jobSheetId).map((js) => (
+                            <label key={js.id}>
+                              <input
+                                type="checkbox"
+                                checked={form.secondaryJobSheetIds.includes(js.id)}
+                                onChange={() => toggleSecondaryJobSheet(js.id)}
+                              />
+                              {js.title}
+                            </label>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </fieldset>
 
                   <fieldset>
-                    <legend>4. Contact en cas d&apos;urgence</legend>
+                    <legend>Contact en cas d&apos;urgence</legend>
                     <div className="candidature-form__grid">
                       <label>
                         Nom et prénom <em>*</em>
                         <input
-                          value={form.urgenceNom}
-                          onChange={(e) => update('urgenceNom', e.target.value)}
+                          value={form.emergencyContactName}
+                          onChange={(e) => update('emergencyContactName', e.target.value)}
                           required
                         />
                       </label>
@@ -507,51 +768,46 @@ export function CandidaturePage() {
                         Téléphone <em>*</em>
                         <input
                           type="tel"
-                          value={form.urgenceTel}
-                          onChange={(e) => update('urgenceTel', e.target.value)}
+                          value={form.emergencyContactPhone}
+                          onChange={(e) => update('emergencyContactPhone', e.target.value)}
                           required
                         />
                       </label>
                       <label>
                         Lien de parenté <em>*</em>
-                        <select
-                          value={form.urgenceLien}
-                          onChange={(e) => update('urgenceLien', e.target.value)}
+                        <input
+                          value={form.emergencyContactRelation}
+                          onChange={(e) => update('emergencyContactRelation', e.target.value)}
+                          placeholder="Ex : Mère, Père, Tuteur…"
                           required
-                        >
-                          <option value="">Sélectionnez</option>
-                          <option value="parent">Parent</option>
-                          <option value="tuteur">Tuteur</option>
-                          <option value="conjoint">Conjoint(e)</option>
-                          <option value="autre">Autre</option>
-                        </select>
+                        />
                       </label>
                     </div>
                   </fieldset>
                 </div>
               ) : null}
 
+              {/* ── ÉTAPE 3 : Parcours & expérience ── */}
               {step === 2 ? (
                 <fieldset className="candidature-form">
                   <legend>3. Parcours &amp; expérience</legend>
                   <label>
-                    Formation / parcours scolaire <em>*</em>
+                    Expériences / stages <em>*</em>
                     <textarea
                       rows={4}
-                      value={form.formation}
-                      onChange={(e) => update('formation', e.target.value)}
-                      placeholder="Décrivez brièvement votre parcours de formation..."
+                      value={form.experiences}
+                      onChange={(e) => update('experiences', e.target.value)}
+                      placeholder="Stages, apprentissages, expériences liées au métier..."
                       required
                     />
                   </label>
                   <label>
-                    Expérience professionnelle / stages <em>*</em>
+                    Compétences complémentaires
                     <textarea
-                      rows={4}
-                      value={form.experience}
-                      onChange={(e) => update('experience', e.target.value)}
-                      placeholder="Stages, apprentissages, expériences liées au métier..."
-                      required
+                      rows={3}
+                      value={form.complementarySkills}
+                      onChange={(e) => update('complementarySkills', e.target.value)}
+                      placeholder="Ex : Soudure TIG, permis B, langues parlées..."
                     />
                   </label>
                   <label>
@@ -567,20 +823,20 @@ export function CandidaturePage() {
                 </fieldset>
               ) : null}
 
+              {/* ── ÉTAPE 4 : Documents ── */}
               {step === 3 ? (
                 <fieldset className="candidature-form">
                   <legend>4. Documents</legend>
                   <p className="candidature-form__hint">
-                    Joignez vos pièces (PDF ou image, max. 5 Mo). Ajoutez aussi une photo et une vidéo de
-                    présentation.
+                    Joignez vos pièces (PDF ou image, max. 5 Mo). Ajoutez aussi une photo et une vidéo de présentation.
                   </p>
                   <div className="candidature-form__files">
                     <FileField
                       label="Pièce d'identité (CNI / passeport)"
                       accept="image/*,.pdf"
                       required
-                      file={form.identite}
-                      onChange={(file) => update('identite', file)}
+                      file={form.identityDocument}
+                      onChange={(file) => update('identityDocument', file)}
                     />
                     <FileField
                       label="Photo de présentation"
@@ -592,7 +848,7 @@ export function CandidaturePage() {
                       onChange={(file) => update('photo', file)}
                     />
                     <FileField
-                      label="CV"
+                      label="CV (optionnel)"
                       accept=".pdf,image/*"
                       file={form.cv}
                       onChange={(file) => update('cv', file)}
@@ -600,8 +856,8 @@ export function CandidaturePage() {
                     <FileField
                       label="Attestation / diplôme (optionnel)"
                       accept=".pdf,image/*"
-                      file={form.diplome}
-                      onChange={(file) => update('diplome', file)}
+                      file={form.diploma}
+                      onChange={(file) => update('diploma', file)}
                     />
                     <FileField
                       label="Vidéo de présentation"
@@ -616,6 +872,7 @@ export function CandidaturePage() {
                 </fieldset>
               ) : null}
 
+              {/* ── ÉTAPE 5 : Confirmation ── */}
               {step === 4 ? (
                 <fieldset className="candidature-form">
                   <legend>5. Confirmation</legend>
@@ -629,24 +886,20 @@ export function CandidaturePage() {
                     <div>
                       <dt>Candidat</dt>
                       <dd>
-                        {form.prenom} {form.nom}
-                        {ageFromBirth(form.naissance) != null
-                          ? ` — ${ageFromBirth(form.naissance)} ans`
-                          : ''}
+                        {form.firstName} {form.lastName}
+                        {getAge(form.dateOfBirth) != null ? ` — ${getAge(form.dateOfBirth)} ans` : ''}
                       </dd>
                     </div>
                     <div>
                       <dt>Contact</dt>
-                      <dd>
-                        {form.email} · {form.telephone}
-                      </dd>
+                      <dd>{form.contactEmail} · {form.contactPhone}</dd>
                     </div>
                     <div>
                       <dt>Métier</dt>
-                      <dd>{SKILLS.find((skill) => skill.id === form.metierPrincipal)?.name ?? '—'}</dd>
+                      <dd>{selectedSkillName}</dd>
                     </div>
                     <div>
-                      <dt>Médias</dt>
+                      <dt>Documents</dt>
                       <dd>
                         Photo : {form.photo?.name ?? 'manquante'} · Vidéo : {form.video?.name ?? 'manquante'}
                       </dd>
@@ -667,9 +920,15 @@ export function CandidaturePage() {
                 </fieldset>
               ) : null}
 
+              {submitError && (
+                <p className="candidature-form__error" role="alert" style={{ color: '#b91c1c', marginTop: 8 }}>
+                  {submitError}
+                </p>
+              )}
+
               <div className="candidature-form__nav">
                 {step > 0 ? (
-                  <button type="button" className="candidature-form__btn candidature-form__btn--ghost" onClick={goPrev}>
+                  <button type="button" className="candidature-form__btn candidature-form__btn--ghost" onClick={goPrev} disabled={submitting}>
                     ← Précédent
                   </button>
                 ) : (
@@ -685,8 +944,8 @@ export function CandidaturePage() {
                     Suivant →
                   </button>
                 ) : (
-                  <button type="submit" className="candidature-form__btn" disabled={!canGoNext()}>
-                    Envoyer ma candidature →
+                  <button type="submit" className="candidature-form__btn" disabled={!canGoNext() || submitting}>
+                    {submitting ? 'Envoi en cours…' : 'Envoyer ma candidature →'}
                   </button>
                 )}
               </div>
@@ -734,6 +993,47 @@ export function CandidaturePage() {
           </article>
         </aside>
       </div>
+
+      {ageBlockOpen && (
+        <div
+          className="concours-page__modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Âge minimum requis"
+          onClick={() => setAgeBlockOpen(false)}
+          style={{ zIndex: 1300 }}
+        >
+          <div
+            className="concours-page__success-card"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: 440, textAlign: 'center' }}
+          >
+            <div style={{ width: 56, height: 56, margin: '0 auto 8px', borderRadius: '50%', background: 'color-mix(in srgb, #ef4444 12%, transparent)', display: 'grid', placeItems: 'center' }}>
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+            </div>
+            <h2 style={{ margin: '0 0 8px', fontSize: '1.25rem', color: 'var(--color-text)' }}>
+              Âge minimum non atteint
+            </h2>
+            <p style={{ margin: '0 0 16px', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+              Vous devez avoir au moins <strong>16 ans</strong> pour postuler comme candidat
+              Côte d&apos;Ivoire Skills. Vérifiez votre date de naissance ou revenez
+              lorsque vous remplirez cette condition.
+            </p>
+            <button
+              type="button"
+              className="concours-page__modal-btn concours-page__modal-btn--primary"
+              onClick={() => setAgeBlockOpen(false)}
+              style={{ margin: '0 auto' }}
+            >
+              J&apos;ai compris
+            </button>
+          </div>
+        </div>
+      )}
 
       <aside className="candidature-page__secure" aria-label="Protection des données">
         <span className="candidature-page__secure-icon" aria-hidden="true">

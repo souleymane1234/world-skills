@@ -7,15 +7,28 @@
 }
 
 .metiers-page__category-title {
-  margin: 0 0 14px;
+  margin: 0 0 18px;
   text-align: left;
-  font-size: 1.1rem;
-  color: var(--accent);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border-bottom: none;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, currentColor 8%, var(--bg)),
+    color-mix(in srgb, currentColor 4%, var(--bg))
+  );
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 12%, transparent);
 }
 
 .metiers-page__category-emoji {
-  font-size: 1.2em;
-  vertical-align: -0.08em;
+  font-size: 1.15em;
+  vertical-align: -0.05em;
 }
 
 .metiers-page__category-title--tertiaire {
@@ -40,29 +53,32 @@
 
 .metiers-page__cards-grid {
   display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .metiers-page__card {
-  border: 1px solid var(--border);
+  position: relative;
+  border: none;
   background: var(--bg);
   overflow: hidden;
-  box-shadow: var(--shadow);
-  border-radius: 16px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   transition:
-    transform 0.28s ease,
-    box-shadow 0.28s ease,
-    border-color 0.28s ease;
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .metiers-page__card-image {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .metiers-page__card-body {
@@ -94,9 +110,15 @@
   font-weight: 600;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 480px) {
   .metiers-page__cards-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .metiers-page__cards-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -106,13 +128,23 @@
   }
 }
 
+@media (max-width: 479px) {
+  .metiers-page__cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .metiers-page__card:hover {
-    transform: translateY(-4px) scale(1.01);
-    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+    transform: translateY(-6px);
     box-shadow:
-      0 14px 24px rgba(0, 0, 0, 0.12),
-      0 6px 10px rgba(0, 0, 0, 0.08);
+      0 20px 40px rgba(0, 0, 0, 0.1),
+      0 8px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .metiers-page__card:hover .metiers-page__card-image {
+    transform: scale(1.06);
   }
 }
 

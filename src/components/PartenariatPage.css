@@ -419,4 +419,215 @@
   .partenariat-page__categories-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  .partenariat-page__engagement-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Engagement section ── */
+
+.partenariat-page__engagement-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-h);
+  margin: 0 0 28px;
+}
+
+.partenariat-page__engagement-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+@keyframes engagement-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.partenariat-page__engagement-card {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 22px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.05);
+  border-top: 4px solid transparent;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: engagement-card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.partenariat-page__engagement-card:nth-child(1) { animation-delay: 0s; }
+.partenariat-page__engagement-card:nth-child(2) { animation-delay: 0.08s; }
+.partenariat-page__engagement-card:nth-child(3) { animation-delay: 0.16s; }
+.partenariat-page__engagement-card:nth-child(4) { animation-delay: 0.24s; }
+
+.partenariat-page__engagement-card--green {
+  border-top-color: var(--ws-green, #1aa867);
+}
+.partenariat-page__engagement-card--orange {
+  border-top-color: var(--ws-orange, #ff6b35);
+}
+.partenariat-page__engagement-card--blue {
+  border-top-color: var(--ws-blue, #1a73e8);
+}
+.partenariat-page__engagement-card--accent {
+  border-top-color: var(--accent);
+}
+
+.partenariat-page__engagement-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.partenariat-page__engagement-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.partenariat-page__engagement-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.partenariat-page__engagement-card--green .partenariat-page__engagement-icon {
+  background: color-mix(in srgb, var(--ws-green, #1aa867) 12%, var(--bg));
+  color: var(--ws-green, #1aa867);
+}
+.partenariat-page__engagement-card--orange .partenariat-page__engagement-icon {
+  background: color-mix(in srgb, var(--ws-orange, #ff6b35) 12%, var(--bg));
+  color: var(--ws-orange, #ff6b35);
+}
+.partenariat-page__engagement-card--blue .partenariat-page__engagement-icon {
+  background: color-mix(in srgb, var(--ws-blue, #1a73e8) 12%, var(--bg));
+  color: var(--ws-blue, #1a73e8);
+}
+.partenariat-page__engagement-card--accent .partenariat-page__engagement-icon {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+  color: var(--accent);
+}
+
+.partenariat-page__engagement-card h3 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-h);
+}
+
+.partenariat-page__engagement-desc {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--text) 75%, transparent);
+}
+
+.partenariat-page__engagement-points {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.partenariat-page__engagement-points li {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text);
+  padding-left: 18px;
+  position: relative;
+}
+
+.partenariat-page__engagement-points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.partenariat-page__engagement-card--green .partenariat-page__engagement-points li::before {
+  background: var(--ws-green, #1aa867);
+}
+.partenariat-page__engagement-card--orange .partenariat-page__engagement-points li::before {
+  background: var(--ws-orange, #ff6b35);
+}
+.partenariat-page__engagement-card--blue .partenariat-page__engagement-points li::before {
+  background: var(--ws-blue, #1a73e8);
+}
+.partenariat-page__engagement-card--accent .partenariat-page__engagement-points li::before {
+  background: var(--accent);
+}
+
+.partenariat-page__engagement-link {
+  margin-top: auto;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: gap 0.2s ease;
+}
+
+.partenariat-page__engagement-card--green .partenariat-page__engagement-link {
+  color: var(--ws-green, #1aa867);
+}
+.partenariat-page__engagement-card--orange .partenariat-page__engagement-link {
+  color: var(--ws-orange, #ff6b35);
+}
+.partenariat-page__engagement-card--blue .partenariat-page__engagement-link {
+  color: var(--ws-blue, #1a73e8);
+}
+.partenariat-page__engagement-card--accent .partenariat-page__engagement-link {
+  color: var(--accent);
+}
+
+.partenariat-page__engagement-link:hover {
+  gap: 8px;
+}
+
+@media (max-width: 1023px) {
+  .partenariat-page__engagement-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 599px) {
+  .partenariat-page__engagement-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .partenariat-page__engagement-title {
+    font-size: 1.2rem;
+  }
 }

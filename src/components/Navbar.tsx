@@ -16,6 +16,7 @@ const SUBPAGE_PREFIXES = [
   '/connexion',
   '/inscription',
   '/inscription-candidat',
+  '/inscription-expert',
   '/candidature',
   '/profil',
   '/showroom',

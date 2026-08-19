@@ -21,7 +21,7 @@ const CARDS = [
     points: [
       { text: 'Participez à votre métier', icon: FaWrench },
       { text: 'Valorisez vos compétences', icon: FaCheck },
-      { text: 'Tentez de remporter des prix', icon: FaCheck },
+      { text: 'Tentez de remporter des prix', icon: FaTrophy },
     ],
     cta: "Je m'inscris comme candidat",
     href: '/inscription-candidat',
@@ -39,7 +39,7 @@ const CARDS = [
       { text: "Contribuez à l'excellence des métiers", icon: FaCheck },
     ],
     cta: "Je m'inscris comme expert",
-    href: '/competition#expert',
+    href: '/inscription-expert',
     icon: FaUserGraduate,
   },
   {

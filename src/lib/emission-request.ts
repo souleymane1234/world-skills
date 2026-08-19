@@ -61,6 +61,15 @@ export const emissionRequest = {
   listCategories(params: ListEmissionCategoriesQuery) {
     return throttled(() => emissionApi.listCategories(params))
   },
+  getParticipationOptions(editionId: string) {
+    return throttled(() => emissionApi.getParticipationOptions(editionId))
+  },
+  getMyCandidature(editionId: string) {
+    return throttled(() => emissionApi.getMyCandidature(editionId))
+  },
+  applyCompetitor(editionId: string, body: Record<string, unknown>) {
+    return throttled(() => emissionApi.applyCompetitor(editionId, body))
+  },
   applyToEdition(editionId: string, body: ApplyToEditionBodyDto) {
     return throttled(() => emissionApi.applyToEdition(editionId, body))
   },
