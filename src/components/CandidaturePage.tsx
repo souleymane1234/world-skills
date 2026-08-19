@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { emissionRequest } from '../lib/emission-request'
 import { uploadsApi } from '../services/api-client'
 import { useActiveEdition, useResolvedEmission } from '../hooks/use-emission-queries'
-import { getAccessToken, getAuthEventName, isApiLoggedIn } from '../lib/auth-session'
+import { getAuthEventName, isApiLoggedIn } from '../lib/auth-session'
 import './CandidaturePage.css'
 import './ConcoursPage.css'
 

@@ -107,11 +107,21 @@ export function ExpertFormModal({ open, editionId, onClose, onSuccess }: Props) 
 
   const options = optionsQuery.data?.data ?? null
 
-  const jobSheets = options?.jobSheets ?? []
-  const activitySectors = options?.activitySectors ?? []
-  const levels = options?.levels ?? []
-  const expertiseTags = options?.expertiseTags ?? []
-  const expertRoles = options?.expertRoles ?? DESIRED_ROLES_STATIC
+  const jobSheets = Array.isArray(options?.jobSheets)
+    ? (options.jobSheets as Array<{ id: string; title: string }>)
+    : []
+  const activitySectors = Array.isArray(options?.activitySectors)
+    ? (options.activitySectors as Array<{ id: string; name: string }>)
+    : []
+  const levels = Array.isArray(options?.levels)
+    ? (options.levels as Array<{ id: string; label: string }>)
+    : []
+  const expertiseTags = Array.isArray(options?.expertiseTags)
+    ? (options.expertiseTags as Array<{ id: string; name: string }>)
+    : []
+  const expertRoles = Array.isArray(options?.expertRoles)
+    ? (options.expertRoles as Array<{ id: string; name: string }>)
+    : DESIRED_ROLES_STATIC
 
   const reset = useCallback(() => {
     setStep(0)

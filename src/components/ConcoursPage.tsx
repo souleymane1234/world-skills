@@ -154,15 +154,6 @@ export function ConcoursPage() {
     activeEditionQuery.data && 'title' in activeEditionQuery.data
       ? activeEditionQuery.data.title
       : null
-  const apiEditionDescription =
-    activeEditionQuery.data && 'description' in activeEditionQuery.data
-      ? activeEditionQuery.data.description?.trim()
-      : null
-  const apiSponsors =
-    activeEditionQuery.data && 'sponsors' in activeEditionQuery.data
-      ? activeEditionQuery.data.sponsors ?? []
-      : []
-
   const closeLightbox = useCallback(() => setLightboxIndex(null), [])
 
   const revealMetierPanel = useCallback(
