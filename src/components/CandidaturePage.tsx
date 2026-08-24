@@ -969,7 +969,7 @@ export function CandidaturePage() {
           <article className="candidature-page__aside-card candidature-page__aside-card--gold">
             <h2>Conditions de participation</h2>
             <ul>
-              <li>Avoir entre 16 et 30 ans à la date de la compétition</li>
+              <li>Avoir entre 16 et 50 ans à la date de la compétition</li>
               <li>Être de nationalité ivoirienne ou résident en Côte d&apos;Ivoire</li>
               <li>S&apos;engager à respecter le règlement de la compétition</li>
             </ul>

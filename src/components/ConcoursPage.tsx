@@ -12,6 +12,7 @@ import {
   useActiveEdition,
   useEmissionCategories,
 } from '../hooks/use-emission-queries'
+import { formatEditionDateRange } from '../lib/map-emission'
 import { SectionBridge } from './SectionBridge'
 import { PartnersTrustCarousel } from './PartnersTrustCarousel'
 import './ConcoursPage.css'
@@ -154,6 +155,34 @@ export function ConcoursPage() {
     activeEditionQuery.data && 'title' in activeEditionQuery.data
       ? activeEditionQuery.data.title
       : null
+  const apiEditionDescription =
+    activeEditionQuery.data && 'description' in activeEditionQuery.data
+      ? activeEditionQuery.data.description?.trim() || null
+      : null
+  const apiEditionDates =
+    activeEditionQuery.data?.startDate && activeEditionQuery.data?.endDate
+      ? formatEditionDateRange(
+          activeEditionQuery.data.startDate,
+          activeEditionQuery.data.endDate,
+        )
+      : null
+  const apiEditionLocation =
+    activeEditionQuery.data && 'emissionName' in activeEditionQuery.data
+      ? activeEditionQuery.data.emissionName?.trim() || null
+      : activeEditionQuery.emission?.title?.trim() || null
+  const apiEditionStage =
+    activeEditionQuery.data && 'currentStage' in activeEditionQuery.data
+      ? String(activeEditionQuery.data.currentStage || '')
+          .replace(/_/g, ' ')
+          .trim() || null
+      : null
+  const apiSponsors =
+    activeEditionQuery.data && 'sponsors' in activeEditionQuery.data
+      ? (activeEditionQuery.data.sponsors ?? []).filter((s) => s?.name)
+      : []
+  const candidatesCount =
+    activeEditionQuery.nestedEdition?.candidatesCount ?? apiCandidates.length
+
   const closeLightbox = useCallback(() => setLightboxIndex(null), [])
 
   const revealMetierPanel = useCallback(
@@ -226,9 +255,51 @@ export function ConcoursPage() {
 
       <section id="competition" className="concours-page__stack">
         {!selectedMetier && (
-          <h1 id="competition-title" className="visually-hidden">
-            {apiEditionTitle ?? 'Côte d\u2019Ivoire Skills 2026'}
-          </h1>
+          <section className="concours-page__edition-banner" aria-labelledby="competition-title">
+            <div className="concours-page__edition-banner-inner">
+              <p className="concours-page__edition-banner-eyebrow">Édition en cours</p>
+              <h1 id="competition-title">
+                {apiEditionTitle ?? 'Côte d\u2019Ivoire Skills 2026'}
+              </h1>
+              {apiEditionDescription ? (
+                <p className="concours-page__edition-banner-lead">{apiEditionDescription}</p>
+              ) : (
+                <p className="concours-page__edition-banner-lead">
+                  Découvrez les métiers, suivez les candidats et participez à la
+                  plus grande compétition des métiers en Côte d&apos;Ivoire.
+                </p>
+              )}
+
+              <ul className="concours-page__edition-meta">
+                {apiEditionDates ? (
+                  <li>
+                    <span>Dates</span>
+                    <strong>{apiEditionDates}</strong>
+                  </li>
+                ) : null}
+                {apiEditionLocation ? (
+                  <li>
+                    <span>Émission</span>
+                    <strong>{apiEditionLocation}</strong>
+                  </li>
+                ) : null}
+                {apiEditionStage ? (
+                  <li>
+                    <span>Phase</span>
+                    <strong>{apiEditionStage}</strong>
+                  </li>
+                ) : null}
+                <li>
+                  <span>Candidats</span>
+                  <strong>{candidatesCount}</strong>
+                </li>
+                <li>
+                  <span>Disciplines</span>
+                  <strong>{totalDisciplines}</strong>
+                </li>
+              </ul>
+            </div>
+          </section>
         )}
 
         {/* ── Métiers & Candidats ── */}
@@ -528,6 +599,46 @@ export function ConcoursPage() {
             </section>
           </>
         )}
+
+        {!selectedMetier && apiSponsors.length > 0 ? (
+          <section className="concours-page__section concours-page__edition-sponsors-section">
+            <div className="concours-page__inner">
+              <div className="concours-page__edition-sponsors">
+                <p className="concours-page__edition-sponsors-label">
+                  Partenaires de l&apos;édition
+                </p>
+                <ul className="concours-page__edition-sponsors-list">
+                  {apiSponsors.map((sponsor) => (
+                    <li key={`${sponsor.name}-${sponsor.logoUrl}`}>
+                      {sponsor.websiteUrl ? (
+                        <a
+                          href={sponsor.websiteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="concours-page__edition-sponsor"
+                        >
+                          <img
+                            src={sponsor.logoUrl || '/logo.png'}
+                            alt={sponsor.name}
+                            loading="lazy"
+                          />
+                        </a>
+                      ) : (
+                        <span className="concours-page__edition-sponsor">
+                          <img
+                            src={sponsor.logoUrl || '/logo.png'}
+                            alt={sponsor.name}
+                            loading="lazy"
+                          />
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+        ) : null}
       </section>
 
       <SectionBridge variant="wave" />

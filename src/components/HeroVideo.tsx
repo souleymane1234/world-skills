@@ -14,6 +14,8 @@ type HeroVideoProps = {
   controls?: boolean
   /** Active le son en haut de page, puis le coupe au scroll */
   soundOnTopMuteOnScroll?: boolean
+  /** Affiche le titre / sous-titre / boutons au-dessus de la video */
+  showOverlay?: boolean
 }
 
 export function HeroVideo({
@@ -23,6 +25,7 @@ export function HeroVideo({
   title = DEFAULT_TITLE,
   controls = false,
   soundOnTopMuteOnScroll = false,
+  showOverlay = true,
 }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -111,20 +114,22 @@ export function HeroVideo({
         preload="auto"
         aria-label="Vidéo de présentation WorldSkills Côte d'Ivoire"
       />
-      <div className="site-hero-video__overlay">
-        <p className="site-hero-video__subtitle">{subtitle}</p>
-        <h1 className="site-hero-video__title">{title}</h1>
-        {!controls ? (
-          <div className="site-hero-video__actions">
-            <a className="ui-btn ui-btn--primary" href="/inscription">
-              Je m&apos;inscris
-            </a>
-            <a className="ui-btn ui-btn--ghost" href="/competition">
-              Découvrir la compétition
-            </a>
-          </div>
-        ) : null}
-      </div>
+      {showOverlay ? (
+        <div className="site-hero-video__overlay">
+          <p className="site-hero-video__subtitle">{subtitle}</p>
+          <h1 className="site-hero-video__title">{title}</h1>
+          {!controls ? (
+            <div className="site-hero-video__actions">
+              <a className="ui-btn ui-btn--primary" href="/inscription">
+                Je m&apos;inscris
+              </a>
+              <a className="ui-btn ui-btn--ghost" href="/competition">
+                Découvrir la compétition
+              </a>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }

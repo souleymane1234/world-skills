@@ -3,8 +3,9 @@
   width: 100%;
   max-width: none;
   margin: 0;
-  min-height: max(650px, 100svh);
   height: 100svh;
+  height: 100dvh;
+  min-height: 100svh;
   background: var(--color-dark);
   overflow: hidden;
   flex-shrink: 0;
@@ -16,7 +17,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
 }
 

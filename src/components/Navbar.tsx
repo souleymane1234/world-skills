@@ -114,13 +114,6 @@ export function Navbar() {
           height={72}
           alt="Côte d'Ivoire Skills — Les Olympiades des Métiers"
         />
-        <img
-          className="site-navbar__logo site-navbar__logo--ortt"
-          src="/ortt.png"
-          width={160}
-          height={56}
-          alt="Révèle Ton Talent"
-        />
       </a>
 
       <button

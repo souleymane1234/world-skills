@@ -140,7 +140,7 @@ function App() {
     <>
       <Navbar />
       <section id="accueil">
-        <HeroVideo soundOnTopMuteOnScroll />
+        <HeroVideo soundOnTopMuteOnScroll showOverlay={false} />
         <AboutSection />
         <InscriptionsSection />
         <SectionBridge variant="ribbon" />

@@ -246,9 +246,20 @@ export function PartenariatPage() {
 
         <section className="concours-page__section">
           <div className="concours-page__inner partenariat-page__engagement">
-            <h2 className="partenariat-page__engagement-title">
+            <header className="partenariat-page__sponsoring-intro">
+              <p className="partenariat-page__sponsoring-eyebrow">Sponsoring</p>
+              <h2 className="partenariat-page__sponsoring-title">
+                Devenez acteur de Côte d&apos;Ivoire Skills 2026
+              </h2>
+              <p className="partenariat-page__sponsoring-lead">
+                Associez votre marque à la plus grande compétition des métiers en Côte
+                d&apos;Ivoire et contribuez à former, valoriser et propulser les talents
+                de demain.
+              </p>
+            </header>
+            <h3 className="partenariat-page__engagement-title">
               Choisissez votre manière de vous engager
-            </h2>
+            </h3>
             <div className="partenariat-page__engagement-grid">
               {ENGAGEMENT_OPTIONS.map((option) => (
                 <article
