@@ -96,6 +96,39 @@
   pointer-events: auto;
 }
 
+.site-hero-video__sound-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  z-index: 5;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.55);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.site-hero-video__sound-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.site-hero-video__sound-btn:hover {
+  background: rgb(0 0 0 / 0.72);
+  transform: translateX(-50%) translateY(-1px);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   @keyframes mtd-hero-fade {
     from {

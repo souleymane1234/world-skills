@@ -29,75 +29,110 @@ export function HeroVideo({
 }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [hasUserInteracted, setHasUserInteracted] = useState(false)
-  const [autoplayBlocked, setAutoplayBlocked] = useState(false)
-  const shouldMute =
-    controls
-      ? false
-      : soundOnTopMuteOnScroll
-        ? isScrolled || autoplayBlocked
-        : true
+  const [soundLockedByBrowser, setSoundLockedByBrowser] = useState(false)
+  const [isMuted, setIsMuted] = useState(!soundOnTopMuteOnScroll)
 
   useEffect(() => {
     if (!soundOnTopMuteOnScroll || controls) return
 
-    const onScroll = () => setIsScrolled(window.scrollY > 8)
+    const onScroll = () => {
+      const scrolled = window.scrollY > 8
+      setIsScrolled(scrolled)
+      const video = videoRef.current
+      if (!video || soundLockedByBrowser) return
+      video.muted = scrolled
+      setIsMuted(scrolled)
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [soundOnTopMuteOnScroll, controls])
-
-  useEffect(() => {
-    if (!soundOnTopMuteOnScroll || controls) return
-
-    const markInteracted = () => setHasUserInteracted(true)
-    window.addEventListener('pointerdown', markInteracted, { once: true })
-    window.addEventListener('keydown', markInteracted, { once: true })
-    window.addEventListener('touchstart', markInteracted, { once: true })
-    return () => {
-      window.removeEventListener('pointerdown', markInteracted)
-      window.removeEventListener('keydown', markInteracted)
-      window.removeEventListener('touchstart', markInteracted)
-    }
-  }, [soundOnTopMuteOnScroll, controls])
+  }, [soundOnTopMuteOnScroll, controls, soundLockedByBrowser])
 
   useEffect(() => {
     const video = videoRef.current
     if (!video || controls) return
-    const tryPlay = async () => {
+
+    let cancelled = false
+
+    const tryAutoplayWithSound = async () => {
+      // 1) Tente lecture avec son (certains navigateurs l'autorisent)
       try {
-        if (soundOnTopMuteOnScroll && !isScrolled && !autoplayBlocked) {
-          video.muted = false
-        } else {
-          video.muted = shouldMute
-        }
+        video.muted = false
+        video.defaultMuted = false
+        video.volume = 1
         await video.play()
+        if (cancelled) return
+        setSoundLockedByBrowser(false)
+        setIsMuted(false)
+        return
       } catch {
-        // Fallback: some browsers block unmuted autoplay on initial load/refresh.
-        if (soundOnTopMuteOnScroll && !isScrolled) {
-          setAutoplayBlocked(true)
-        }
+        // continue
+      }
+
+      // 2) Fallback: lecture muette (toujours autorisée), puis attente d'un geste
+      try {
         video.muted = true
-        try {
-          await video.play()
-        } catch {
-          // Keep silent fail; user interaction will retry.
+        video.defaultMuted = true
+        await video.play()
+        if (cancelled) return
+        if (soundOnTopMuteOnScroll) {
+          setSoundLockedByBrowser(true)
+          setIsMuted(true)
         }
+      } catch {
+        // Keep silent fail
       }
     }
-    void tryPlay()
-  }, [controls, src, soundOnTopMuteOnScroll, isScrolled, autoplayBlocked, shouldMute])
+
+    void tryAutoplayWithSound()
+    return () => {
+      cancelled = true
+    }
+  }, [controls, src, soundOnTopMuteOnScroll])
 
   useEffect(() => {
-    if (!soundOnTopMuteOnScroll || controls || !hasUserInteracted || isScrolled) return
+    if (!soundOnTopMuteOnScroll || controls) return
+
+    const unlockSound = () => {
+      if (isScrolled) return
+      const video = videoRef.current
+      if (!video) return
+      video.muted = false
+      video.defaultMuted = false
+      video.volume = 1
+      setSoundLockedByBrowser(false)
+      setIsMuted(false)
+      void video.play().catch(() => {
+        // No-op
+      })
+    }
+
+    // Débloque le son dès le premier geste utilisateur (politique navigateurs)
+    const opts: AddEventListenerOptions = { once: true, capture: true }
+    window.addEventListener('pointerdown', unlockSound, opts)
+    window.addEventListener('touchstart', unlockSound, opts)
+    window.addEventListener('keydown', unlockSound, opts)
+    window.addEventListener('click', unlockSound, opts)
+    return () => {
+      window.removeEventListener('pointerdown', unlockSound, true)
+      window.removeEventListener('touchstart', unlockSound, true)
+      window.removeEventListener('keydown', unlockSound, true)
+      window.removeEventListener('click', unlockSound, true)
+    }
+  }, [soundOnTopMuteOnScroll, controls, isScrolled, src])
+
+  const enableSound = () => {
     const video = videoRef.current
     if (!video) return
-    setAutoplayBlocked(false)
     video.muted = false
+    video.defaultMuted = false
+    video.volume = 1
+    setSoundLockedByBrowser(false)
+    setIsMuted(false)
     void video.play().catch(() => {
-      // No-op if browser still blocks playback.
+      // No-op
     })
-  }, [soundOnTopMuteOnScroll, controls, hasUserInteracted, isScrolled])
+  }
 
   return (
     <div className={`site-hero-video${controls ? ' site-hero-video--controls' : ''}`}>
@@ -107,13 +142,31 @@ export function HeroVideo({
         src={src}
         poster={poster}
         autoPlay={!controls}
-        muted={shouldMute}
+        muted={isMuted}
         loop={!controls}
         controls={controls}
         playsInline
         preload="auto"
         aria-label="Vidéo de présentation WorldSkills Côte d'Ivoire"
       />
+
+      {soundOnTopMuteOnScroll && !controls && soundLockedByBrowser && !isScrolled ? (
+        <button
+          type="button"
+          className="site-hero-video__sound-btn"
+          onClick={enableSound}
+          aria-label="Activer le son de la vidéo"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M3 10v4h4l5 5V5L7 10H3zm13.5 2a3.5 3.5 0 0 0-1.8-3.05v6.1A3.5 3.5 0 0 0 16.5 12zM14 4.23v2.06a5.5 5.5 0 0 1 0 11.42v2.06A7.5 7.5 0 0 0 14 4.23z"
+            />
+          </svg>
+          Activer le son
+        </button>
+      ) : null}
+
       {showOverlay ? (
         <div className="site-hero-video__overlay">
           <p className="site-hero-video__subtitle">{subtitle}</p>

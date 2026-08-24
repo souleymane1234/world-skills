@@ -47,24 +47,16 @@ export function Footer() {
         <section className="site-footer__brand" aria-label="WorldSkills Côte d'Ivoire">
           <a className="site-footer__brand-logo" href="/#accueil" aria-label="Accueil">
             <img
-              className="site-footer__logo site-footer__logo--arms"
-              src="/Amoirie.png"
-              alt="Armoiries de la République de Côte d'Ivoire"
-              width={140}
-              height={140}
-            />
-            <span className="site-footer__divider" aria-hidden="true" />
-            <img
-              className="site-footer__logo site-footer__logo--skills"
-              src="/logo.png"
-              alt="Côte d'Ivoire Skills — Les Olympiades des Métiers"
-              width={280}
-              height={72}
-            />
-            <img
               className="site-footer__logo site-footer__logo--ortt"
               src="/ortt.png"
               alt="Révèle Ton Talent"
+              width={160}
+              height={56}
+            />
+            <img
+              className="site-footer__logo site-footer__logo--lta"
+              src="/lta.png"
+              alt="LTA"
               width={160}
               height={56}
             />
